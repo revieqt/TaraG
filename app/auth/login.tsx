@@ -102,6 +102,14 @@ export default function LoginScreen() {
               </ThemedView>
             </TouchableOpacity>
             <TouchableOpacity
+              onPress={() => router.push('/auth/forgotPassword')}
+              style={{ marginTop: 20, marginBottom: 10 }}
+            >
+              <ThemedText style={{ textAlign: 'center', color: '#205781', textDecorationLine: 'underline' }}>
+                Forgot Password?
+              </ThemedText>
+            </TouchableOpacity>
+            <TouchableOpacity
               onPress={() => router.push('/auth/register')}
               style={{ marginVertical: 20 }}>
               <ThemedText>Dont have an account yet? Register</ThemedText>

@@ -32,11 +32,17 @@ export default function ChangePasswordScreen() {
     }
     setLoading(true);
     try {
-      await changeUserPassword(newPassword);
+      await changeUserPassword(currentPassword, newPassword);
       Alert.alert('Success', 'Your password has been changed.');
       navigation.goBack();
     } catch (err: any) {
-      setFormError(err?.message || 'Failed to change password.');
+      if (err && err.code === 'auth/wrong-password') {
+        setFormError('Current password is incorrect.');
+      }else if( (err && err.code === 'auth/invalid-credential')){
+        setFormError('Incorrect current password.');
+      } else {
+        setFormError(err?.message || 'Failed to change password.');
+      }
     }
     setLoading(false);
   };

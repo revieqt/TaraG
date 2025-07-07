@@ -8,7 +8,7 @@ import { getAuth, reload } from 'firebase/auth';
 import React, { useEffect, useState } from 'react';
 import { Alert, KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity } from 'react-native';
 
-const RESEND_COOLDOWN = 30; // seconds
+const RESEND_COOLDOWN = 180; // seconds
 
 export default function VerifyEmailScreen() {
   const [sending, setSending] = useState(false);

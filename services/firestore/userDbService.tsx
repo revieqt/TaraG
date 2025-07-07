@@ -1,7 +1,10 @@
 import {
   createUserWithEmailAndPassword,
+  EmailAuthProvider,
   User as FirebaseUser,
+  reauthenticateWithCredential,
   sendEmailVerification,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   updatePassword,
 } from 'firebase/auth';
@@ -38,11 +41,20 @@ export async function verifyUserEmail(user?: FirebaseUser) {
   await sendEmailVerification(currentUser);
 }
 
-// Change password for current user
-export async function changeUserPassword(newPassword: string) {
-  const currentUser = auth.currentUser;
-  if (!currentUser) throw new Error('No user is currently signed in.');
-  await updatePassword(currentUser, newPassword);
+// Re-authenticate user with current password
+export async function reauthenticateCurrentUser(currentPassword: string) {
+  const user = auth.currentUser;
+  if (!user || !user.email) throw new Error('No user is currently signed in.');
+  const credential = EmailAuthProvider.credential(user.email, currentPassword);
+  await reauthenticateWithCredential(user, credential);
+}
+
+// Change password for current user (with re-authentication)
+export async function changeUserPassword(currentPassword: string, newPassword: string) {
+  const user = auth.currentUser;
+  if (!user) throw new Error('No user is currently signed in.');
+  await reauthenticateCurrentUser(currentPassword);
+  await updatePassword(user, newPassword);
 }
 
 export async function loginUserAndFetchProfile(email: string, password: string) {
@@ -80,6 +92,11 @@ export async function loginUserAndFetchProfile(email: string, password: string) 
     createdOn: userData.createdOn?.toDate ? userData.createdOn.toDate() : userData.createdOn,
     groups: userData.groups || [],
   };
+}
+
+// Send password reset email
+export async function sendUserPasswordResetEmail(email: string) {
+  await sendPasswordResetEmail(auth, email);
 }
 
 // ...existing code...

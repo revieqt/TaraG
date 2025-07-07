@@ -1,10 +1,10 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-export default function ExploreScreen() {
+export default function RegisterScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome Explore!</Text>
+      <Text style={styles.title}>Welcome Home!</Text>
       <Text style={styles.subtitle}>This is your home screen.</Text>
     </View>
   );

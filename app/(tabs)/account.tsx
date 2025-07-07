@@ -32,21 +32,28 @@ export default function AccountScreen() {
       contentContainerStyle={styles.container}
       showsVerticalScrollIndicator={false}
     >
-      <TouchableOpacity style={styles.profileButton} onPress={() => {}}>
-        <Image
-          source={
-            user?.profileImage
-              ? { uri: user?.profileImage }
-              : require('@/assets/images/defaultUser.jpg')
-          }
-          style={styles.profileImage}
-        />
-        <View style={{justifyContent: 'center'}}>
-          <ThemedText type='subtitle'>{fullName}</ThemedText>
-          <ThemedText >@{user?.username}</ThemedText>
-          <ThemedText type='link'>View Profile</ThemedText>
-        </View>
-      </TouchableOpacity>
+      <View style={styles.header}>
+        <TouchableOpacity style={styles.profileButton} onPress={() => {router.push('/account/viewProfile')}}>
+          <Image
+            source={
+              user?.profileImage
+                ? { uri: user?.profileImage }
+                : require('@/assets/images/defaultUser.jpg')
+            }
+            style={styles.profileImage}
+          />
+          <View style={{justifyContent: 'center'}}>
+            <ThemedText >{fullName}</ThemedText>
+            <ThemedText >@{user?.username}</ThemedText>
+            <ThemedText type='link'>View Profile</ThemedText>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => router.push('/account/notifications')} style={styles.notifications}>
+          <ThemedIcons library='MaterialIcons' name='notifications' size={24}></ThemedIcons>
+        </TouchableOpacity>
+      </View>
+      
 
       <ThemedView style={styles.options}>
         <ThemedText type='subtitle'>Settings</ThemedText>
@@ -78,11 +85,30 @@ export default function AccountScreen() {
         </Collapsible>
 
         <Collapsible title="Privacy and Security">
+
+          <TouchableOpacity>
+            <ThemedView style={styles.collapsibleChild} >
+              <ThemedIcons library='MaterialIcons' name='notifications' size={15}/><ThemedText>Push Notifications</ThemedText>
+            </ThemedView>
+          </TouchableOpacity>
+
           <TouchableOpacity onPress={() => router.push('/auth/changePassword')}>
             <ThemedView style={styles.collapsibleChild} >
               <ThemedIcons library='MaterialIcons' name='vpn-key' size={15}/><ThemedText>Change Password</ThemedText>
             </ThemedView>
           </TouchableOpacity>
+
+          { !auth.currentUser?.emailVerified ? 
+            <TouchableOpacity onPress={() => router.push('/auth/verifyEmail')}>
+              <ThemedView style={styles.collapsibleChild} >
+                <ThemedIcons library='MaterialIcons' name='mark-email-read' size={15}/><ThemedText>Verify your Email</ThemedText>
+              </ThemedView>
+            </TouchableOpacity>
+            : null
+          }
+
+          
+          
         </Collapsible>
 
         <Collapsible title="Tour Guide Settings">
@@ -126,6 +152,9 @@ export default function AccountScreen() {
             </ThemedView>
           </TouchableOpacity>
         </Collapsible>
+
+
+        
       </ThemedView>
 
       {/* Logout Button */}
@@ -141,6 +170,15 @@ export default function AccountScreen() {
 }
 
 const styles = StyleSheet.create({
+  header: {
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    height: 100,
+  },
   container: {
     flex: 1,
     justifyContent: 'flex-start',
@@ -151,11 +189,8 @@ const styles = StyleSheet.create({
   },
   profileButton: {
     flexDirection: 'row',
-    width: '100%',
     alignItems: 'center',
-    borderBottomColor: '#ccc',
-    borderBottomWidth: 1,
-    height: 100,
+    
   },
   profileImage: {
     width: 80,
@@ -164,6 +199,14 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     backgroundColor: '#eee',
     marginRight: 16,
+  },
+  notifications:{
+    width: 80,
+    aspectRatio: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 20,
+    backgroundColor: '#f0f0f0',
   },
   fullName: {
     fontSize: 22,

@@ -43,6 +43,9 @@ export default function RootLayout() {
           <Stack.Screen name="auth/forgotPassword" options={{ headerShown: false }} />
           <Stack.Screen name="auth/changePassword" options={{ headerShown: false }} />
           
+          <Stack.Screen name="account/viewProfile" options={{ headerShown: false }} />
+          <Stack.Screen name="account/notifications" options={{ headerShown: false }} />
+
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" options={{ headerShown: false }} />
         </Stack>

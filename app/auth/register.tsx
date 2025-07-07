@@ -1,25 +1,16 @@
 import Button from '@/components/Button';
+import ContactNumberField from '@/components/ContactNumberField';
 import DatePicker from '@/components/DatePicker';
+import DropDownField from '@/components/DropDownField';
 import PasswordField from '@/components/PasswordField';
 import TextField from '@/components/TextField';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { registerUser } from '@/services/firestore/userDbService';
+import { calculateAge } from '@/utils/calculateAge';
 import { router } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
-
-const defaultProfileImage = require('@/assets/images/defaultUser.jpg');
-
-function calculateAge(birthdate: Date) {
-  const today = new Date();
-  let age = today.getFullYear() - birthdate.getFullYear();
-  const m = today.getMonth() - birthdate.getMonth();
-  if (m < 0 || (m === 0 && today.getDate() < birthdate.getDate())) {
-    age--;
-  }
-  return age;
-}
 
 export default function RegisterScreen() {
   const [fname, setFname] = useState('');
@@ -35,6 +26,7 @@ export default function RegisterScreen() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const scrollRef = useRef<ScrollView>(null);
+  const [areaCode, setAreaCode] = useState('+63');
 
   const handleRegister = async () => {
     setErrorMsg('');
@@ -53,6 +45,12 @@ export default function RegisterScreen() {
       scrollRef.current?.scrollTo({ y: 0, animated: true });
       return;
     }
+    const age = calculateAge(bdate as Date);
+    if (age < 13) {
+      setErrorMsg('You must be at least 13 years old to register.');
+      scrollRef.current?.scrollTo({ y: 0, animated: true });
+      return;
+    }
     if (password !== confirmPassword) {
       setErrorMsg('Passwords do not match.');
       scrollRef.current?.scrollTo({ y: 0, animated: true });
@@ -62,7 +60,6 @@ export default function RegisterScreen() {
     setLoading(true);
 
     try {
-      const age = calculateAge(bdate as Date);
       await registerUser(
         email,
         password,
@@ -73,10 +70,10 @@ export default function RegisterScreen() {
           bdate,
           age,
           gender,
-          contactNumber,
+          contactNumber: areaCode + contactNumber,
           username,
           status: 'Active',
-          profileImage: defaultProfileImage, // You can set a default URL if you want
+          profileImage: '@/assets/images/defaultUser.jpg', // You can set a default URL if you want
           type: 'user',
         }
       );
@@ -99,11 +96,11 @@ export default function RegisterScreen() {
   };
 
   return (
-    <ThemedView style={styles.background}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={{ flex: 1, width: '100%' }}
-      >
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      style={{ flex: 1, width: '100%' }}
+    >
+      <ThemedView style={styles.background}>
         <ScrollView
           ref={scrollRef}
           style={{ width: '100%', padding: 20 }}
@@ -148,17 +145,21 @@ export default function RegisterScreen() {
             onChange={setBdate}
           />
 
-          <TextField
+          <DropDownField
             placeholder="Gender"
             value={gender}
-            onChangeText={setGender}
+            onValueChange={setGender}
+            values={['Male', 'Female', 'Other']}
+            style={{ marginBottom: 15 }}
           />
 
-          <TextField
+          <ContactNumberField
+            areaCode={areaCode}
+            onAreaCodeChange={setAreaCode}
+            number={contactNumber}
+            onNumberChange={setContactNumber}
             placeholder="Contact Number"
-            value={contactNumber}
-            onChangeText={setContactNumber}
-            keyboardType="phone-pad"
+            style={{ marginBottom: 15 }}
           />
 
           <TextField
@@ -203,8 +204,8 @@ export default function RegisterScreen() {
             </ThemedText>
           </TouchableOpacity>
         </ScrollView>
-      </KeyboardAvoidingView>
-    </ThemedView>
+      </ThemedView>
+    </KeyboardAvoidingView>
   );
 }
 

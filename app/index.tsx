@@ -1,9 +1,22 @@
-import { router } from "expo-router";
-import { useEffect } from "react";
+import { router } from 'expo-router';
+import { onAuthStateChanged } from 'firebase/auth';
+import { useEffect } from 'react';
+import { auth } from '../services/firestore/config';
 
 export default function Index() {
   useEffect(() => {
-    router.replace("/(tabs)/home");
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      console.log('Auth state changed. User:', user);
+      if (user) {
+        // User is logged in, go to home
+        router.replace('/(tabs)/home');
+      } else {
+        // No user, go to login
+        router.replace('/auth/login');
+      }
+    });
+
+    return unsubscribe;
   }, []);
 
   return null;

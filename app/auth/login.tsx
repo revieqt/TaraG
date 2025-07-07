@@ -1,29 +1,152 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import Button from '@/components/Button';
+import PasswordField from '@/components/PasswordField';
+import TextField from '@/components/TextField';
+import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from '@/components/ThemedView';
+import { useSession } from '@/context/SessionContext';
+import { useGoogleLogin } from '@/hooks/useGoogleAuth';
+import { loginUserAndFetchProfile } from '@/services/firestore/userDbService';
+import { FontAwesome } from '@expo/vector-icons';
+import { router } from 'expo-router';
+import React, { useState } from 'react';
+import { KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 export default function LoginScreen() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [focusedInput, setFocusedInput] = useState<string | null>(null);
+  const { updateSession } = useSession();
+  const { signIn: googleSignIn, ready: googleReady } = useGoogleLogin();
+
+  const handleLogin = async () => {
+    setErrorMsg('');
+    setLoading(true);
+    if (!email || !password) {
+      setErrorMsg('Please enter both email and password.');
+      setLoading(false);
+      return;
+    }
+    try {
+      const userForSession = await loginUserAndFetchProfile(email, password, updateSession);
+      await updateSession({ user: userForSession });
+      router.replace('/');
+    } catch (error: any) {
+      if (error.code === 'auth/user-not-found') {
+        setErrorMsg('No account found with this email.');
+      } else if (error.code === 'auth/wrong-password') {
+        setErrorMsg('Incorrect password.');
+      } else if (error.code === 'auth/invalid-email') {
+        setErrorMsg('Invalid email address.');
+      } else if (typeof error === 'string') {
+        setErrorMsg(error);
+      } else {
+        setErrorMsg('Login failed. Please check your credentials.');
+      }
+    }
+    setLoading(false);
+  };
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Welcome Home!</Text>
-      <Text style={styles.subtitle}>This is your home screen.</Text>
-    </View>
+    <ThemedView style={styles.background}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        <ThemedView style={styles.formContainer}>
+          <ThemedText type='title'>Smart Plans,</ThemedText>
+          <ThemedText style={{ marginBottom: 30 }}>Safer Journeys. Join TaraG!</ThemedText>
+
+          {errorMsg ? (
+            <ThemedText style={styles.errorMsg}>{errorMsg}</ThemedText>
+          ) : null}
+
+          <TextField
+            placeholder="Email"
+            value={email}
+            onChangeText={setEmail}
+            onFocus={() => setFocusedInput('email')}
+            onBlur={() => setFocusedInput(null)}
+            isFocused={focusedInput === 'email'}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+
+          <PasswordField
+            placeholder="Password"
+            value={password}
+            onChangeText={setPassword}
+            onFocus={() => setFocusedInput('password')}
+            onBlur={() => setFocusedInput(null)}
+            isFocused={focusedInput === 'password'}
+          />
+
+          <Button
+            title={loading ? 'Logging in...' : 'Login'}
+            onPress={handleLogin}
+            type="primary"
+            loading={loading}
+            gradientColors={['#00FFDE', '#0065F8']}
+            buttonStyle={{ width: '100%', marginTop: 16 }}
+          />
+
+          <View style={styles.options}>
+            <ThemedText>or</ThemedText>
+            <TouchableOpacity
+              onPress={googleSignIn}
+              disabled={!googleReady}
+            >
+              <ThemedView style={styles.circularButton} color='primary'>
+                <FontAwesome name="google" size={30} color="#4285F4" />
+              </ThemedView>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => router.push('/auth/register')}
+              style={{ marginVertical: 20 }}>
+              <ThemedText>Dont have an account yet? Register</ThemedText>
+            </TouchableOpacity>
+          </View>
+        </ThemedView>
+      </KeyboardAvoidingView>
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  background: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    padding: 20,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 12,
+  container: {
+    width: '100%',
   },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
+  formContainer: {
+    marginTop: 150,
+  },
+  errorMsg: {
+    color: 'red',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  options: {
+    alignItems: 'center',
+    marginTop: 17,
+  },
+  circularButton: {
+    width: 60,
+    height: 60,
+    marginTop: 10,
+    marginBottom: 50,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
 });

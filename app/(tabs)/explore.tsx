@@ -1,14 +1,21 @@
+import NotificationsButton from '@/components/custom/NotificationsButton';
 import EmailVerificationModal from '@/components/modals/EmailVerificationModal';
+import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { useSession } from '@/context/SessionContext';
 import { auth } from '@/services/firestore/config';
+import { hasUnreadNotifications } from '@/services/firestore/userDbService';
 import { useFocusEffect } from 'expo-router';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function ExploreScreen() {
   const [showModal, setShowModal] = useState(false);
   const [activeTab, setActiveTab] = useState<'Explore' | 'Tours' | 'Your Groups'>('Explore');
   const [search, setSearch] = useState('');
+  const { session } = useSession();
+  const userId = session?.user?.id;
+  const [hasUnread, setHasUnread] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -19,6 +26,11 @@ export default function ExploreScreen() {
       }
     }, [auth.currentUser])
   );
+
+  useEffect(() => {
+    if (!userId) return;
+    hasUnreadNotifications(userId).then(setHasUnread);
+  }, [userId]);
 
   const tabOrder = ['Explore', 'Tours', 'Your Groups'] as const;
 
@@ -35,10 +47,10 @@ export default function ExploreScreen() {
           activeOpacity={0.7}
         >
           <View style={styles.tabInnerContainer}>
-            <Text style={[
+            <ThemedText style={[
               styles.tabButtonText,
               activeTab === tab && styles.activeTabButtonText,
-            ]}>{tab}</Text>
+            ]}>{tab}</ThemedText>
           </View>
           <View style={[
             styles.tabUnderline,
@@ -70,9 +82,13 @@ export default function ExploreScreen() {
   return (
     <ThemedView style={styles.container}>
       <EmailVerificationModal visible={showModal} onClose={() => setShowModal(false)} />
-
+      <ThemedView style={styles.header}>
+        <ThemedText type='subtitle'>Explore</ThemedText>
+        <NotificationsButton userId={userId} />
+      </ThemedView>
+      
       {renderTabChooser()}
-      <View style={styles.tabStackContainer}>
+      <ThemedView style={styles.tabStackContainer}>
         <View
           style={[
             styles.tabContent,
@@ -100,7 +116,7 @@ export default function ExploreScreen() {
         >
           {renderYourGroupsTab()}
         </View>
-      </View>
+      </ThemedView>
 
       {/* <FabMenu
         mainLabel="Create Group"
@@ -124,10 +140,18 @@ export default function ExploreScreen() {
 }
 
 const styles = StyleSheet.create({
+  header:{
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingBottom: 10,
+    paddingTop: 20,
+    alignItems: 'center',
+  },
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingTop: 25,
   },
   tabChooserContainer: {
     flexDirection: 'row',
@@ -140,7 +164,6 @@ const styles = StyleSheet.create({
   tabButton: {
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'transparent',
     height: '100%',
   },
   tabInnerContainer: {
@@ -151,7 +174,6 @@ const styles = StyleSheet.create({
   },
   tabButtonText: {
     fontSize: 16,
-    color: '#333',
     fontWeight: '500',
   },
   activeTabButtonText: {
@@ -173,7 +195,6 @@ const styles = StyleSheet.create({
   },
   tabContent: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#fff',
     // Add padding or styles for tab content as needed
   },
   searchContainer: {

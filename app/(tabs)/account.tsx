@@ -170,7 +170,6 @@ const styles = StyleSheet.create({
     height: 100,
   },
   container: {
-    flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'center',
     paddingTop: 60,

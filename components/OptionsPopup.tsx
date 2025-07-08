@@ -1,9 +1,11 @@
+import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from '@/components/ThemedView';
 import React, { useRef, useState } from 'react';
 import { Animated, Easing, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
 
 export interface OptionsAction {
   label: string;
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
   onPress: () => void;
 }
 
@@ -57,8 +59,8 @@ const Options: React.FC<OptionsProps> = ({ actions, style, children }) => {
           <Animated.View style={[styles.menu, { transform: [{ translateY }] }]}>
             {actions.map((action, index) => (
               <Pressable key={index} style={styles.menuItem} onPress={() => { handleClose(); action.onPress(); }}>
-                <View style={styles.icon}>{action.icon}</View>
-                <Text style={styles.label}>{action.label}</Text>
+                {action.icon && <ThemedView style={styles.icon}>{action.icon}</ThemedView>}
+                <ThemedText style={styles.label}>{action.label}</ThemedText>
               </Pressable>
             ))}
           </Animated.View>

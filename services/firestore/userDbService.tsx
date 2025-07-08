@@ -8,7 +8,7 @@ import {
   signInWithEmailAndPassword,
   updatePassword,
 } from 'firebase/auth';
-import { doc, getDoc, getFirestore, setDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, getFirestore, query, setDoc, where } from 'firebase/firestore';
 import { auth, db } from './config';
 
 // Login user with email and password
@@ -99,4 +99,12 @@ export async function sendUserPasswordResetEmail(email: string) {
   await sendPasswordResetEmail(auth, email);
 }
 
-// ...existing code...
+export async function hasUnreadNotifications(userId: string): Promise<boolean> {
+  const q = query(
+    collection(db, 'notifications'),
+    where('userID', '==', userId),
+    where('state', '==', 'unread')
+  );
+  const snapshot = await getDocs(q);
+  return !snapshot.empty;
+}

@@ -1,6 +1,6 @@
-import { Animated, type ViewProps, StyleSheet} from 'react-native';
-import { useEffect, useRef } from 'react';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { useEffect, useRef } from 'react';
+import { Animated, type ViewProps } from 'react-native';
 
 export type ThemedViewProps = ViewProps & {
   lightColor?: string;
@@ -72,7 +72,7 @@ export function ThemedView({
 
   let borderStyle = {};
   if (border === 'thin-gray') {
-    borderStyle = { borderWidth: 1, borderColor: 'gray' };
+    borderStyle = { borderWidth: 1, borderColor: '#ccc' };
   } else if (border === 'thin-black') {
     borderStyle = { borderWidth: 1, borderColor: 'black' };
   } else if (border === 'thin-white') {

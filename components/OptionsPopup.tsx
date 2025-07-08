@@ -1,0 +1,108 @@
+import React, { useRef, useState } from 'react';
+import { Animated, Easing, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
+
+export interface OptionsAction {
+  label: string;
+  icon: React.ReactNode;
+  onPress: () => void;
+}
+
+interface OptionsProps {
+  actions: OptionsAction[];
+  style?: ViewStyle | ViewStyle[];
+  children?: React.ReactNode;
+}
+
+const Options: React.FC<OptionsProps> = ({ actions, style, children }) => {
+  const [visible, setVisible] = useState(false);
+  const slideAnim = useRef(new Animated.Value(0)).current;
+
+  const handleOpen = () => {
+    setVisible(true);
+    Animated.timing(slideAnim, {
+      toValue: 1,
+      duration: 300,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const handleClose = () => {
+    Animated.timing(slideAnim, {
+      toValue: 0,
+      duration: 200,
+      easing: Easing.in(Easing.cubic),
+      useNativeDriver: true,
+    }).start(() => setVisible(false));
+  };
+
+  const translateY = slideAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [100, 0], // Slide up from 100px below
+  });
+
+  return (
+    <View>
+      <TouchableOpacity onPress={handleOpen} style={[styles.optionsButton, style]}>
+        {children ? children : <Text style={styles.buttonText}>Options</Text>}
+      </TouchableOpacity>
+
+      <Modal
+        visible={visible}
+        transparent
+        animationType="none"
+        onRequestClose={handleClose}
+      >
+        <Pressable style={styles.overlay} onPress={handleClose}>
+          <Animated.View style={[styles.menu, { transform: [{ translateY }] }]}>
+            {actions.map((action, index) => (
+              <Pressable key={index} style={styles.menuItem} onPress={() => { handleClose(); action.onPress(); }}>
+                <View style={styles.icon}>{action.icon}</View>
+                <Text style={styles.label}>{action.label}</Text>
+              </Pressable>
+            ))}
+          </Animated.View>
+        </Pressable>
+      </Modal>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  optionsButton: {
+    padding: 0,
+  },
+  buttonText: {
+    fontSize: 16,
+    color: '#007AFF',
+    fontWeight: 'bold',
+  },
+  overlay: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0,0,0,0.2)',
+  },
+  menu: {
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    paddingVertical: 8,
+    paddingHorizontal: 4,
+    elevation: 5,
+  },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+  },
+  icon: {
+    marginRight: 12,
+  },
+  label: {
+    fontSize: 16,
+    color: '#333',
+  },
+});
+
+export default Options;

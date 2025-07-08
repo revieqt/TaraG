@@ -38,6 +38,7 @@
     "expo-status-bar": "~2.2.3",
     "expo-symbols": "~0.4.5",
     "expo-system-ui": "~5.0.10",
+    "expo-updates": "~0.28.16",
     "expo-web-browser": "~14.2.0",
     "firebase": "^11.10.0",
     "haversine-distance": "^1.2.4",
@@ -49,16 +50,13 @@
     "react-native-gesture-handler": "~2.24.0",
     "react-native-get-random-values": "^1.11.0",
     "react-native-google-places-autocomplete": "^2.5.7",
-    "react-native-linear-gradient": "^2.8.3",
-    "react-native-paper": "^5.14.5",
     "react-native-reanimated": "~3.17.4",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.11.1",
     "react-native-svg": "15.11.2",
     "react-native-web": "~0.20.0",
     "react-native-webview": "13.13.5",
-    "undefined": "\\",
-    "expo-updates": "~0.28.16"
+    "undefined": "\\"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

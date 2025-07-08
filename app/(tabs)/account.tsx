@@ -1,9 +1,10 @@
 import Button from '@/components/Button';
-import { Collapsible } from '@/components/Collapsible';
+import OptionsPopup from '@/components/OptionsPopup';
 import { ThemedIcons } from '@/components/ThemedIcons';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useSession } from '@/context/SessionContext';
+import { useThemeSwitcher } from '@/hooks/useThemeSwitcher';
 import { auth } from '@/services/firestore/config';
 import { router } from 'expo-router';
 import { signOut } from 'firebase/auth';
@@ -13,6 +14,7 @@ import { Alert, Image, ScrollView, StyleSheet, TouchableOpacity, View } from 're
 export default function AccountScreen() {
   const { session, clearSession } = useSession();
   const user = session?.user;
+  const { theme, setTheme } = useThemeSwitcher();
 
   const fullName = [user?.fname, user?.mname, user?.lname].filter(Boolean).join(' ');
 
@@ -32,7 +34,7 @@ export default function AccountScreen() {
       contentContainerStyle={styles.container}
       showsVerticalScrollIndicator={false}
     >
-      <View style={styles.header}>
+      <ThemedView style={styles.header}>
         <TouchableOpacity style={styles.profileButton} onPress={() => {router.push('/account/viewProfile')}}>
           <Image
             source={
@@ -52,109 +54,97 @@ export default function AccountScreen() {
         <TouchableOpacity onPress={() => router.push('/account/notifications')} style={styles.notifications}>
           <ThemedIcons library='MaterialIcons' name='notifications' size={24}></ThemedIcons>
         </TouchableOpacity>
-      </View>
+      </ThemedView>
       
-
       <ThemedView style={styles.options}>
         <ThemedText type='subtitle'>Settings</ThemedText>
-        <Collapsible title="General Information">
-          <ThemedView style={styles.collapsibleChild}>
-            <ThemedText>Name: {user?.fname} {user?.mname} {user?.lname}</ThemedText>
-          </ThemedView>
-          <ThemedView style={styles.collapsibleChild}>
-            <ThemedText>Username: {user?.username}</ThemedText>
-          </ThemedView>
-          <ThemedView style={styles.collapsibleChild}>
-            <ThemedText>Gender: {user?.gender}</ThemedText>
-          </ThemedView>
-          <ThemedView style={styles.collapsibleChild}>
-            <ThemedText>Email: {user?.email}</ThemedText>
-          </ThemedView>
-          <ThemedView style={styles.collapsibleChild}>
-            <ThemedText>Phone: {user?.contactNumber}</ThemedText>
-          </ThemedView>
-          <ThemedView style={styles.collapsibleChild}>
-            <ThemedText>Type: {user?.type}</ThemedText>
-          </ThemedView>
-          <ThemedView style={styles.collapsibleChild}>
-            <ThemedText>Status: {user?.status}</ThemedText>
-          </ThemedView>
-          <ThemedView style={styles.collapsibleChild}>
-            <ThemedText>Created: {user?.createdOn instanceof Date ? user?.createdOn.toLocaleString() : ''}</ThemedText>
-          </ThemedView>
-        </Collapsible>
 
-        <Collapsible title="Privacy and Security">
-
-          <TouchableOpacity>
-            <ThemedView style={styles.collapsibleChild} >
-              <ThemedIcons library='MaterialIcons' name='notifications' size={15}/><ThemedText>Push Notifications</ThemedText>
+        {/* Privacy and Security */}
+        <ThemedText style={styles.optionsTitle} type='defaultSemiBold'>Privacy and Security</ThemedText>
+        <TouchableOpacity>
+          <ThemedView style={styles.optionsChild} >
+            <ThemedIcons library='MaterialIcons' name='notifications' size={15}/><ThemedText>Push Notifications</ThemedText>
+          </ThemedView>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push('/auth/changePassword')}>
+          <ThemedView style={styles.optionsChild} >
+            <ThemedIcons library='MaterialIcons' name='vpn-key' size={15}/><ThemedText>Change Password</ThemedText>
+          </ThemedView>
+        </TouchableOpacity>
+        { !auth.currentUser?.emailVerified ? 
+          <TouchableOpacity onPress={() => router.push('/auth/verifyEmail')}>
+            <ThemedView style={styles.optionsChild} >
+              <ThemedIcons library='MaterialIcons' name='mark-email-read' size={15}/><ThemedText>Verify your Email</ThemedText>
             </ThemedView>
           </TouchableOpacity>
+          : null
+        }
 
-          <TouchableOpacity onPress={() => router.push('/auth/changePassword')}>
-            <ThemedView style={styles.collapsibleChild} >
-              <ThemedIcons library='MaterialIcons' name='vpn-key' size={15}/><ThemedText>Change Password</ThemedText>
-            </ThemedView>
-          </TouchableOpacity>
-
-          { !auth.currentUser?.emailVerified ? 
-            <TouchableOpacity onPress={() => router.push('/auth/verifyEmail')}>
-              <ThemedView style={styles.collapsibleChild} >
-                <ThemedIcons library='MaterialIcons' name='mark-email-read' size={15}/><ThemedText>Verify your Email</ThemedText>
-              </ThemedView>
-            </TouchableOpacity>
-            : null
-          }
-
-          
-          
-        </Collapsible>
-
-        <Collapsible title="Tour Guide Settings">
-          {user?.type === 'tourGuide' ? 
-            <View>
-              <TouchableOpacity>
-                <ThemedView style={styles.collapsibleChild} >
-                  <ThemedIcons library='MaterialIcons' name='tour' size={15}/><ThemedText >View Tour Guide Information</ThemedText>
-                </ThemedView>
-              </TouchableOpacity>
-              <TouchableOpacity >
-                <ThemedView style={styles.collapsibleChild} >
-                  <ThemedIcons library='MaterialIcons' name='tour' size={15}/><ThemedText >Manage Tours</ThemedText>
-                </ThemedView>
-              </TouchableOpacity>
-            </View>
-            :
+        <ThemedText style={styles.optionsTitle} type='defaultSemiBold'>Personalization</ThemedText>
+        <OptionsPopup
+          actions={[
+            {
+              label: 'System Theme',
+              icon: <ThemedIcons library='MaterialIcons' name='settings' size={20} />,
+              onPress: () => setTheme('system'),
+            },
+            {
+              label: 'Light Mode',
+              icon: <ThemedIcons library='MaterialIcons' name='light-mode' size={20} />,
+              onPress: () => setTheme('light'),
+            },
+            {
+              label: 'Dark Mode',
+              icon: <ThemedIcons library='MaterialIcons' name='dark-mode' size={20} />,
+              onPress: () => setTheme('dark'),
+            },
+          ]}
+        >
+          <ThemedView style={styles.optionsChild}>
+            <ThemedIcons library='MaterialIcons' name='palette' size={15}/>
+            <ThemedText>Theme Customization</ThemedText>
+          </ThemedView>
+        </OptionsPopup>
+        {/* Tour Guide Settings */}
+        <ThemedText style={styles.optionsTitle} type='defaultSemiBold'>Tour Guide Settings</ThemedText>
+        {user?.type === 'tourGuide' ? 
+          <View>
             <TouchableOpacity>
-              <ThemedView style={styles.collapsibleChild} >
-                <ThemedIcons library='MaterialIcons' name='tour' size={15}/><ThemedText >Apply as Tour Guide</ThemedText>
+              <ThemedView style={styles.optionsChild} >
+                <ThemedIcons library='MaterialIcons' name='tour' size={15}/><ThemedText >View Tour Guide Information</ThemedText>
               </ThemedView>
             </TouchableOpacity>
-          }
-        </Collapsible>
-
-        {/* UNFINISHED AREA */}
-        <Collapsible title="Help and Support">
+            <TouchableOpacity >
+              <ThemedView style={styles.optionsChild} >
+                <ThemedIcons library='MaterialIcons' name='tour' size={15}/><ThemedText >Manage Tours</ThemedText>
+              </ThemedView>
+            </TouchableOpacity>
+          </View>
+          :
           <TouchableOpacity>
-            <ThemedView style={styles.collapsibleChild}>
-              <ThemedIcons library='FontAwesome' name='file-text' size={15}/><ThemedText >App Manual</ThemedText>
+            <ThemedView style={styles.optionsChild} >
+              <ThemedIcons library='MaterialIcons' name='tour' size={15}/><ThemedText >Apply as Tour Guide</ThemedText>
             </ThemedView>
           </TouchableOpacity>
-          <TouchableOpacity>
-            <ThemedView style={styles.collapsibleChild}>
-              <ThemedIcons library='FontAwesome' name='paste' size={15}/><ThemedText >Terms and Conditions</ThemedText>
-            </ThemedView>
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <ThemedView style={styles.collapsibleChild}>
-              <ThemedIcons library='MaterialIcons' name='contact-support' size={15}/><ThemedText >Contact Support</ThemedText>
-            </ThemedView>
-          </TouchableOpacity>
-        </Collapsible>
+        }
 
-
-        
+        {/* Help and Support */}
+        <ThemedText style={styles.optionsTitle} type='defaultSemiBold'>Help and Support</ThemedText>
+        <TouchableOpacity>
+          <ThemedView style={styles.optionsChild}>
+            <ThemedIcons library='FontAwesome' name='file-text' size={15}/><ThemedText >App Manual</ThemedText>
+          </ThemedView>
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <ThemedView style={styles.optionsChild}>
+            <ThemedIcons library='FontAwesome' name='paste' size={15}/><ThemedText >Terms and Conditions</ThemedText>
+          </ThemedView>
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <ThemedView style={styles.optionsChild}>
+            <ThemedIcons library='MaterialIcons' name='contact-support' size={15}/><ThemedText >Contact Support</ThemedText>
+          </ThemedView>
+        </TouchableOpacity>
       </ThemedView>
 
       {/* Logout Button */}
@@ -183,7 +173,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'center',
-    backgroundColor: '#fff',
     paddingTop: 60,
     paddingHorizontal: 20,
   },
@@ -218,14 +207,19 @@ const styles = StyleSheet.create({
     gap: 10,
     width: '100%',
   },
-  collapsibleChild: {
+  optionsTitle: {
+    marginTop: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    paddingBottom: 5,
+  },
+  optionsChild: {
     padding: 10,
     fontSize: 15,
     width: '100%',
     flexDirection: 'row',
     gap: 10,
     alignItems: 'center',
-    overflow: 'hidden',
   },
   logoutButton: {
     width: '100%',

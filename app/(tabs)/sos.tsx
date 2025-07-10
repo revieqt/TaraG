@@ -1,4 +1,3 @@
-import EmailVerificationModal from '@/components/modals/EmailVerificationModal';
 import { auth } from '@/services/firestore/config';
 import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
@@ -9,18 +8,12 @@ export default function SOSScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      // Check if user is logged in and not verified
-      if (auth.currentUser && !auth.currentUser.emailVerified) {
-        setShowModal(true);
-      } else {
-        setShowModal(false);
-      }
+      // Removed email verification modal logic
     }, [auth.currentUser])
   );
 
   return (
     <View style={styles.container}>
-      <EmailVerificationModal visible={showModal} onClose={() => setShowModal(false)} />
       <Text style={styles.title}>Explore</Text>
       <Text style={styles.subtitle}>
         {auth.currentUser?.emailVerified

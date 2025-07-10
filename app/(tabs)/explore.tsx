@@ -1,5 +1,4 @@
 import NotificationsButton from '@/components/custom/NotificationsButton';
-import EmailVerificationModal from '@/components/modals/EmailVerificationModal';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useSession } from '@/context/SessionContext';
@@ -10,7 +9,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function ExploreScreen() {
-  const [showModal, setShowModal] = useState(false);
   const [activeTab, setActiveTab] = useState<'Explore' | 'Tours' | 'Your Groups'>('Explore');
   const [search, setSearch] = useState('');
   const { session } = useSession();
@@ -19,11 +17,7 @@ export default function ExploreScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      if (auth.currentUser && !auth.currentUser.emailVerified) {
-        setShowModal(true);
-      } else {
-        setShowModal(false);
-      }
+      // Removed email verification modal logic
     }, [auth.currentUser])
   );
 
@@ -81,7 +75,6 @@ export default function ExploreScreen() {
   
   return (
     <ThemedView style={styles.container}>
-      <EmailVerificationModal visible={showModal} onClose={() => setShowModal(false)} />
       <ThemedView style={styles.header}>
         <ThemedText type='subtitle'>Explore</ThemedText>
         <NotificationsButton userId={userId} />

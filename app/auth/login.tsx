@@ -1,10 +1,12 @@
 import Button from '@/components/Button';
+import GradientMeshBackground from '@/components/GradientMeshBackground';
 import PasswordField from '@/components/PasswordField';
 import TextField from '@/components/TextField';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useSession } from '@/context/SessionContext';
 import { useGoogleLogin } from '@/hooks/useGoogleAuth';
+import { auth } from '@/services/firestore/config';
 import { loginUserAndFetchProfile } from '@/services/firestore/userDbService';
 import { FontAwesome } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -29,8 +31,14 @@ export default function LoginScreen() {
       return;
     }
     try {
-      const userForSession = await loginUserAndFetchProfile(email, password, updateSession);
+      const userForSession = await loginUserAndFetchProfile(email, password);
       await updateSession({ user: userForSession });
+      // Check if email is verified using Firebase auth
+      if (auth.currentUser && !auth.currentUser.emailVerified) {
+        router.replace('/auth/verifyEmail');
+        setLoading(false);
+        return;
+      }
       router.replace('/');
     } catch (error: any) {
       if (error.code === 'auth/user-not-found') {
@@ -50,11 +58,12 @@ export default function LoginScreen() {
 
   return (
     <ThemedView style={styles.background}>
+      <GradientMeshBackground />
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <ThemedView style={styles.formContainer}>
+        <View style={styles.formContainer}>
           <ThemedText type='title'>Smart Plans,</ThemedText>
           <ThemedText style={{ marginBottom: 30 }}>Safer Journeys. Join TaraG!</ThemedText>
 
@@ -115,7 +124,7 @@ export default function LoginScreen() {
               <ThemedText>Dont have an account yet? Register</ThemedText>
             </TouchableOpacity>
           </View>
-        </ThemedView>
+        </View>
       </KeyboardAvoidingView>
     </ThemedView>
   );

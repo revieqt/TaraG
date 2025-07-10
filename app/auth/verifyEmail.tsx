@@ -67,12 +67,7 @@ export default function VerifyEmailScreen() {
       {/* Floating back arrow */}
       <TouchableOpacity
         style={styles.backButton}
-        onPress={() => {
-          if (router.canGoBack()) {
-            router.back();
-          } else {
-            router.replace('/(tabs)/home');
-          }
+        onPress={() => {router.replace('/auth/login');
         }}
       >
         <ThemedView>

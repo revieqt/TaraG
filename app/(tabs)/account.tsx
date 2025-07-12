@@ -71,14 +71,6 @@ export default function AccountScreen() {
             <ThemedIcons library='MaterialIcons' name='vpn-key' size={15}/><ThemedText>Change Password</ThemedText>
           </ThemedView>
         </TouchableOpacity>
-        { !auth.currentUser?.emailVerified ? 
-          <TouchableOpacity onPress={() => router.push('/auth/verifyEmail')}>
-            <ThemedView style={styles.optionsChild} >
-              <ThemedIcons library='MaterialIcons' name='mark-email-read' size={15}/><ThemedText>Verify your Email</ThemedText>
-            </ThemedView>
-          </TouchableOpacity>
-          : null
-        }
 
         <ThemedText style={styles.optionsTitle} type='defaultSemiBold'>Personalization</ThemedText>
         <OptionsPopup

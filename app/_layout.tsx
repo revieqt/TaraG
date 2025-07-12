@@ -46,6 +46,11 @@ export default function RootLayout() {
           <Stack.Screen name="account/viewProfile" options={{ headerShown: false }} />
           <Stack.Screen name="account/notifications" options={{ headerShown: false }} />
 
+          <Stack.Screen name="home/routes" options={{ headerShown: false }} />
+          <Stack.Screen name="home/itineraries" options={{ headerShown: false }} />
+          <Stack.Screen name="home/weather" options={{ headerShown: false }} />
+          <Stack.Screen name="home/aiChat" options={{ headerShown: false }} />
+
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" options={{ headerShown: false }} />
         </Stack>

@@ -2,10 +2,8 @@ import NotificationsButton from '@/components/custom/NotificationsButton';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useSession } from '@/context/SessionContext';
-import { auth } from '@/services/firestore/config';
 import { hasUnreadNotifications } from '@/services/firestore/userDbService';
-import { useFocusEffect } from 'expo-router';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function ExploreScreen() {
@@ -14,12 +12,6 @@ export default function ExploreScreen() {
   const { session } = useSession();
   const userId = session?.user?.id;
   const [hasUnread, setHasUnread] = useState(false);
-
-  useFocusEffect(
-    useCallback(() => {
-      // Removed email verification modal logic
-    }, [auth.currentUser])
-  );
 
   useEffect(() => {
     if (!userId) return;

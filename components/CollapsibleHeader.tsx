@@ -21,7 +21,7 @@ const CollapsibleHeader: React.FC<CollapsibleHeaderProps> = ({ children, buttons
 
   const toggleExpand = () => {
     Animated.timing(animatedHeight, {
-      toValue: expanded ? 350 : SCREEN_HEIGHT-50,
+      toValue: expanded ? 350 : SCREEN_HEIGHT-130,
       duration: 300,
       useNativeDriver: false,
     }).start(() => setExpanded(!expanded));

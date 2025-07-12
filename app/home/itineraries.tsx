@@ -1,11 +1,11 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-export default function SOSScreen() {
+export default function ItinerariesScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Explore</Text>
+      <Text style={styles.title}>Itineraries</Text>
     </View>
   );
 }

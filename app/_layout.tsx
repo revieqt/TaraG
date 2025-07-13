@@ -8,6 +8,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-get-random-values';
 import 'react-native-reanimated';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -31,32 +32,36 @@ export default function RootLayout() {
   }
 
   return (
-    <SessionProvider>
-      <ThemeProvider value={effectiveTheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          
-          <Stack.Screen name="auth/login" options={{ headerShown: false }} />
-          <Stack.Screen name="auth/register" options={{ headerShown: false }} />
-          <Stack.Screen name="auth/verifyEmail" options={{ headerShown: false }} />
-          <Stack.Screen name="auth/warning" options={{ headerShown: false }} />
-          <Stack.Screen name="auth/forgotPassword" options={{ headerShown: false }} />
-          <Stack.Screen name="auth/changePassword" options={{ headerShown: false }} />
-          
-          <Stack.Screen name="account/viewProfile" options={{ headerShown: false }} />
-          <Stack.Screen name="account/notifications" options={{ headerShown: false }} />
+    <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
+      <SessionProvider>
+        <ThemeProvider value={effectiveTheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            
+            <Stack.Screen name="auth/login" options={{ headerShown: false }} />
+            <Stack.Screen name="auth/register" options={{ headerShown: false }} />
+            <Stack.Screen name="auth/verifyEmail" options={{ headerShown: false }} />
+            <Stack.Screen name="auth/warning" options={{ headerShown: false }} />
+            <Stack.Screen name="auth/forgotPassword" options={{ headerShown: false }} />
+            <Stack.Screen name="auth/changePassword" options={{ headerShown: false }} />
+            <Stack.Screen name="auth/firstLogin" options={{ headerShown: false }} />
+            
+            <Stack.Screen name="account/viewProfile" options={{ headerShown: false }} />
+            <Stack.Screen name="account/notifications" options={{ headerShown: false }} />
 
-          <Stack.Screen name="home/routes" options={{ headerShown: false }} />
-          <Stack.Screen name="home/itineraries" options={{ headerShown: false }} />
-          <Stack.Screen name="home/weather" options={{ headerShown: false }} />
-          <Stack.Screen name="home/aiChat" options={{ headerShown: false }} />
+            <Stack.Screen name="home/routes" options={{ headerShown: false }} />
+            <Stack.Screen name="home/itineraries" options={{ headerShown: false }} />
+            <Stack.Screen name="home/weather" options={{ headerShown: false }} />
+            <Stack.Screen name="home/aiChat" options={{ headerShown: false }} />
 
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" options={{ headerShown: false }} />
-        </Stack>
-        <StatusBar style="auto" />
-      </ThemeProvider>
-    </SessionProvider>
+            <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen name="+not-found" options={{ headerShown: false }} />
+          </Stack>
+          <StatusBar style="auto" />
+        </ThemeProvider>
+      </SessionProvider>
+    </SafeAreaView>
+    
       
   );
 }

@@ -4,6 +4,7 @@ import Button from './Button';
 
 interface TabChooserProps {
   tabs: string[];
+  views?: React.ReactNode[]; // <-- Add this for stacked views
   onTabChange?: (index: number) => void;
   containerStyle?: ViewStyle;
   buttonStyle?: ViewStyle;
@@ -16,6 +17,7 @@ interface TabChooserProps {
 
 const TabChooser: React.FC<TabChooserProps> = ({
   tabs,
+  views,
   onTabChange,
   containerStyle,
   buttonStyle,
@@ -70,6 +72,12 @@ const TabChooser: React.FC<TabChooserProps> = ({
             />
         ))}
       </ScrollView>
+      {/* Stacked Views */}
+      {views && views[activeIndex] && (
+        <View style={{ width: '100%' }}>
+          {views[activeIndex]}
+        </View>
+      )}
     </View>
   );
 };

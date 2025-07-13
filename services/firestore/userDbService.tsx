@@ -91,6 +91,8 @@ export async function loginUserAndFetchProfile(email: string, password: string) 
     type: userData.type,
     createdOn: userData.createdOn?.toDate ? userData.createdOn.toDate() : userData.createdOn,
     groups: userData.groups || [],
+    isFirstLogin: userData.isFirstLogin ?? true,
+    likes: userData.likes || [],
   };
 }
 

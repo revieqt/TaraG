@@ -1,3 +1,4 @@
+import { ThemedView } from '@/components/ThemedView';
 import React, { useRef, useState } from 'react';
 import {
   Animated,
@@ -17,7 +18,7 @@ type CollapsibleHeaderProps = {
 
 const CollapsibleHeader: React.FC<CollapsibleHeaderProps> = ({ children, buttons }) => {
   const [expanded, setExpanded] = useState(false);
-  const animatedHeight = useRef(new Animated.Value(250)).current;
+  const animatedHeight = useRef(new Animated.Value(350)).current;
 
   const toggleExpand = () => {
     Animated.timing(animatedHeight, {
@@ -42,7 +43,7 @@ const CollapsibleHeader: React.FC<CollapsibleHeaderProps> = ({ children, buttons
         </TouchableOpacity>
         {buttons && <View style={styles.extraButtons}>{buttons}</View>}
       </View>
-      <View style={styles.overlay}></View>
+      <ThemedView style={styles.overlay}></ThemedView>
     </Animated.View>
   );
 };
@@ -87,7 +88,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
-    backgroundColor: '#fff'
   }
 });
 

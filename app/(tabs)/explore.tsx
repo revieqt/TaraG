@@ -103,23 +103,7 @@ export default function ExploreScreen() {
         </View>
       </ThemedView>
 
-      {/* <FabMenu
-        mainLabel="Create Group"
-        mainIcon={<MaterialIcons name="add" size={32} color="#fff" />}
-        mainOnPress={() => router.push('/groups/create')}
-        actions={[
-          {
-            label: 'Join with Invite code',
-            icon: <MaterialIcons name="input" size={20} color="#00FFDE" />,
-            onPress: () => setJoinModalVisible(true),
-          },
-          {
-            label: 'Send New Message',
-            icon: <AntDesign name="mail" size={20} color="#00FFDE" />,
-            onPress: () => setJoinModalVisible(true),
-          },
-        ]}
-      /> */}
+
     </ThemedView>
   );
 }
@@ -169,7 +153,7 @@ const styles = StyleSheet.create({
     height: 3,
     width: '100%',
     backgroundColor: 'transparent',
-    borderRadius: 2,
+    borderRadius: 10,
   },
   activeTabUnderline: {
     backgroundColor: '#007AFF',

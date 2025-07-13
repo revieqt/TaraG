@@ -39,6 +39,12 @@ export default function LoginScreen() {
         setLoading(false);
         return;
       }
+      // Check if this is the user's first login
+      if (userForSession.isFirstLogin) {
+        router.replace('/auth/firstLogin');
+        setLoading(false);
+        return;
+      }
       router.replace('/');
     } catch (error: any) {
       if (error.code === 'auth/user-not-found') {

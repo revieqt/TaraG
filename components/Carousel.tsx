@@ -8,6 +8,8 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import ThemedIcons from './ThemedIcons';
+import { ThemedText } from './ThemedText';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -68,20 +70,18 @@ const Carousel: React.FC<CarouselProps> = ({
     <View style={[styles.container, style]} onLayout={onLayout}>
       {navigationArrows && currentIndex > 0 && (
         <TouchableOpacity
-          style={[styles.arrow, styles.arrowLeft]}
+          style={[styles.arrow, {left: 10}]}
           onPress={() => scrollToIndex(currentIndex - 1)}
-          activeOpacity={0.7}
         >
-          <Text style={styles.arrowText}>{'‹'}</Text>
+          <ThemedIcons library='MaterialIcons' name='arrow-back-ios' size={20} color='white'/>
         </TouchableOpacity>
       )}
       {navigationArrows && currentIndex < images.length - 1 && (
         <TouchableOpacity
-          style={[styles.arrow, styles.arrowRight]}
+          style={[styles.arrow, {right: 10}]}
           onPress={() => scrollToIndex(currentIndex + 1)}
-          activeOpacity={0.7}
         >
-          <Text style={styles.arrowText}>{'›'}</Text>
+          <ThemedIcons library='MaterialIcons' name='arrow-forward-ios' size={20} color='white'/>
         </TouchableOpacity>
       )}
       <ScrollView
@@ -98,9 +98,9 @@ const Carousel: React.FC<CarouselProps> = ({
             {darkenImage && <View style={styles.overlay} />}
 
             <View style={styles.content}>
-              {titles[index] && <Text style={styles.title}>{titles[index]}</Text>}
+              {titles[index] && <ThemedText type='subtitle' style={styles.title}>{titles[index]}</ThemedText>}
               {subtitles[index] && (
-                <Text style={styles.subtitle}>{subtitles[index]}</Text>
+                <ThemedText style={styles.subtitle}>{subtitles[index]}</ThemedText>
               )}
               {buttonLabels[index] && buttonLinks[index] && (
                 <TouchableOpacity
@@ -153,23 +153,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
     color: '#fff',
     textAlign: 'center',
   },
   subtitle: {
-    fontSize: 16,
     color: '#fff',
-    marginTop: 8,
     textAlign: 'center',
   },
   button: {
     marginTop: 15,
     paddingHorizontal: 24,
     paddingVertical: 10,
-    backgroundColor: '#007AFF',
-    borderRadius: 8,
+    backgroundColor: 'rgba(255,255,255,0.3)',
+    borderRadius: 25,
+    borderColor: 'white',
+    borderWidth: 1,
   },
   buttonText: {
     color: '#fff',
@@ -198,24 +196,10 @@ const styles = StyleSheet.create({
     top: '50%',
     marginTop: -24,
     zIndex: 10,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    borderRadius: 24,
     width: 48,
     height: 48,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  arrowLeft: {
-    left: 10,
-  },
-  arrowRight: {
-    right: 10,
-  },
-  arrowText: {
-    color: '#fff',
-    fontSize: 32,
-    fontWeight: 'bold',
-    lineHeight: 36,
   },
 });
 

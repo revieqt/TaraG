@@ -30,7 +30,7 @@ const CollapsibleHeader: React.FC<CollapsibleHeaderProps> = ({ children, buttons
 
   return (
     <Animated.View style={[styles.container, { height: animatedHeight }]}>
-      <View style={styles.content}>
+      <View style={{flex:1}}>
         {children}
       </View>
       <View style={styles.buttonRow}>
@@ -43,7 +43,7 @@ const CollapsibleHeader: React.FC<CollapsibleHeaderProps> = ({ children, buttons
         </TouchableOpacity>
         {buttons && <View style={styles.extraButtons}>{buttons}</View>}
       </View>
-      <ThemedView style={styles.overlay}></ThemedView>
+      <ThemedView shadow='soft' style={styles.overlay}></ThemedView>
     </Animated.View>
   );
 };
@@ -53,10 +53,6 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: 'red',
     overflow: 'hidden',
-  },
-  content: {
-    flex: 1,
-    padding: 16,
   },
   buttonRow: {
     flexDirection: 'row',

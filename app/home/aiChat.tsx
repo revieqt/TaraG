@@ -1,15 +1,15 @@
-import { MaterialIcons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import * as Speech from 'expo-speech';
-import React, { useRef, useState } from 'react';
-import { ActivityIndicator, FlatList, Image, KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
-
+import Header from '@/components/Header';
 import OptionsPopup from '@/components/OptionsPopup';
 import TextField from '@/components/TextField';
 import { ThemedIcons } from '@/components/ThemedIcons';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useAIChat } from '@/hooks/useAIChat';
+import { MaterialIcons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import * as Speech from 'expo-speech';
+import React, { useRef, useState } from 'react';
+import { ActivityIndicator, FlatList, Image, KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 export default function AIChatScreen() {
   const { messages, loading, error, sendMessage, resetChat } = useAIChat();
@@ -46,23 +46,25 @@ export default function AIChatScreen() {
 
   return (
     <ThemedView style={{ flex: 1, padding: 0 }}>
-      <ThemedView style={styles.header}>
-        <ThemedText type="title">Tara</ThemedText>
+
+      <Header label='TaraAI' rightButton={[
         <OptionsPopup
           actions={[
-            {
-              label: ttsEnabled ? 'Disable Text-to-Speech' : 'Enable Text-to-Speech',
-              icon: <MaterialIcons name="record-voice-over" size={20} color="#222" />,
-              onPress: () => setTtsEnabled((prev) => !prev),
-            },
-            {
-              label: 'Reset Chat',
-              icon: <MaterialIcons name="refresh" size={20} color="#222" />,
-              onPress: resetChat,
-            },
-          ]}
-        />
-      </ThemedView>
+          {
+            label: ttsEnabled ? 'Disable Text-to-Speech' : 'Enable Text-to-Speech',
+            icon: <MaterialIcons name="record-voice-over" size={20} color="#222" />,
+            onPress: () => setTtsEnabled((prev) => !prev),
+          },
+          {
+            label: 'Reset Chat',
+            icon: <MaterialIcons name="refresh" size={20} color="#222" />,
+            onPress: resetChat,
+          },
+        ]}>
+          <ThemedIcons library="MaterialCommunityIcons" name="dots-vertical" size={24}/>
+        </OptionsPopup>
+    
+      ]}/>
       {showIntro ? (
         <ThemedView style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 32 }}>
           <Image

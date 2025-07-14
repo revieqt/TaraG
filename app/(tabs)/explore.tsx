@@ -47,8 +47,11 @@ export default function ExploreScreen() {
                   buttonLinks={[() => alert('Next'), () => alert('Done'), () => alert('Done')]}
                   darkenImage
                   navigationArrows
+                  blur
                 />
               </View>
+
+
             </ScrollView>
           </View>,
 
@@ -85,6 +88,6 @@ const styles = StyleSheet.create({
   },
   carouselContainer:{
     width: '100%',
-    height: 250,
+    height: 350,
   }
 });

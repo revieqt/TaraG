@@ -7,6 +7,7 @@ import { ThemedIcons } from '@/components/ThemedIcons';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import NotificationsButton from '@/components/custom/NotificationsButton';
+import TaraMap from '@/components/maps/TaraMap';
 import { useLocation } from '@/hooks/useLocation';
 import { wikipediaService } from '@/services/wikipediaService';
 import { router } from 'expo-router';
@@ -75,6 +76,9 @@ export default function HomeScreen() {
               
             />
             <NotificationsButton style={styles.mapInputs} />
+          </View>
+          <View style={{ flex: 1, borderRadius: 12, overflow: 'hidden' }}>
+            <TaraMap />
           </View>
         </CollapsibleHeader>
         <View style={styles.homeContent}>
@@ -169,6 +173,11 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
+    position: 'absolute',
+    zIndex: 10,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 10,
   },
   homeContent:{
     width: '100%',

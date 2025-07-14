@@ -33,7 +33,7 @@ export default function AccountScreen() {
       <ScrollView
         style={{ width: '100%' }}
         contentContainerStyle={styles.container}
-        showsVerticalScrollIndicator={false}
+        showsVerticalScrollIndicator={true}
       >
         <ThemedView style={styles.header}>
           <TouchableOpacity style={styles.profileButton} onPress={() => {router.push('/account/viewProfile')}}>

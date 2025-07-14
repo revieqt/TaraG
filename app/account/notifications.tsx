@@ -1,11 +1,11 @@
-import BackButton from '@/components/custom/BackButton';
+import Header from '@/components/Header';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useSession } from '@/context/SessionContext';
 import { changeNotificationToRead, getNotifications } from '@/services/firestore/notificationDbService';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 
 type Notification = {
   id: string;
@@ -50,10 +50,7 @@ export default function NotificationsScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', width: '100%', marginBottom: 18 }}>
-        <BackButton />
-        <ThemedText style={[styles.title, { marginLeft: 8 }]}>Notifications</ThemedText>
-      </View>
+      <Header label="Notifications" />
       {loading ? (
         <ThemedText>Loading...</ThemedText>
       ) : notifications.length === 0 ? (
@@ -82,9 +79,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    backgroundColor: '#fff',
-    paddingTop: 32,
-    paddingHorizontal: 12,
   },
   title: {
     fontSize: 28,

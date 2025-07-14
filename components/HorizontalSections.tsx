@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
-import { Dimensions, ScrollView, StyleSheet, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { Dimensions, ScrollView, StyleSheet, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import Button from './Button';
+import { ThemedText } from './ThemedText';
 
 interface HorizontalSectionsProps {
   labels: string[];
@@ -81,12 +82,12 @@ const HorizontalSections: React.FC<HorizontalSectionsProps> = ({
           activeOpacity={0.7}
         >
           <View style={styles.fullTabInnerContainer}>
-            <Text style={[
+            <ThemedText style={[
               styles.fullTabText,
               tabTextStyle,
               activeIndex === idx && styles.activeFullTabText,
               activeIndex === idx && activeTabTextStyle,
-            ].filter(Boolean) as TextStyle[]}>{label}</Text>
+            ].filter(Boolean) as TextStyle[]}>{label}</ThemedText>
           </View>
           <View style={[
             styles.fullTabUnderline,
@@ -199,7 +200,6 @@ const styles = StyleSheet.create({
   fullTabText: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#333',
   },
   activeFullTabText: {
     color: '#007AFF',

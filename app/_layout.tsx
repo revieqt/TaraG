@@ -1,4 +1,5 @@
 import { SessionProvider } from '@/context/SessionContext';
+import { useThemeColor } from '@/hooks/useThemeColor';
 import { useThemeSwitcher } from '@/hooks/useThemeSwitcher';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
@@ -21,6 +22,9 @@ export default function RootLayout() {
     Roboto: require('../assets/fonts/Roboto-VariableFont_wdth,wght.ttf'),
   });
 
+  // Get the themed background color
+  const backgroundColor = useThemeColor({}, 'background');
+
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
@@ -32,36 +36,38 @@ export default function RootLayout() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor }} edges={['top', 'bottom']}>
       <SessionProvider>
         <ThemeProvider value={effectiveTheme === 'dark' ? DarkTheme : DefaultTheme}>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="(tabs)" />
             
-            <Stack.Screen name="auth/login" options={{ headerShown: false }} />
-            <Stack.Screen name="auth/register" options={{ headerShown: false }} />
-            <Stack.Screen name="auth/verifyEmail" options={{ headerShown: false }} />
-            <Stack.Screen name="auth/warning" options={{ headerShown: false }} />
-            <Stack.Screen name="auth/forgotPassword" options={{ headerShown: false }} />
-            <Stack.Screen name="auth/changePassword" options={{ headerShown: false }} />
-            <Stack.Screen name="auth/firstLogin" options={{ headerShown: false }} />
+            <Stack.Screen name="auth/login" />
+            <Stack.Screen name="auth/register" />
+            <Stack.Screen name="auth/verifyEmail" />
+            <Stack.Screen name="auth/warning" />
+            <Stack.Screen name="auth/forgotPassword" />
+            <Stack.Screen name="auth/changePassword" />
+            <Stack.Screen name="auth/firstLogin" />
             
-            <Stack.Screen name="account/viewProfile" options={{ headerShown: false }} />
-            <Stack.Screen name="account/notifications" options={{ headerShown: false }} />
+            <Stack.Screen name="account/viewProfile" />
+            <Stack.Screen name="account/notifications" />
 
-            <Stack.Screen name="home/routes" options={{ headerShown: false }} />
-            <Stack.Screen name="home/itineraries" options={{ headerShown: false }} />
-            <Stack.Screen name="home/weather" options={{ headerShown: false }} />
-            <Stack.Screen name="home/aiChat" options={{ headerShown: false }} />
+            <Stack.Screen name="home/routes" />
+            <Stack.Screen name="home/routes-create" />
+            <Stack.Screen name="home/itineraries" />
+            <Stack.Screen name="home/itineraries-create" />
+            <Stack.Screen name="home/weather" />
+            <Stack.Screen name="home/aiChat" />
 
-            <Stack.Screen name="index" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" options={{ headerShown: false }} />
+            <Stack.Screen name="index" />
+            <Stack.Screen name="+not-found" />
           </Stack>
           <StatusBar style="auto" />
         </ThemeProvider>
       </SessionProvider>
     </SafeAreaView>
-    
       
   );
 }

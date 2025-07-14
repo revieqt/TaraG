@@ -1,7 +1,6 @@
 import Button from '@/components/Button';
 import CollapsibleHeader from '@/components/CollapsibleHeader';
 import FabMenu from '@/components/FabMenu';
-import HorizontalSections from '@/components/HorizontalSections';
 import OptionsPopup from '@/components/OptionsPopup';
 import TextField from '@/components/TextField';
 import { ThemedIcons } from '@/components/ThemedIcons';
@@ -21,6 +20,7 @@ export default function HomeScreen() {
   const [wikiLoading, setWikiLoading] = useState(false);
   const [wikiImage, setWikiImage] = useState<string | null>(null);
   const [wikiImageLoading, setWikiImageLoading] = useState(false);
+  const [homeContentState, setHomeContentState] = useState<'default' | 'searchLocation'>('default');
 
   useEffect(() => {
     if (city) {
@@ -47,34 +47,9 @@ export default function HomeScreen() {
     return 'Location unavailable';
   };
 
-  const labels = ['Near You', 'About Location', 'Search'];
-  const sections = [
-    <ThemedView key="near-you" style={styles.tabArea}>
-      <ThemedText type='subtitle'>Near You Content</ThemedText>
-      {/* Place your Near You content here */}
-    </ThemedView>,
-    <ThemedView key="about-location" style={styles.tabArea}>
-      <ThemedText type='subtitle'>About {city}</ThemedText>
-      <ThemedText style={{marginBottom: 20, color: 'gray'}}>General Information</ThemedText>
-      {wikiImageLoading && <ThemedText>Loading image...</ThemedText>}
-      {!wikiImageLoading && wikiImage && (
-        <View style={{ alignItems: 'center', marginBottom: 12 }}>
-          <Image src={wikiImage} alt={city + ' image'} style={{ width: '100%', height: 200, borderRadius: 8, marginBottom: 10 }} />
-        </View>
-      )}
-      {!wikiImageLoading && !wikiImage && <ThemedText>No image found.</ThemedText>}
-      {wikiLoading && <ThemedText>Loading info...</ThemedText>}
-      {!wikiLoading && wikiInfo && <ThemedText>{wikiInfo}</ThemedText>}
-      {!wikiLoading && !wikiInfo && <ThemedText>No information found.</ThemedText>}
-    </ThemedView>,
-    <ThemedView key="search" style={styles.tabArea}>
-      <ThemedText type='subtitle'>Search Content</ThemedText>
-      {/* Place your Search content here */}
-    </ThemedView>,
-  ];
 
   return (
-    <ThemedView>
+    <ThemedView style={{flex: 1}}>
       <ScrollView showsVerticalScrollIndicator={false}>
         <CollapsibleHeader
           buttons={
@@ -102,50 +77,73 @@ export default function HomeScreen() {
             <NotificationsButton style={styles.mapInputs} />
           </View>
         </CollapsibleHeader>
-        <View style={{width: '100%', paddingHorizontal: 20}}>
-          <ThemedText>You're currently at</ThemedText>
-          <ThemedText type='subtitle'>{getLocationText()}</ThemedText>
+        <View style={styles.homeContent}>
+          {homeContentState === 'default' && (
+            <>
+              <ThemedText>You're currently at</ThemedText>
+              <ThemedText type='subtitle'>{getLocationText()}</ThemedText>
+              <TouchableOpacity style={styles.searchLocationButton} onPress={() => setHomeContentState('searchLocation')}>
+                <ThemedIcons library='MaterialIcons' name={'arrow-forward'} size={24}/>
+              </TouchableOpacity>
 
-          <View style={styles.menu}>
-            <TouchableOpacity style={styles.menuOptions} onPress={() => router.push('/home/routes')}>
-              <ThemedView roundness={50} color='secondary' style={styles.menuButton}>
-                <ThemedIcons library='MaterialIcons' name='route' size={20} color='#fff'/>
-              </ThemedView>
-              <ThemedText>Routes</ThemedText>
-            </TouchableOpacity>
+              <View style={styles.menu}>
+                <TouchableOpacity style={styles.menuOptions} onPress={() => router.push('/home/routes')}>
+                  <ThemedView roundness={50} color='secondary' style={styles.menuButton}>
+                    <ThemedIcons library='MaterialIcons' name='route' size={20} color='#fff'/>
+                  </ThemedView>
+                  <ThemedText>Routes</ThemedText>
+                </TouchableOpacity>
 
-            <TouchableOpacity style={styles.menuOptions} onPress={() => router.push('/home/itineraries')}>
-              <ThemedView roundness={50} color='secondary' style={styles.menuButton}>
-              <ThemedIcons library='MaterialIcons' name='event-note' size={20} color='#fff'/>
-              </ThemedView>
-              <ThemedText>Itineraries</ThemedText>
-            </TouchableOpacity>
+                <TouchableOpacity style={styles.menuOptions} onPress={() => router.push('/home/itineraries')}>
+                  <ThemedView roundness={50} color='secondary' style={styles.menuButton}>
+                  <ThemedIcons library='MaterialIcons' name='event-note' size={20} color='#fff'/>
+                  </ThemedView>
+                  <ThemedText>Itineraries</ThemedText>
+                </TouchableOpacity>
 
-            <TouchableOpacity style={styles.menuOptions} onPress={() => router.push('/home/weather')}>
-              <ThemedView roundness={50} color='secondary' style={styles.menuButton}>
-              <ThemedIcons library='MaterialIcons' name='cloud-queue' size={20} color='#fff'/>
-              </ThemedView>
-              <ThemedText>Weather</ThemedText>
-            </TouchableOpacity>
+                <TouchableOpacity style={styles.menuOptions} onPress={() => router.push('/home/weather')}>
+                  <ThemedView roundness={50} color='secondary' style={styles.menuButton}>
+                  <ThemedIcons library='MaterialIcons' name='cloud-queue' size={20} color='#fff'/>
+                  </ThemedView>
+                  <ThemedText>Weather</ThemedText>
+                </TouchableOpacity>
 
-            <TouchableOpacity style={styles.menuOptions} onPress={() => router.push('/home/aiChat')}>
-              <ThemedView roundness={50} color='secondary' style={styles.menuButton}>
-                <ThemedIcons library='MaterialDesignIcons' name='robot-happy-outline' size={20} color='#fff'/>
-              </ThemedView>
-              <ThemedText>TaraAI</ThemedText>
-            </TouchableOpacity>
-          </View>
+                <TouchableOpacity style={styles.menuOptions} onPress={() => router.push('/home/aiChat')}>
+                  <ThemedView roundness={50} color='secondary' style={styles.menuButton}>
+                    <ThemedIcons library='MaterialDesignIcons' name='robot-happy-outline' size={20} color='#fff'/>
+                  </ThemedView>
+                  <ThemedText>TaraAI</ThemedText>
+                </TouchableOpacity>
+              </View>
 
-          <View style={styles.tabChooser}>
-            <HorizontalSections
-              labels={labels}
-              sections={sections}
-              type="roundTab"
-            />
-          </View>
-          </View>
-        
-        </ScrollView>
+            </>
+          )}
+          {homeContentState === 'searchLocation' && (
+            <>
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <TouchableOpacity onPress={() => setHomeContentState('default')} style={{ marginBottom: 12, flexDirection: 'row', alignItems: 'center', marginRight: 15 }}>
+                  <ThemedIcons library="MaterialIcons" name="arrow-back" size={24} />
+                </TouchableOpacity>
+
+                <View>
+                  <ThemedText type='subtitle'>About {city}</ThemedText>
+                  <ThemedText style={{marginBottom: 20, color: 'gray'}}>General Information</ThemedText>
+                </View>
+              </View>
+              {wikiImageLoading && <ThemedText>Loading image...</ThemedText>}
+              {!wikiImageLoading && wikiImage && (
+                <View style={{ alignItems: 'center', marginBottom: 12 }}>
+                  <Image src={wikiImage} alt={city + ' image'} style={{ width: '100%', height: 200, borderRadius: 8, marginBottom: 10 }} />
+                </View>
+              )}
+              {!wikiImageLoading && !wikiImage && <ThemedText>No image found.</ThemedText>}
+              {wikiLoading && <ThemedText>Loading info...</ThemedText>}
+              {!wikiLoading && wikiInfo && <ThemedText>{wikiInfo}</ThemedText>}
+              {!wikiLoading && !wikiInfo && <ThemedText>No information found.</ThemedText>}
+            </>
+          )}
+        </View>
+      </ScrollView>
 
       <FabMenu
         mainLabel="Create Route"
@@ -171,6 +169,16 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
+  },
+  homeContent:{
+    width: '100%',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  searchLocationButton:{
+    position: 'absolute',
+    right: 20,
+    top: 20
   },
   menu:{
     flexDirection: 'row',

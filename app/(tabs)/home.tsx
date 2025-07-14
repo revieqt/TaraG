@@ -1,8 +1,8 @@
 import Button from '@/components/Button';
 import CollapsibleHeader from '@/components/CollapsibleHeader';
 import FabMenu from '@/components/FabMenu';
+import HorizontalSections from '@/components/HorizontalSections';
 import OptionsPopup from '@/components/OptionsPopup';
-import TabChooser from '@/components/TabChooser';
 import TextField from '@/components/TextField';
 import { ThemedIcons } from '@/components/ThemedIcons';
 import { ThemedText } from '@/components/ThemedText';
@@ -15,7 +15,6 @@ import { useEffect, useState } from 'react';
 import { Image, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 export default function HomeScreen() {
-  const [selectedTab, setSelectedTab] = useState(0);
   const [search, setSearch] = useState('');
   const { suburb, city, loading, error } = useLocation();
   const [wikiInfo, setWikiInfo] = useState<string | null>(null);
@@ -48,6 +47,31 @@ export default function HomeScreen() {
     return 'Location unavailable';
   };
 
+  const labels = ['Near You', 'About Location', 'Search'];
+  const sections = [
+    <ThemedView key="near-you" style={styles.tabArea}>
+      <ThemedText type='subtitle'>Near You Content</ThemedText>
+      {/* Place your Near You content here */}
+    </ThemedView>,
+    <ThemedView key="about-location" style={styles.tabArea}>
+      <ThemedText type='subtitle'>About {city}</ThemedText>
+      <ThemedText style={{marginBottom: 20, color: 'gray'}}>General Information</ThemedText>
+      {wikiImageLoading && <ThemedText>Loading image...</ThemedText>}
+      {!wikiImageLoading && wikiImage && (
+        <View style={{ alignItems: 'center', marginBottom: 12 }}>
+          <Image src={wikiImage} alt={city + ' image'} style={{ width: '100%', height: 200, borderRadius: 8, marginBottom: 10 }} />
+        </View>
+      )}
+      {!wikiImageLoading && !wikiImage && <ThemedText>No image found.</ThemedText>}
+      {wikiLoading && <ThemedText>Loading info...</ThemedText>}
+      {!wikiLoading && wikiInfo && <ThemedText>{wikiInfo}</ThemedText>}
+      {!wikiLoading && !wikiInfo && <ThemedText>No information found.</ThemedText>}
+    </ThemedView>,
+    <ThemedView key="search" style={styles.tabArea}>
+      <ThemedText type='subtitle'>Search Content</ThemedText>
+      {/* Place your Search content here */}
+    </ThemedView>,
+  ];
 
   return (
     <ThemedView>
@@ -113,35 +137,10 @@ export default function HomeScreen() {
           </View>
 
           <View style={styles.tabChooser}>
-            <TabChooser
-              tabs={['Near You', 'About Location', 'Search']}
-              onTabChange={setSelectedTab}
-              views={[
-                <ThemedView key="near-you" style={styles.tabArea}>
-                  <ThemedText type='subtitle'>Near You Content</ThemedText>
-                  {/* Place your Near You content here */}
-                </ThemedView>,
-
-                <ThemedView key="about-location" style={[{},styles.tabArea]}>
-                  <ThemedText type='subtitle'>About {city}</ThemedText>
-                  <ThemedText style={{marginBottom: 20, color: 'gray'}}>General Information</ThemedText>
-                  {wikiImageLoading && <ThemedText>Loading image...</ThemedText>}
-                  {!wikiImageLoading && wikiImage && (
-                    <View style={{ alignItems: 'center', marginBottom: 12 }}>
-                      <Image src={wikiImage} alt={city + ' image'} style={{ width: '100%', height: 200, borderRadius: 8, marginBottom: 10 }} />
-                    </View>
-                  )}
-                  {!wikiImageLoading && !wikiImage && <ThemedText>No image found.</ThemedText>}
-                  {wikiLoading && <ThemedText>Loading info...</ThemedText>}
-                  {!wikiLoading && wikiInfo && <ThemedText>{wikiInfo}</ThemedText>}
-                  {!wikiLoading && !wikiInfo && <ThemedText>No information found.</ThemedText>}
-                </ThemedView>,
-
-                <ThemedView key="search" style={styles.tabArea}>
-                  <ThemedText type='subtitle'>Search Content</ThemedText>
-                  {/* Place your Search content here */}
-                </ThemedView>,
-              ]}
+            <HorizontalSections
+              labels={labels}
+              sections={sections}
+              type="roundTab"
             />
           </View>
           </View>

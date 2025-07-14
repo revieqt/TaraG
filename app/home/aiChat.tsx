@@ -66,7 +66,7 @@ export default function AIChatScreen() {
       {showIntro ? (
         <ThemedView style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 32 }}>
           <Image
-            source={require('@/assets/images/tara-profile.png')}
+            source={require('@/assets/images/slide1-img.png')}
             style={{ width: 80, height: 80, borderRadius: 40, marginBottom: 10}}
           />
           <ThemedText type="subtitle" style={{ marginBottom: 10 }}>Hello, I am Tara</ThemedText>
@@ -87,7 +87,7 @@ export default function AIChatScreen() {
             ]}>
               {item.role === 'assistant' && (
                 <Image
-                  source={require('@/assets/images/tara-profile.png')}
+                  source={require('@/assets/images/slide1-img.png')}
                   style={styles.taraProfile}
                 />
               )}

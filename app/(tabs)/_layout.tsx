@@ -108,9 +108,9 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="sos"
+        name="safety"
         options={{
-          title: 'SOS',
+          title: 'Safety',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIconWithTopBorder
               name={focused ? 'alert-circle' : 'alert-circle-outline'}

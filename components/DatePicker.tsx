@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { View, TextInput, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import { useThemeColor } from '@/hooks/useThemeColor';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import React, { useState } from 'react';
+import { Platform, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 
 interface DatePickerProps {
   placeholder: string;
@@ -13,6 +13,7 @@ interface DatePickerProps {
   isFocused?: boolean;
   minimumDate?: Date;
   maximumDate?: Date;
+  style?: any; // <-- add this
 }
 
 const DatePicker: React.FC<DatePickerProps> = ({
@@ -24,6 +25,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
   isFocused: isFocusedProp,
   minimumDate,
   maximumDate,
+  style, // <-- add this
 }) => {
   const backgroundColor = useThemeColor({}, 'background');
   const textColor = useThemeColor({}, 'text');
@@ -58,6 +60,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
         styles.inputWrapper,
         { backgroundColor },
         { borderColor: focused ? borderColor : '#cccccc', borderWidth: 1 },
+        style, // <-- apply custom style
       ]}
     >
       <TextInput

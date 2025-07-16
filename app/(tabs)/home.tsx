@@ -152,12 +152,12 @@ export default function HomeScreen() {
       <FabMenu
         mainLabel="Create Route"
         mainIcon={<ThemedIcons library='MaterialIcons' name="add" size={32} color="#fff" />}
-        mainOnPress={() => router.push('/home/routes')}
+        mainOnPress={() => router.push('/home/routes-create')}
         actions={[
           {
             label: 'Create Itineraries',
             icon: <ThemedIcons library='MaterialIcons' name="note-add"  size={20} color="#00FFDE" />,
-            onPress: () => router.push('/home/itineraries'),
+            onPress: () => router.push('/home/itineraries-create'),
           },
           {
             label: 'New Chat with AI',

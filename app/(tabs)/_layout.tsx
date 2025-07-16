@@ -3,38 +3,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { Platform, Text, View } from 'react-native';
-
-function TabBarIconWithTopBorder({
-  name,
-  focused,
-  color,
-  activeColor,
-}: {
-  name: any;
-  color: string;
-  focused: boolean;
-  activeColor: string;
-}) {
-  return (
-    <View
-      style={{
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderTopWidth: 3,
-        borderTopColor: focused ? activeColor : 'transparent',
-        paddingTop: 3,
-        paddingHorizontal: 8,
-        height: 38,
-        width: 38,
-        marginTop: 8,
-        borderRadius: 3,
-      }}
-    >
-      <Ionicons size={22} name={name} color={color} />
-    </View>
-  );
-}
+import { Platform, Text } from 'react-native';
 
 function TabBarLabel({ children, color }: { children: React.ReactNode; color: string }) {
   return (
@@ -43,7 +12,7 @@ function TabBarLabel({ children, color }: { children: React.ReactNode; color: st
         fontFamily: 'Roboto',
         fontSize: 11,
         color,
-        marginTop: 5,
+        marginTop: 2,
         textAlign: 'center',
       }}
     >
@@ -68,12 +37,13 @@ export default function TabLayout() {
             position: 'absolute',
             paddingHorizontal: 24,
             paddingBottom: 12,
-            paddingTop: 8,
+            paddingTop: 5,
             height: 60,
           },
           default: {
             paddingHorizontal: 10,
             paddingBottom: 12,
+            paddingTop: 5,
             height: 60,
           },
         }),
@@ -84,11 +54,10 @@ export default function TabLayout() {
         options={{
           title: 'Home',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIconWithTopBorder
+            <Ionicons
+              size={22}
               name={focused ? 'home' : 'home-outline'}
               color={color}
-              focused={focused}
-              activeColor={activeColor}
             />
           ),
         }}
@@ -98,11 +67,10 @@ export default function TabLayout() {
         options={{
           title: 'Explore',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIconWithTopBorder
+            <Ionicons
+              size={22}
               name={focused ? 'compass' : 'compass-outline'}
               color={color}
-              focused={focused}
-              activeColor={activeColor}
             />
           ),
         }}
@@ -112,11 +80,10 @@ export default function TabLayout() {
         options={{
           title: 'Safety',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIconWithTopBorder
+            <Ionicons
+              size={22}
               name={focused ? 'alert-circle' : 'alert-circle-outline'}
               color={color}
-              focused={focused}
-              activeColor={activeColor}
             />
           ),
         }}
@@ -126,11 +93,10 @@ export default function TabLayout() {
         options={{
           title: 'Account',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIconWithTopBorder
+            <Ionicons
+              size={22}
               name={focused ? 'person' : 'person-outline'}
               color={color}
-              focused={focused}
-              activeColor={activeColor}
             />
           ),
         }}

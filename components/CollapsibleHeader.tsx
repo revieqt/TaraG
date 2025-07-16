@@ -61,13 +61,15 @@ const styles = StyleSheet.create({
     bottom: 30,
     right: 16,
     zIndex: 10,
+    gap: 8,
   },
   button: {
-    backgroundColor: '#007AFF',
-    paddingVertical: 8,
-    paddingHorizontal: 14,
-    borderRadius: 20,
-    marginRight: 8,
+    backgroundColor: 'rgba(255,255,255,0.7)',
+    padding: 8,
+    paddingHorizontal: 15,
+    borderRadius: 25,
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.8)'
   },
   extraButtons: {
     flexDirection: 'row',

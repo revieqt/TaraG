@@ -7,7 +7,6 @@ import { ThemedIcons } from '@/components/ThemedIcons';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import NotificationsButton from '@/components/custom/NotificationsButton';
-import TaraMap from '@/components/maps/TaraMap';
 import { useLocation } from '@/hooks/useLocation';
 import { wikipediaService } from '@/services/wikipediaService';
 import { router } from 'expo-router';
@@ -55,14 +54,16 @@ export default function HomeScreen() {
         <CollapsibleHeader
           buttons={
             <>
-              {/* 3D View Button using Button component */}
-              <Button title="3D View" onPress={() => {}} buttonStyle={styles.mapInputs} textStyle={{ fontSize: 14 }}/>
-              {/* Kebab Icon with OptionsPopup */}
+              <Button title="3D View" onPress={() => {}} buttonStyle={styles.mapInputs} textStyle={{ fontSize: 14, color: 'white' }}/>
+
               <OptionsPopup actions={[{ 
                 label: 'Option 1', onPress: () => {} },
                 { label: 'Option 2', onPress: () => {} }]}
                 >
-                <ThemedIcons library="MaterialCommunityIcons" name="dots-vertical" size={22} color="#fff" />
+                <View style={[styles.kebab,styles.mapInputs]}>
+                  <ThemedIcons library="MaterialCommunityIcons" name="dots-vertical" size={22} color="#fff" />
+                </View>
+                
               </OptionsPopup>
             </>
           }
@@ -78,7 +79,6 @@ export default function HomeScreen() {
             <NotificationsButton style={styles.mapInputs} />
           </View>
           <View style={{ flex: 1, borderRadius: 12, overflow: 'hidden' }}>
-            <TaraMap />
           </View>
         </CollapsibleHeader>
         <View style={styles.homeContent}>
@@ -220,8 +220,17 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   mapInputs:{
-    borderColor: 'light-gray',
+    borderColor: 'rgba(255,255,255,0.8)',
     backgroundColor: 'rgba(255,255,255,0.7)',
-    color: 'light-gray'
+    color: 'light-gray',
+    borderWidth: 2,
   },
+  kebab:{
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 25,
+    marginLeft: 8
+  }
 });

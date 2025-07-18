@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, StyleSheet, TextInputProps } from 'react-native';
+import { View, TextInput, StyleSheet, TextInputProps, NativeSyntheticEvent, TextInputContentSizeChangeEventData } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 
 interface TextFieldProps {
@@ -13,6 +13,9 @@ interface TextFieldProps {
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
   style?: any;
   onSubmitEditing?: TextInputProps['onSubmitEditing']; // <-- add this
+  multiline?: boolean; // <-- add this
+  numberOfLines?: number; // <-- add this
+  onContentSizeChange?: (e: NativeSyntheticEvent<TextInputContentSizeChangeEventData>) => void;
 }
 
 const TextField: React.FC<TextFieldProps> = ({
@@ -26,6 +29,9 @@ const TextField: React.FC<TextFieldProps> = ({
   autoCapitalize = 'none',
   style,
   onSubmitEditing, // <-- add this
+  multiline, // <-- add this
+  numberOfLines, // <-- add this
+  onContentSizeChange,
 }) => {
   // Use themed colors
   const backgroundColor = useThemeColor({}, 'primary');
@@ -61,6 +67,7 @@ const TextField: React.FC<TextFieldProps> = ({
         style={[
           styles.input,
           { color: textColor, textAlignVertical: 'center', paddingTop: 0, paddingBottom: 0 },
+          style // <-- now applies custom styles from props
         ]}
         placeholder={placeholder}
         placeholderTextColor={useThemeColor({ light: '#aaa', dark: '#888' }, 'icon')}
@@ -70,6 +77,9 @@ const TextField: React.FC<TextFieldProps> = ({
         autoCapitalize={autoCapitalize}
         underlineColorAndroid="transparent"
         onSubmitEditing={onSubmitEditing} // <-- add this
+        multiline={multiline} // <-- add this
+        numberOfLines={numberOfLines} // <-- add this
+        onContentSizeChange={onContentSizeChange}
       />
     </View>
   );

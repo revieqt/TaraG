@@ -14,15 +14,20 @@ const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 type CollapsibleHeaderProps = {
   children?: React.ReactNode;
   buttons?: React.ReactNode;
+  defaultHeight?: number;
+  expandedAllowance?: number;
 };
 
-const CollapsibleHeader: React.FC<CollapsibleHeaderProps> = ({ children, buttons }) => {
+const CollapsibleHeader: React.FC<CollapsibleHeaderProps> = ({ children, buttons, defaultHeight, expandedAllowance }) => {
+  const collapsedHeight = defaultHeight ?? 350;
   const [expanded, setExpanded] = useState(false);
-  const animatedHeight = useRef(new Animated.Value(350)).current;
+  const animatedHeight = useRef(new Animated.Value(collapsedHeight)).current;
+
+  const allowance = typeof expandedAllowance === 'number' ? expandedAllowance : 150;
 
   const toggleExpand = () => {
     Animated.timing(animatedHeight, {
-      toValue: expanded ? 350 : SCREEN_HEIGHT-130,
+      toValue: expanded ? collapsedHeight : SCREEN_HEIGHT - allowance,
       duration: 300,
       useNativeDriver: false,
     }).start(() => setExpanded(!expanded));

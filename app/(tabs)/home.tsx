@@ -98,7 +98,7 @@ export default function HomeScreen() {
                   <ThemedText>Routes</ThemedText>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.menuOptions} onPress={() => router.push('/home/itineraries')}>
+                <TouchableOpacity style={styles.menuOptions} onPress={() => router.push('/home/itineraries/itineraries')}>
                   <ThemedView roundness={50} color='secondary' style={styles.menuButton}>
                   <ThemedIcons library='MaterialIcons' name='event-note' size={20} color='#fff'/>
                   </ThemedView>
@@ -157,7 +157,7 @@ export default function HomeScreen() {
           {
             label: 'Create Itineraries',
             icon: <ThemedIcons library='MaterialIcons' name="note-add"  size={20} color="#00FFDE" />,
-            onPress: () => router.push('/home/itineraries-create'),
+            onPress: () => router.push('/home/itineraries/itineraries-create'),
           },
           {
             label: 'New Chat with AI',

@@ -47,7 +47,6 @@ export default function ExploreScreen() {
                   buttonLinks={[() => alert('Next'), () => alert('Done'), () => alert('Done')]}
                   darkenImage
                   navigationArrows
-                  blur
                 />
               </View>
 

@@ -1,12 +1,11 @@
 import React, { useRef, useState } from 'react';
 import { Dimensions, ScrollView, StyleSheet, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
-import Button from './Button';
 import { ThemedText } from './ThemedText';
 
 interface HorizontalSectionsProps {
   labels: string[];
   sections: React.ReactNode[];
-  type?: 'roundTab' | 'fullTab' | 'dotIdentifier';
+  type?: 'fullTab' | 'dotIdentifier';
   containerStyle?: ViewStyle;
   tabStyle?: ViewStyle;
   tabTextStyle?: ViewStyle;
@@ -40,31 +39,6 @@ const HorizontalSections: React.FC<HorizontalSectionsProps> = ({
     const newIndex = Math.round(event.nativeEvent.contentOffset.x / width);
     setActiveIndex(newIndex);
   };
-
-  // Tab Chooser: roundTab style
-  const renderRoundTab = () => (
-    <View style={[styles.tabRow, { marginBottom: 12 }]}> 
-      {labels.map((label, idx) => (
-        <Button
-          key={label}
-          title={label}
-          onPress={() => handleTabPress(idx)}
-          buttonStyle={[
-            styles.roundTab,
-            tabStyle,
-            activeIndex === idx && styles.activeRoundTab,
-            activeIndex === idx && activeTabStyle,
-          ].filter(Boolean) as ViewStyle[]}
-          textStyle={[
-            styles.roundTabText,
-            tabTextStyle,
-            activeIndex === idx && styles.activeRoundTabText,
-            activeIndex === idx && activeTabTextStyle,
-          ].filter(Boolean) as TextStyle[]}
-        />
-      ))}
-    </View>
-  );
 
   // Tab Chooser: fullTab style (like Explore)
   const renderFullTab = () => (
@@ -115,7 +89,6 @@ const HorizontalSections: React.FC<HorizontalSectionsProps> = ({
 
   return (
     <View style={[styles.container, containerStyle]}> 
-      {type === 'roundTab' && renderRoundTab()}
       {type === 'fullTab' && renderFullTab()}
       <ScrollView
         ref={scrollViewRef}
@@ -147,33 +120,6 @@ const styles = StyleSheet.create({
   section: {
     flex: 1,
     height: '100%',
-  },
-  tabRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 8,
-    marginTop: 16,
-  },
-  roundTab: {
-    borderRadius: 20,
-    paddingHorizontal: 18,
-    paddingVertical: 7,
-    borderWidth: 1.5,
-    borderColor: '#00CAFF',
-    backgroundColor: 'white',
-    marginHorizontal: 4,
-  },
-  activeRoundTab: {
-    backgroundColor: '#00CAFF',
-    borderColor: '#00CAFF',
-  },
-  roundTabText: {
-    color: '#00CAFF',
-    fontWeight: 'bold',
-  },
-  activeRoundTabText: {
-    color: '#fff',
   },
   fullTabRow: {
     flexDirection: 'row',
@@ -207,7 +153,7 @@ const styles = StyleSheet.create({
   },
   fullTabUnderline: {
     height: 3,
-    width: '100%',
+    width: '80%',
     backgroundColor: 'transparent',
     borderRadius: 10,
   },

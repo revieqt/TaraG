@@ -56,8 +56,9 @@ export default function RootLayout() {
 
             <Stack.Screen name="home/routes" />
             <Stack.Screen name="home/routes-create" />
-            <Stack.Screen name="home/itineraries" />
-            <Stack.Screen name="home/itineraries-create" />
+            <Stack.Screen name="home/itineraries/itineraries" />
+            <Stack.Screen name="home/itineraries/itineraries-create" />
+            <Stack.Screen name="home/itineraries/[id]" />
             <Stack.Screen name="home/weather" />
             <Stack.Screen name="home/aiChat" />
 

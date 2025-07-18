@@ -3,11 +3,14 @@ import DatePicker from '@/components/DatePicker';
 import DropDownField from '@/components/DropDownField';
 import Header from '@/components/Header';
 import LocationAutocomplete, { LocationItem } from '@/components/LocationAutocomplete';
+import LoadingModal from '@/components/modals/LoadingModal';
 import TextField from '@/components/TextField';
 import ThemedIcons from '@/components/ThemedIcons';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import ToggleButton from '@/components/ToggleButton';
+import { useSession } from '@/context/SessionContext';
+import { saveItinerary } from '@/services/firestore/itinerariesDbService';
 import React, { useState } from 'react';
 import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 
@@ -18,9 +21,6 @@ const ITINERARY_TYPES = [
   { label: 'Business', value: 'Business' },
 ];
 
-const GOOGLE_API_KEY = 'AIzaSyDI_dL8xl7gnjcPps-CXgDJM9DtF3oZPVI';
-
-// Add types for location
 interface DailyLocation {
   date: Date | null;
   locations: LocationItem[];
@@ -54,6 +54,11 @@ export default function CreateItineraryScreen() {
   const [jsonResult, setJsonResult] = useState<any>(null);
   const [showAddLocation, setShowAddLocation] = useState<{[key: string]: boolean}>({}); // key: dayIdx or 'main'
   const [pendingLocation, setPendingLocation] = useState<{[key: string]: Partial<LocationItem>}>({});
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
+  const { session } = useSession();
+  const [descriptionHeight, setDescriptionHeight] = useState(60);
 
   // Add a location to a day (fix: ensure dailyLocations is synced with autoDailyLocations)
   const addLocationToDay = (dayIdx: number, loc: LocationItem) => {
@@ -102,6 +107,7 @@ export default function CreateItineraryScreen() {
     }
     const createdOn = new Date();
     let result = {
+      userID: session?.user?.id || '',
       title,
       description,
       type,
@@ -118,6 +124,15 @@ export default function CreateItineraryScreen() {
         : locations,
     };
     setJsonResult(result);
+    setLoading(true);
+    setSuccess(false);
+    setErrorMessage(undefined);
+    (async () => {
+      const saveResult = await saveItinerary(result);
+      setLoading(false);
+      setSuccess(saveResult.success);
+      setErrorMessage(saveResult.errorMessage);
+    })();
   };
 
   // For daily plan, auto-generate days from startDate to endDate
@@ -184,8 +199,14 @@ export default function CreateItineraryScreen() {
         keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
       >
         <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-          <TextField placeholder="Title" value={title} onChangeText={setTitle} />
-          <TextField placeholder="Description" value={description} onChangeText={setDescription} />
+          <TextField placeholder="Title" value={title} onChangeText={setTitle} 
+            style={{ fontFamily: 'PoppinsBold', fontSize: 35, borderColor: 'transparent', marginBottom: 0, height: 60}}
+          />
+          <TextField placeholder="Add a Description" value={description} onChangeText={setDescription} 
+            style={{ borderColor: 'transparent', minHeight: 60, height: descriptionHeight, textAlignVertical: 'top'}}
+            multiline
+            onContentSizeChange={e => setDescriptionHeight(e.nativeEvent.contentSize.height)}
+          />
           <DropDownField
             placeholder="Type"
             value={type}
@@ -209,6 +230,7 @@ export default function CreateItineraryScreen() {
               style={{flex: 2}}
             />
           </View>
+          
           {/* Only show planDaily toggle if more than 1 day */}
           {numDays > 1 && (
             <ThemedView style={styles.rowBetween}>
@@ -295,6 +317,13 @@ export default function CreateItineraryScreen() {
           )}
         </ScrollView>
       </KeyboardAvoidingView>
+      <LoadingModal
+        visible={loading || success || !!errorMessage}
+        success={success}
+        successMessage="Itinerary saved! Redirecting..."
+        errorMessage={errorMessage}
+        redirectTo="/home/itineraries/itineraries"
+      />
     </ThemedView>
   );
 }

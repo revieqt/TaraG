@@ -38,7 +38,7 @@ export default function RoutesScreen() {
       <FabMenu
         mainLabel="Create Itinerary"
         mainIcon={<ThemedIcons library='MaterialIcons' name="add" size={32} color="#fff" />}
-        mainOnPress={() => router.push('/home/itineraries-create')}
+        mainOnPress={() => router.push('/home/itineraries/itineraries-create')}
         actions={[]}
       />
     </ThemedView>

@@ -4,9 +4,10 @@ import HorizontalSections from '@/components/HorizontalSections';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useSession } from '@/context/SessionContext';
+import { router } from 'expo-router';
 import { hasUnreadNotifications } from '@/services/firestore/userDbService';
 import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View, TouchableOpacity, Image } from 'react-native';
 
 export default function ExploreScreen() {
   const { session } = useSession();
@@ -29,8 +30,35 @@ export default function ExploreScreen() {
         labels={['Explore', 'Tours', 'Your Groups']}
         sections={[
           <View key="explore" style={styles.tabContent}>
-            <ScrollView showsVerticalScrollIndicator={false}>
-              
+            <ScrollView showsVerticalScrollIndicator={false} style={{width: '100%'}}>
+              {/* Post input UI */}
+              <TouchableOpacity
+                style={styles.postInputContainer}
+                onPress={() => router.push("/explore/explore-post")}
+              >
+                <View style={styles.postRow}>
+                  <Image
+                    source={{ uri: session?.user?.profileImage || 'https://ui-avatars.com/api/?name=User' }}
+                    style={styles.profileImage}
+                  />
+                  <View style={styles.postInputBox}>
+                    <ThemedText>Share something to the world</ThemedText>
+                  </View>
+                </View>
+
+                <View style={styles.postRow}>
+                  <TouchableOpacity style={styles.attachButton}>
+                    <ThemedText style={styles.attachButtonText}>Attach Route</ThemedText>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.attachButton}>
+                    <ThemedText style={styles.attachButtonText}>Attach Itinerary</ThemedText>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.attachButton}>
+                    <ThemedText style={styles.attachButtonText}>Attach Group</ThemedText>
+                  </TouchableOpacity>
+                </View>
+                
+              </TouchableOpacity>
             </ScrollView>
           </View>,
 
@@ -88,5 +116,45 @@ const styles = StyleSheet.create({
   carouselContainer:{
     width: '100%',
     height: 350,
-  }
+  },
+  postInputContainer: {
+    padding: 16,
+    backgroundColor: 'rgba(0,0,0,0.02)',
+    borderRadius: 12,
+    margin: 16,
+    gap: 10
+  },
+  postRow:{
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  postInputBox: {
+    flex: 1,
+    height: 40,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    paddingHorizontal: 12,
+    marginRight: 8,
+    justifyContent: 'center',
+  },
+  profileImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 10,
+  },
+  attachButton: {
+    backgroundColor: '#E0E7FF',
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    marginRight: 8,
+  },
+  attachButtonText: {
+    color: '#3730A3',
+    fontWeight: '600',
+    fontSize: 14,
+  },
 });

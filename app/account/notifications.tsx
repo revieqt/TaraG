@@ -2,18 +2,11 @@ import Header from '@/components/Header';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useSession } from '@/context/SessionContext';
-import { changeNotificationToRead, getNotifications } from '@/services/firestore/notificationDbService';
+import { getNotifications, changeNotificationToRead, type Notification } from '@/services/notificationApiService';
+import { socketService } from '@/services/socketService';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
-
-type Notification = {
-  id: string;
-  note: string;
-  notifiedOn?: { seconds: number };
-  state?: string;
-  action?: string;
-};
+import { StyleSheet, TouchableOpacity, Alert } from 'react-native';
 
 export default function NotificationsScreen() {
   const { session } = useSession();
@@ -23,26 +16,51 @@ export default function NotificationsScreen() {
 
   useEffect(() => {
     if (!userId) return;
-    setLoading(true);
-    getNotifications(userId).then((notifs) => {
-      // Map to ensure all required fields exist
-      const mappedNotifs = notifs.map((n: any) => ({
-        id: n.id,
-        note: n.note ?? '',
-        notifiedOn: n.notifiedOn,
-        state: n.state,
-        action: n.action,
-      }));
-      setNotifications(mappedNotifs.sort((a, b) => (b.notifiedOn?.seconds ?? 0) - (a.notifiedOn?.seconds ?? 0)));
-      setLoading(false);
-    });
+
+    // Connect to Socket.io
+    socketService.connect(userId);
+
+    // Set up real-time notification listener
+    const handleNewNotification = (newNotification: Notification) => {
+      setNotifications(prev => [newNotification, ...prev]);
+      Alert.alert('New Notification', newNotification.note);
+    };
+
+    socketService.onNewNotification(handleNewNotification);
+
+    // Fetch initial notifications
+    fetchNotifications();
+
+    return () => {
+      socketService.offNewNotification(handleNewNotification);
+    };
   }, [userId]);
+
+  const fetchNotifications = async () => {
+    if (!userId) return;
+    
+    try {
+      setLoading(true);
+      const notifs = await getNotifications(userId);
+      setNotifications(notifs);
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+      Alert.alert('Error', 'Failed to load notifications');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleNotificationPress = async (notif: Notification) => {
     if (notif.state === 'unread') {
-      await changeNotificationToRead(notif.id);
-      setNotifications((prev) => prev.map(n => n.id === notif.id ? { ...n, state: 'read' } : n));
+      try {
+        await changeNotificationToRead(notif.id);
+        setNotifications((prev) => prev.map(n => n.id === notif.id ? { ...n, state: 'read' } : n));
+      } catch (error) {
+        console.error('Error marking notification as read:', error);
+      }
     }
+    
     if (notif.action && typeof notif.action === 'string') {
       router.replace(notif.action as any);
     }

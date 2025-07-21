@@ -10,10 +10,13 @@ import { useEffect } from 'react';
 import 'react-native-get-random-values';
 import 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { socketService } from '@/services/socketService';
+import { useSession } from '@/context/SessionContext';
 
 SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
+function AppContent() {
+  const { session } = useSession();
   const { effectiveTheme } = useThemeSwitcher();
   const [loaded] = useFonts({
     Poppins: require('../assets/fonts/Poppins-Regular.ttf'),
@@ -31,44 +34,62 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
+  // Initialize Socket.io connection when user is logged in
+  useEffect(() => {
+    if (session?.user?.id) {
+      socketService.connect(session.user.id);
+    } else {
+      socketService.disconnect();
+    }
+
+    return () => {
+      socketService.disconnect();
+    };
+  }, [session?.user?.id]);
+
   if (!loaded) {
     return null;
   }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor }} edges={['top', 'bottom']}>
-      <SessionProvider>
-        <ThemeProvider value={effectiveTheme === 'dark' ? DarkTheme : DefaultTheme}>
+      <ThemeProvider value={effectiveTheme === 'dark' ? DarkTheme : DefaultTheme}>
+        
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(tabs)" />
           
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="(tabs)" />
-            
-            <Stack.Screen name="auth/login" />
-            <Stack.Screen name="auth/register" />
-            <Stack.Screen name="auth/verifyEmail" />
-            <Stack.Screen name="auth/warning" />
-            <Stack.Screen name="auth/forgotPassword" />
-            <Stack.Screen name="auth/changePassword" />
-            <Stack.Screen name="auth/firstLogin" />
-            
-            <Stack.Screen name="account/viewProfile" />
-            <Stack.Screen name="account/notifications" />
+          <Stack.Screen name="auth/login" />
+          <Stack.Screen name="auth/register" />
+          <Stack.Screen name="auth/verifyEmail" />
+          <Stack.Screen name="auth/warning" />
+          <Stack.Screen name="auth/forgotPassword" />
+          <Stack.Screen name="auth/changePassword" />
+          <Stack.Screen name="auth/firstLogin" />
+          
+          <Stack.Screen name="account/viewProfile" />
+          <Stack.Screen name="account/notifications" />
 
-            <Stack.Screen name="home/routes" />
-            <Stack.Screen name="home/routes-create" />
-            <Stack.Screen name="home/itineraries/itineraries" />
-            <Stack.Screen name="home/itineraries/itineraries-create" />
-            <Stack.Screen name="home/itineraries/[id]" />
-            <Stack.Screen name="home/weather" />
-            <Stack.Screen name="home/aiChat" />
+          <Stack.Screen name="home/routes" />
+          <Stack.Screen name="home/routes-create" />
+          <Stack.Screen name="home/itineraries/itineraries" />
+          <Stack.Screen name="home/itineraries/itineraries-create" />
+          <Stack.Screen name="home/itineraries/[id]" />
+          <Stack.Screen name="home/weather" />
+          <Stack.Screen name="home/aiChat" />
 
-            <Stack.Screen name="index" />
-            <Stack.Screen name="+not-found" />
-          </Stack>
-          <StatusBar style="auto" />
-        </ThemeProvider>
-      </SessionProvider>
+          <Stack.Screen name="index" />
+          <Stack.Screen name="+not-found" />
+        </Stack>
+        <StatusBar style="auto" />
+      </ThemeProvider>
     </SafeAreaView>
-      
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <SessionProvider>
+      <AppContent />
+    </SessionProvider>
   );
 }

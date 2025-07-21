@@ -122,11 +122,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.02)',
     borderRadius: 12,
     margin: 16,
-    gap: 10
+    gap: 10,
   },
   postRow:{
     flexDirection: 'row',
     alignItems: 'center',
+    overflow: 'hidden'
   },
   postInputBox: {
     flex: 1,

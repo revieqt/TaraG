@@ -66,7 +66,9 @@ export default function HomeScreen() {
                 
               </OptionsPopup>
             </>
+            
           }
+          defaultHeight={150}
         >
           <View style={styles.header}>
             <TextField

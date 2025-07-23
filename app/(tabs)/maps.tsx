@@ -68,7 +68,6 @@ export default function HomeScreen() {
             </>
             
           }
-          defaultHeight={150}
         >
           <View style={styles.header}>
             <TextField
@@ -88,54 +87,8 @@ export default function HomeScreen() {
             <>
               <ThemedText>You're currently at</ThemedText>
               <ThemedText type='subtitle'>{getLocationText()}</ThemedText>
-              <TouchableOpacity style={styles.searchLocationButton} onPress={() => setHomeContentState('searchLocation')}>
-                <ThemedIcons library='MaterialIcons' name={'arrow-forward'} size={24}/>
-              </TouchableOpacity>
-
-              <View style={styles.menu}>
-                <TouchableOpacity style={styles.menuOptions} onPress={() => router.push('/home/routes')}>
-                  <ThemedView roundness={50} color='secondary' style={styles.menuButton}>
-                    <ThemedIcons library='MaterialIcons' name='route' size={20} color='#fff'/>
-                  </ThemedView>
-                  <ThemedText>Routes</ThemedText>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.menuOptions} onPress={() => router.push('/home/itineraries/itineraries')}>
-                  <ThemedView roundness={50} color='secondary' style={styles.menuButton}>
-                  <ThemedIcons library='MaterialIcons' name='event-note' size={20} color='#fff'/>
-                  </ThemedView>
-                  <ThemedText>Itineraries</ThemedText>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.menuOptions} onPress={() => router.push('/home/weather')}>
-                  <ThemedView roundness={50} color='secondary' style={styles.menuButton}>
-                  <ThemedIcons library='MaterialIcons' name='cloud-queue' size={20} color='#fff'/>
-                  </ThemedView>
-                  <ThemedText>Weather</ThemedText>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.menuOptions} onPress={() => router.push('/home/aiChat')}>
-                  <ThemedView roundness={50} color='secondary' style={styles.menuButton}>
-                    <ThemedIcons library='MaterialDesignIcons' name='robot-happy-outline' size={20} color='#fff'/>
-                  </ThemedView>
-                  <ThemedText>TaraAI</ThemedText>
-                </TouchableOpacity>
-              </View>
-
-            </>
-          )}
-          {homeContentState === 'searchLocation' && (
-            <>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <TouchableOpacity onPress={() => setHomeContentState('default')} style={{ marginBottom: 12, flexDirection: 'row', alignItems: 'center', marginRight: 15 }}>
-                  <ThemedIcons library="MaterialIcons" name="arrow-back" size={24} />
-                </TouchableOpacity>
-
-                <View>
-                  <ThemedText type='subtitle'>About {city}</ThemedText>
-                  <ThemedText style={{marginBottom: 20, color: 'gray'}}>General Information</ThemedText>
-                </View>
-              </View>
+              <ThemedText type='subtitle'>About {city}</ThemedText>
+              <ThemedText style={{marginBottom: 20, color: 'gray'}}>General Information</ThemedText>
               {wikiImageLoading && <ThemedText>Loading image...</ThemedText>}
               {!wikiImageLoading && wikiImage && (
                 <View style={{ alignItems: 'center', marginBottom: 12 }}>
@@ -146,6 +99,7 @@ export default function HomeScreen() {
               {wikiLoading && <ThemedText>Loading info...</ThemedText>}
               {!wikiLoading && wikiInfo && <ThemedText>{wikiInfo}</ThemedText>}
               {!wikiLoading && !wikiInfo && <ThemedText>No information found.</ThemedText>}
+
             </>
           )}
         </View>

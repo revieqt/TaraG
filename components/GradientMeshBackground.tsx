@@ -1,52 +1,73 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const { width, height } = Dimensions.get('window');
 
-const GradientMeshBackground = () => {
+type GradientMeshBackgroundProps = {
+  gradientBackground?: boolean;
+  style?: any;
+};
+
+const GradientMeshBackground: React.FC<GradientMeshBackgroundProps> = ({ gradientBackground = false, style }) => {
+  // Use the height from style if provided, else fallback to window height
+  const containerHeight = (style && style.height) || height;
+
   return (
-    <View style={StyleSheet.absoluteFill}>
+    <View style={[StyleSheet.absoluteFill, style]}>
+      {/* Always render the gradient as the back layer */}
+      {gradientBackground && (
+        <LinearGradient
+          colors={['#00eaff', '#03A6A1']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={[StyleSheet.absoluteFill, { height: containerHeight, width: '100%', zIndex: -10 }]}
+        />
+      )}
+
       {/* Blob Top Left */}
-      <LinearGradient
-        colors={['#4e7cff', '#9b9bff']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={[styles.blob, {
-          top: -100,
-          left: -100,
-          width: 300,
-          height: 300,
-          borderRadius: 150,
-        }]}
+      <View
+        style={[
+          styles.blob,
+          {
+            top: -containerHeight * 0.18,
+            left: -containerHeight * 0.18,
+            width: containerHeight * 0.35,
+            height: containerHeight * 0.35,
+            borderRadius: (containerHeight * 0.35) / 2,
+            backgroundColor: 'rgba(255, 255, 255, 0.5)',
+          },
+        ]}
       />
 
       {/* Blob Bottom Right */}
-      <LinearGradient
-        colors={['#9b9bff', '#d1d1ff']}
-        start={{ x: 1, y: 1 }}
-        end={{ x: 0, y: 0 }}
-        style={[styles.blob, {
-          bottom: -100,
-          right: -100,
-          width: 300,
-          height: 300,
-          borderRadius: 150,
-        }]}
+      <View
+        style={[
+          styles.blob,
+          {
+            bottom: -containerHeight * 0.18,
+            right: -containerHeight * 0.18,
+            width: containerHeight * 0.35,
+            height: containerHeight * 0.35,
+            borderRadius: (containerHeight * 0.35) / 2,
+            backgroundColor: 'rgba(255, 255, 255, 0.7)',
+          },
+        ]}
       />
 
       {/* Blob Center */}
-      <LinearGradient
-        colors={['#f4f4ff', '#e0e0ff']}
-        start={{ x: 0, y: 1 }}
-        end={{ x: 1, y: 0 }}
-        style={[styles.blob, {
-          top: height / 3,
-          left: width / 4,
-          width: 250,
-          height: 250,
-          borderRadius: 125,
-        }]}
+      <View
+        style={[
+          styles.blob,
+          {
+            top: containerHeight * 0.33,
+            left: width / 4,
+            width: containerHeight * 0.28,
+            height: containerHeight * 0.28,
+            borderRadius: (containerHeight * 0.28) / 2,
+            backgroundColor: '#e0e0ff',
+          },
+        ]}
       />
     </View>
   );
@@ -56,9 +77,9 @@ const styles = StyleSheet.create({
   blob: {
     position: 'absolute',
     opacity: 0.5,
-    zIndex: -1,
+    zIndex: 1,
     transform: [{ rotate: '15deg' }],
-    filter: 'blur(100px)', // Note: Web only. Mobile uses softness + opacity.
+    filter: 'blur(100px)', // Web only
   },
 });
 

@@ -16,9 +16,16 @@ type CollapsibleHeaderProps = {
   buttons?: React.ReactNode;
   defaultHeight?: number;
   expandedAllowance?: number;
+  disableExpand?: boolean; // <-- Added prop
 };
 
-const CollapsibleHeader: React.FC<CollapsibleHeaderProps> = ({ children, buttons, defaultHeight, expandedAllowance }) => {
+const CollapsibleHeader: React.FC<CollapsibleHeaderProps> = ({
+  children,
+  buttons,
+  defaultHeight,
+  expandedAllowance,
+  disableExpand, // <-- Added prop
+}) => {
   const collapsedHeight = defaultHeight ?? 350;
   const [expanded, setExpanded] = useState(false);
   const animatedHeight = useRef(new Animated.Value(collapsedHeight)).current;
@@ -35,20 +42,22 @@ const CollapsibleHeader: React.FC<CollapsibleHeaderProps> = ({ children, buttons
 
   return (
     <Animated.View style={[styles.container, { height: animatedHeight }]}>
-      <View style={{flex:1}}>
+      <View style={{ flex: 1 }}>
         {children}
       </View>
       <View style={styles.buttonRow}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={toggleExpand}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.buttonText}>{expanded ? 'Collapse' : 'Expand'}</Text>
-        </TouchableOpacity>
+        {!disableExpand && (
+          <TouchableOpacity
+            style={styles.button}
+            onPress={toggleExpand}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.buttonText}>{expanded ? 'Collapse' : 'Expand'}</Text>
+          </TouchableOpacity>
+        )}
         {buttons && <View style={styles.extraButtons}>{buttons}</View>}
       </View>
-      <ThemedView shadow='soft' style={styles.overlay}></ThemedView>
+      <ThemedView shadow style={styles.overlay}></ThemedView>
     </Animated.View>
   );
 };
@@ -84,13 +93,14 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: '600',
   },
-  overlay:{
+  overlay: {
     width: '100%',
     height: 20,
     position: 'absolute',
     bottom: 0,
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
+    zIndex: 5,
   }
 });
 

@@ -24,7 +24,7 @@ export const BackButton: React.FC<BackButtonProps> = ({ style, type = 'default' 
         style={[
           {
             position: 'absolute',
-            top: 32,
+            top: 16,
             left: 16,
             zIndex: 100,
             borderRadius: 24,

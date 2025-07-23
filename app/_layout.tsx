@@ -74,7 +74,7 @@ function AppContent() {
           <Stack.Screen name="home/itineraries/itineraries" />
           <Stack.Screen name="home/itineraries/itineraries-create" />
           <Stack.Screen name="home/itineraries/[id]" />
-          <Stack.Screen name="home/weather" />
+          <Stack.Screen name="home/safety" />
           <Stack.Screen name="home/aiChat" />
 
           <Stack.Screen name="index" />

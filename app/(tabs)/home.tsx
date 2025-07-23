@@ -15,13 +15,6 @@ export default function HomeScreen() {
   const user = session?.user;
   const { suburb, city, state, loading, error } = useLocation();
 
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return 'Good Morning';
-    if (hour < 18) return 'Good Afternoon';
-    return 'Good Evening';
-  };
-
   const getLocationText = () => {
     if (loading) return 'Getting your location...';
     if (error) return 'Location unavailable';
@@ -36,10 +29,7 @@ export default function HomeScreen() {
       <ParallaxHeader
        header={
           <View style={styles.headerContainer}>
-          {/* Base layer: Map background */}
           <TaraMap mapStyle={styles.mapBackground} />
-          
-          {/* Middle layer: Gradient overlay */}
           <LinearGradient
             colors={['transparent', '#fff']}
             start={{ x: 0.5, y: 0 }}
@@ -47,8 +37,6 @@ export default function HomeScreen() {
             style={styles.gradientOverlay}
             pointerEvents="none"
           />
-          
-          {/* Top layer: Content */}
           <View style={styles.headerContent}>
             <View style={styles.notificationContainer}>
               <NotificationsButton />
@@ -56,7 +44,7 @@ export default function HomeScreen() {
             
             <View style={styles.textContainer}>
               <ThemedText type='title'>
-                {getGreeting()}{user?.fname ? `, ${user.fname}` : ''}
+                Hello {user?.fname ? `${user.fname}` : ''}!
               </ThemedText>
               <ThemedText type='subtitle'>Welcome to TaraG!</ThemedText>
             </View>
@@ -81,11 +69,11 @@ export default function HomeScreen() {
               <ThemedText>Itineraries</ThemedText>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.menuOptions} onPress={() => router.push('/home/weather')}>
+            <TouchableOpacity style={styles.menuOptions} onPress={() => router.push('/home/safety')}>
               <ThemedView roundness={50} color='secondary' style={styles.menuButton}>
-              <ThemedIcons library='MaterialIcons' name='cloud-queue' size={20} color='#fff'/>
+              <ThemedIcons library='MaterialDesignIcons' name='car-brake-alert' size={20} color='#fff'/>
               </ThemedView>
-              <ThemedText>Weather</ThemedText>
+              <ThemedText>Safety</ThemedText>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.menuOptions} onPress={() => router.push('/home/aiChat')}>
@@ -96,19 +84,31 @@ export default function HomeScreen() {
             </TouchableOpacity>
           </View>
 
-          <ThemedView shadow style={styles.redirectToTara}>
-            <TouchableOpacity onPress={() => router.push('/home/aiChat')} style={{opacity: 0.5}}>
-              <ThemedText>What are you going to do? Ask Tara!</ThemedText>
-            </TouchableOpacity>
-          </ThemedView>
-          
-
           <ThemedView shadow style={styles.locationContent}>
-            <ThemedText>You're currently at</ThemedText>
-            <ThemedText type='subtitle'>{getLocationText()}</ThemedText>
+            <TouchableOpacity onPress={() => router.push('/(tabs)/maps')}>
+              <ThemedText>You're currently at</ThemedText>
+              <ThemedText type='subtitle'>{getLocationText()}</ThemedText>
+            </TouchableOpacity>
+            
           </ThemedView>
+
+          <View style={styles.grid}>
+            <ThemedView shadow style={[{padding: 15},styles.gridItem]}>
+              <ThemedText type='defaultSemiBold'>{city}</ThemedText>
+              <ThemedText type='subtitle'>30</ThemedText>
+              
+            </ThemedView>
+
+            <View style={styles.gridItem}>
+              <ThemedView shadow style={styles.gridItemChild}>
+                <ThemedText>Emergency State</ThemedText>
+              </ThemedView>
+              <ThemedView shadow style={styles.gridItemChild}>
+                <ThemedText>Explore more features in the app!</ThemedText>
+              </ThemedView>
+            </View>
+          </View>
         </View>
-        
       </ParallaxHeader>
     </ThemedView>
   );
@@ -191,5 +191,23 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     overflow: 'hidden',
     backgroundColor: 'rgba(255, 255, 255, 0.3)',
-  }
+  },
+  grid: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20,
+    gap: 10,
+  },
+  gridItem: {
+    width: '48%',
+    height: 150,
+    borderRadius: 10,
+  },
+  gridItemChild: {
+    width: '100%',
+    borderRadius: 10,
+    padding: 10,
+    height: '47%', // This ensures equal height for both children
+    marginBottom: 10,
+  },
 });

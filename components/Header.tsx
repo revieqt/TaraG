@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import BackButton from './custom/BackButton';
 import { ThemedText } from './ThemedText';
+import { ThemedView } from './ThemedView';
 
 interface HeaderProps {
   label?: string;
@@ -13,21 +14,21 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ label, style, rightButton, leftButton }) => {
   if (leftButton) {
     return (
-      <View style={[styles.container, style]}>
+      <ThemedView lightColor="transparent" darkColor="transparent" style={[styles.container, style]}>
         {leftButton}
         <View style={{ flex: 1 }} />
         {rightButton}
-      </View>
+      </ThemedView>
+    );
+  } else {
+    return (
+      <ThemedView lightColor="transparent" darkColor="transparent" style={[styles.container, style]}>
+        <BackButton />
+        {label && <ThemedText type='subtitle' style={[styles.label, { flex: 1 }]}>{label}</ThemedText>}
+        {rightButton}
+      </ThemedView>
     );
   }
-
-  return (
-    <View style={[styles.container, style]}>
-      <BackButton />
-      {label && <ThemedText type='subtitle' style={[styles.label, { flex: 1 }]}>{label}</ThemedText>}
-      {rightButton}
-    </View>
-  );
 };
 
 const styles = StyleSheet.create({
@@ -45,4 +46,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Header; 
+export default Header;

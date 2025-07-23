@@ -6,10 +6,10 @@ export type ThemedViewProps = ViewProps & {
   lightColor?: string;
   darkColor?: string;
   color?: 'primary' | 'secondary' | 'accent' | 'complimentary1' | 'complimentary2' | 'complimentary3' | 'complimentary4';
-  shadow?: 'soft' | 'default';
+  shadow?: boolean; // changed to boolean
   border?: 'thin-gray' | 'thin-black' | 'thin-white';
   opacity?: number;
-  roundness?: number; // <-- added prop
+  roundness?: number;
 };
 
 export function ThemedView({
@@ -17,10 +17,10 @@ export function ThemedView({
   lightColor,
   darkColor,
   color,
-  shadow,
+  shadow, // now boolean
   border,
   opacity,
-  roundness, // <-- added prop
+  roundness,
   ...otherProps
 }: ThemedViewProps) {
   let colorKey:
@@ -51,22 +51,15 @@ export function ThemedView({
     }).start();
   }, [fadeAnim]);
 
+  // Only one soft shadow style if shadow is true
   let shadowStyle = {};
-  if (shadow === 'soft') {
+  if (shadow) {
     shadowStyle = {
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 4 },
+      shadowColor: 'rgba(0, 0, 0, 0.4 )',
+      shadowOffset: { width: 0, height: 0 }, // Equal shadow on all sides
       shadowOpacity: 0.18,
-      shadowRadius: 30,
-      elevation: 8,
-    };
-  } else if (shadow === 'default') {
-    shadowStyle = {
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.23,
-      shadowRadius: 2.62,
-      elevation: 4,
+      shadowRadius: 24,
+      elevation: 10,
     };
   }
 
@@ -93,6 +86,6 @@ export function ThemedView({
         style,
       ]}
       {...otherProps}
-    />
+      />
   );
 }

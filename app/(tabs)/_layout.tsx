@@ -63,6 +63,19 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="maps"
+        options={{
+          title: 'Maps',
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              size={22}
+              name={focused ? 'map' : 'map-outline'}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="explore"
         options={{
           title: 'Explore',
@@ -70,19 +83,6 @@ export default function TabLayout() {
             <Ionicons
               size={22}
               name={focused ? 'compass' : 'compass-outline'}
-              color={color}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="safety"
-        options={{
-          title: 'Safety',
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              size={22}
-              name={focused ? 'alert-circle' : 'alert-circle-outline'}
               color={color}
             />
           ),

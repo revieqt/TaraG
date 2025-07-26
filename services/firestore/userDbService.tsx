@@ -93,6 +93,7 @@ export async function loginUserAndFetchProfile(email: string, password: string) 
     groups: userData.groups || [],
     isFirstLogin: userData.isFirstLogin ?? true,
     likes: userData.likes || [],
+    emergencyContact: userData.emergencyContact || [],
   };
 }
 

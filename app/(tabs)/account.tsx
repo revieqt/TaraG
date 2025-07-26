@@ -36,7 +36,7 @@ export default function AccountScreen() {
         showsVerticalScrollIndicator={true}
       >
         <ThemedView style={styles.header}>
-          <TouchableOpacity style={styles.profileButton} onPress={() => {router.push('/account/viewProfile')}}>
+          <TouchableOpacity style={styles.profileButton} onPress={() => {router.push({ pathname: '/account/viewProfile', params: { userId: user?.id } })}}>
             <Image
               source={
                 user?.profileImage

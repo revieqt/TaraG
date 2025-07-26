@@ -2,6 +2,11 @@ import React, { createContext, useContext, useEffect, useState, ReactNode } from
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // 🧑‍💼 User type
+export type EmergencyContact = {
+  name: string;
+  contactNumber: string;
+};
+
 export type User = {
   id: string;
   fname: string;
@@ -17,7 +22,8 @@ export type User = {
   status: string;
   type: string;
   createdOn: Date;
-  groups?: string[]; // <-- Added groups array
+  groups?: string[];
+  emergencyContact?: EmergencyContact[];
 };
 
 // 📍 ActiveRoute type
@@ -61,7 +67,7 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
           if (parsed.user) {
             parsed.user.bdate = new Date(parsed.user.bdate);
             parsed.user.createdOn = new Date(parsed.user.createdOn);
-            // groups will be loaded as array if present, no conversion needed
+            // emergencyContact is an array of objects, no conversion needed
           }
 
           if (parsed.activeRoute) {

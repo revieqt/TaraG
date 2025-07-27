@@ -77,7 +77,7 @@ export default function ItinerariesScreen() {
             <ThemedView><ThemedText>No itinerary found.</ThemedText></ThemedView>
           )}
           {!loading && !error && itineraries.map((itinerary) => (
-            <ThemedView key={itinerary.id} shadow='soft' roundness={12} style={{ padding: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <ThemedView key={itinerary.id} shadow roundness={12} style={{ padding: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
               <View style={{ flex: 1 }}>
                 <TouchableOpacity onPress={() => goToViewItinerary(itinerary.id)} activeOpacity={0.7}>
                   <ThemedText type='defaultSemiBold'>{itinerary.title}</ThemedText>

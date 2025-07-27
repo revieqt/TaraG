@@ -1,18 +1,21 @@
 import Carousel from '@/components/Carousel';
 import NotificationsButton from '@/components/custom/NotificationsButton';
 import HorizontalSections from '@/components/HorizontalSections';
+import { ThemedIcons } from '@/components/ThemedIcons';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useSession } from '@/context/SessionContext';
-import { router } from 'expo-router';
 import { hasUnreadNotifications } from '@/services/firestore/userDbService';
+import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, View, TouchableOpacity, Image } from 'react-native';
+import { Image, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import ExploreSearchModal from '../explore/explore-search';
 
 export default function ExploreScreen() {
   const { session } = useSession();
   const userId = session?.user?.id;
   const [hasUnread, setHasUnread] = useState(false);
+  const [searchModalVisible, setSearchModalVisible] = useState(false);
 
   useEffect(() => {
     if (!userId) return;
@@ -24,8 +27,14 @@ export default function ExploreScreen() {
     <ThemedView style={styles.container}>
       <ThemedView style={styles.header}>
         <ThemedText type='subtitle'>Explore</ThemedText>
-        <NotificationsButton userId={userId} />
+        <View style={{flexDirection: 'row', gap: 20, alignItems: 'center'}}>
+          <TouchableOpacity onPress={() => setSearchModalVisible(true)}>
+            <ThemedIcons library="MaterialIcons" name="search" size={25}/>
+          </TouchableOpacity>
+          <NotificationsButton userId={userId} />
+        </View>
       </ThemedView>
+      <ExploreSearchModal visible={searchModalVisible} onClose={() => setSearchModalVisible(false)} />
       <HorizontalSections
         labels={['Explore', 'Tours', 'Your Groups']}
         sections={[

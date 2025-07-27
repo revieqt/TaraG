@@ -1,19 +1,21 @@
+import NotificationsButton from '@/components/custom/NotificationsButton';
+import TaraMap from '@/components/maps/TaraMap';
+import ParallaxHeader from '@/components/ParallaxHeader';
 import { ThemedIcons } from '@/components/ThemedIcons';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { LinearGradient } from 'expo-linear-gradient';
-import { useLocation } from '@/hooks/useLocation';
-import NotificationsButton from '@/components/custom/NotificationsButton';
-import { router } from 'expo-router';
-import ParallaxHeader from '@/components/ParallaxHeader';
 import { useSession } from '@/context/SessionContext';
-import TaraMap from '@/components/maps/TaraMap';
-import {  StyleSheet, TouchableOpacity, View, Text, Image } from 'react-native';
+import { useLocation } from '@/hooks/useLocation';
+import { useThemeColor } from '@/hooks/useThemeColor';
+import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
 export default function HomeScreen() {
   const { session } = useSession();
   const user = session?.user;
   const { suburb, city, state, loading, error } = useLocation();
+  const backgroundColor = useThemeColor({}, 'background');
 
   const getLocationText = () => {
     if (loading) return 'Getting your location...';
@@ -31,7 +33,7 @@ export default function HomeScreen() {
           <View style={styles.headerContainer}>
           <TaraMap mapStyle={styles.mapBackground} />
           <LinearGradient
-            colors={['transparent', '#fff']}
+            colors={['transparent', backgroundColor]}
             start={{ x: 0.5, y: 0 }}
             end={{ x: 0.5, y: 1 }}
             style={styles.gradientOverlay}
@@ -39,6 +41,12 @@ export default function HomeScreen() {
           />
           <View style={styles.headerContent}>
             <View style={styles.notificationContainer}>
+              <TouchableOpacity onPress={() => router.push('/(tabs)/maps')}>
+                <ThemedView roundness={20}style={styles.redirectToMap}>  
+                  <ThemedIcons library="MaterialIcons" name="map" size={20}/>
+                  <ThemedText>More on Maps</ThemedText>
+                </ThemedView>
+              </TouchableOpacity>
               <NotificationsButton />
             </View>
             
@@ -46,7 +54,7 @@ export default function HomeScreen() {
               <ThemedText type='title'>
                 Hello {user?.fname ? `${user.fname}` : ''}!
               </ThemedText>
-              <ThemedText type='subtitle'>Welcome to TaraG!</ThemedText>
+              <ThemedText type='defaultSemiBold' style={{opacity: 0.7}}>Welcome to TaraG!</ThemedText>
             </View>
           </View>
         </View>
@@ -56,35 +64,35 @@ export default function HomeScreen() {
         <View style={{ paddingHorizontal: 20 }}>
           <View style={styles.menu}>
             <TouchableOpacity style={styles.menuOptions} onPress={() => router.push('/home/routes')}>
-              <ThemedView roundness={50} color='secondary' style={styles.menuButton}>
-                <ThemedIcons library='MaterialIcons' name='route' size={20} color='#fff'/>
+              <ThemedView roundness={20} color='secondary' style={styles.menuButton}>
+                <ThemedIcons library='MaterialIcons' name='route' size={25} color='#fff'/>
               </ThemedView>
               <ThemedText>Routes</ThemedText>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.menuOptions} onPress={() => router.push('/home/itineraries/itineraries')}>
-              <ThemedView roundness={50} color='secondary' style={styles.menuButton}>
-              <ThemedIcons library='MaterialIcons' name='event-note' size={20} color='#fff'/>
+              <ThemedView roundness={20} color='secondary' style={styles.menuButton}>
+              <ThemedIcons library='MaterialIcons' name='event-note' size={25} color='#fff'/>
               </ThemedView>
               <ThemedText>Itineraries</ThemedText>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.menuOptions} onPress={() => router.push('/home/safety')}>
-              <ThemedView roundness={50} color='secondary' style={styles.menuButton}>
-              <ThemedIcons library='MaterialDesignIcons' name='car-brake-alert' size={20} color='#fff'/>
+              <ThemedView roundness={20} color='secondary' style={styles.menuButton}>
+              <ThemedIcons library='MaterialDesignIcons' name='car-brake-alert' size={25} color='#fff'/>
               </ThemedView>
               <ThemedText>Safety</ThemedText>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.menuOptions} onPress={() => router.push('/home/aiChat')}>
-              <ThemedView roundness={50} color='secondary' style={styles.menuButton}>
-                <ThemedIcons library='MaterialDesignIcons' name='robot-happy-outline' size={20} color='#fff'/>
+              <ThemedView roundness={20} color='secondary' style={styles.menuButton}>
+                <ThemedIcons library='MaterialDesignIcons' name='robot-happy-outline' size={25} color='#fff'/>
               </ThemedView>
               <ThemedText>TaraAI</ThemedText>
             </TouchableOpacity>
           </View>
 
-          <ThemedView shadow style={styles.locationContent}>
+          <ThemedView shadow color='primary' style={styles.locationContent}>
             <TouchableOpacity onPress={() => router.push('/(tabs)/maps')}>
               <ThemedText>You're currently at</ThemedText>
               <ThemedText type='subtitle'>{getLocationText()}</ThemedText>
@@ -93,17 +101,17 @@ export default function HomeScreen() {
           </ThemedView>
 
           <View style={styles.grid}>
-            <ThemedView shadow style={[{padding: 15},styles.gridItem]}>
+            <ThemedView shadow color='primary' style={[{padding: 15},styles.gridItem]}>
               <ThemedText type='defaultSemiBold'>{city}</ThemedText>
               <ThemedText type='subtitle'>30</ThemedText>
               
             </ThemedView>
 
             <View style={styles.gridItem}>
-              <ThemedView shadow style={styles.gridItemChild}>
+              <ThemedView shadow color='primary' style={styles.gridItemChild}>
                 <ThemedText>Emergency State</ThemedText>
               </ThemedView>
-              <ThemedView shadow style={styles.gridItemChild}>
+              <ThemedView shadow color='primary'style={styles.gridItemChild}>
                 <ThemedText>Explore more features in the app!</ThemedText>
               </ThemedView>
             </View>
@@ -144,6 +152,19 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 10,
     right: 10,
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'center',
+  },
+  redirectToMap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
   },
   textContainer: {
     position: 'absolute',
@@ -162,7 +183,7 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   menuButton:{
-    width: 50,
+    width: 55,
     aspectRatio: 1,
     justifyContent: 'center',
     alignItems: 'center',

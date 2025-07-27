@@ -5,7 +5,7 @@ import { Animated, type ViewProps } from 'react-native';
 export type ThemedViewProps = ViewProps & {
   lightColor?: string;
   darkColor?: string;
-  color?: 'primary' | 'secondary' | 'accent' | 'complimentary1' | 'complimentary2' | 'complimentary3' | 'complimentary4';
+  color?: 'primary' | 'secondary' | 'accent';
   shadow?: boolean;
   border?: 'thin-gray' | 'thin-black' | 'thin-white';
   opacity?: number;
@@ -27,19 +27,11 @@ export function ThemedView({
     | 'background'
     | 'primary'
     | 'secondary'
-    | 'accent'
-    | 'complimentary1'
-    | 'complimentary2'
-    | 'complimentary3'
-    | 'complimentary4' = 'background';
+    | 'accent' = 'background';
 
   if (color === 'primary') colorKey = 'primary';
   else if (color === 'secondary') colorKey = 'secondary';
   else if (color === 'accent') colorKey = 'accent';
-  else if (color === 'complimentary1') colorKey = 'complimentary1';
-  else if (color === 'complimentary2') colorKey = 'complimentary2';
-  else if (color === 'complimentary3') colorKey = 'complimentary3';
-  else if (color === 'complimentary4') colorKey = 'complimentary4';
 
   const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, colorKey);
 
@@ -66,7 +58,7 @@ export function ThemedView({
   let shadowStyle = {};
   if (shadow) {
     shadowStyle = {
-      shadowColor: 'rgba(0,0,0,0.4)',
+      shadowColor: 'rgba(120,120,120,0.6)',
       shadowOffset: { width: 0, height: 0 },
       shadowOpacity: 0.18,
       shadowRadius: 24,

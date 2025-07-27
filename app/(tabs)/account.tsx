@@ -46,21 +46,17 @@ export default function AccountScreen() {
               style={styles.profileImage}
             />
             <View style={{justifyContent: 'center'}}>
-              <ThemedText >{fullName}</ThemedText>
+              <ThemedText type='defaultSemiBold'>{fullName}</ThemedText>
               <ThemedText >@{user?.username}</ThemedText>
-              <ThemedText type='link'>View Profile</ThemedText>
             </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => router.push('/account/notifications')} style={styles.notifications}>
-            <ThemedIcons library='MaterialIcons' name='notifications' size={24}></ThemedIcons>
+            <View style={{position: 'absolute', right: 0}}>
+              <ThemedIcons library='MaterialIcons' name='arrow-forward-ios' size={20}/>
+            </View>
+            
           </TouchableOpacity>
         </ThemedView>
         
         <ThemedView style={styles.options}>
-          <ThemedText type='subtitle'>Settings</ThemedText>
-
-          {/* Privacy and Security */}
           <ThemedText style={styles.optionsTitle} type='defaultSemiBold'>Privacy and Security</ThemedText>
           <TouchableOpacity>
             <ThemedView style={styles.optionsChild} >
@@ -160,27 +156,23 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
     height: 100,
+    marginTop: 10,
   },
   container: {
     justifyContent: 'flex-start',
     alignItems: 'center',
-    paddingTop: 60,
     paddingHorizontal: 20,
   },
   profileButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    
+    flex: 1,
   },
   profileImage: {
-    width: 80,
+    width: 50,
     aspectRatio: 1,
     borderRadius: 50,
-    marginBottom: 16,
-    backgroundColor: '#eee',
     marginRight: 16,
   },
   notifications:{
@@ -197,7 +189,6 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   options: {
-    marginTop: 30,
     gap: 10,
     width: '100%',
   },

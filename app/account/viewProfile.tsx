@@ -8,6 +8,8 @@ import { useSession } from '@/context/SessionContext';
 import { useLocalSearchParams } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
 import OptionsPopup from '@/components/OptionsPopup';
+import ViewImageModal from '@/components/custom/ViewImage';
+import useChangeProfileImage from '@/hooks/useChangeProfileImage';
 
 
 export default function ProfileScreen() {
@@ -24,17 +26,39 @@ export default function ProfileScreen() {
     isCurrentUser = false;
   }
 
+  const [viewImageVisible, setViewImageVisible] = useState(false);
+  const changeProfileImage = useChangeProfileImage();
+
   return (
     <ThemedView style={{flex:1}}>
       <BackButton style={styles.backButton}/>
       {user && (
-          <OptionsPopup actions={[]} style={styles.profileImage}> 
-            <Image
-              source={user.profileImage ? { uri: user.profileImage } : require('@/assets/images/defaultUser.jpg')}
-              style={{flex:1}}
-            />
-          </OptionsPopup>
-        )}
+        <OptionsPopup
+          actions={[
+            {
+              label: 'View Profile',
+              onPress: () => setViewImageVisible(true),
+            },
+            ...(isCurrentUser ? [{
+              label: 'Change Profile',
+              onPress: async () => {
+                await changeProfileImage();
+              },
+            }] : []),
+          ]}
+          style={styles.profileImage}
+        >
+          <Image
+            source={user.profileImage ? { uri: user.profileImage } : require('@/assets/images/defaultUser.jpg')}
+            style={{flex:1}}
+          />
+        </OptionsPopup>
+      )}
+      <ViewImageModal
+        visible={viewImageVisible}
+        imageUrl={user?.profileImage || ''}
+        onClose={() => setViewImageVisible(false)}
+      />
       <CollapsibleHeader disableExpand defaultHeight={150}>
         <GradientMeshBackground gradientBackground/>
       </CollapsibleHeader>
@@ -43,7 +67,7 @@ export default function ProfileScreen() {
         {
           user ? (
             <>
-              <ThemedText type="subtitle">{user.fname} {user.mname} {user.lname}</ThemedText>
+              <ThemedText type="subtitle">{user.fname} {user.mname ? user.mname : ''}{user.lname}</ThemedText>
               <ThemedText type="defaultSemiBold">@{user.username}</ThemedText>
             </>
           ) : (

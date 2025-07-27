@@ -1,10 +1,8 @@
 import Button from '@/components/Button';
-import OptionsPopup from '@/components/OptionsPopup';
 import { ThemedIcons } from '@/components/ThemedIcons';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useSession } from '@/context/SessionContext';
-import { useThemeSwitcher } from '@/hooks/useThemeSwitcher';
 import { auth } from '@/services/firestore/config';
 import { router } from 'expo-router';
 import { signOut } from 'firebase/auth';
@@ -14,7 +12,6 @@ import { Alert, Image, ScrollView, StyleSheet, TouchableOpacity, View } from 're
 export default function AccountScreen() {
   const { session, clearSession } = useSession();
   const user = session?.user;
-  const { theme, setTheme } = useThemeSwitcher();
 
   const fullName = [user?.fname, user?.mname, user?.lname].filter(Boolean).join(' ');
 
@@ -69,31 +66,6 @@ export default function AccountScreen() {
             </ThemedView>
           </TouchableOpacity>
 
-          <ThemedText style={styles.optionsTitle} type='defaultSemiBold'>Personalization</ThemedText>
-          <OptionsPopup
-            actions={[
-              {
-                label: 'System Theme',
-                icon: <ThemedIcons library='MaterialIcons' name='settings' size={20} />,
-                onPress: () => setTheme('system'),
-              },
-              {
-                label: 'Light Mode',
-                icon: <ThemedIcons library='MaterialIcons' name='light-mode' size={20} />,
-                onPress: () => setTheme('light'),
-              },
-              {
-                label: 'Dark Mode',
-                icon: <ThemedIcons library='MaterialIcons' name='dark-mode' size={20} />,
-                onPress: () => setTheme('dark'),
-              },
-            ]}
-          >
-            <ThemedView style={styles.optionsChild}>
-              <ThemedIcons library='MaterialIcons' name='palette' size={15}/>
-              <ThemedText>Theme Customization</ThemedText>
-            </ThemedView>
-          </OptionsPopup>
           {/* Tour Guide Settings */}
           <ThemedText style={styles.optionsTitle} type='defaultSemiBold'>Tour Guide Settings</ThemedText>
           {user?.type === 'tourGuide' ? 

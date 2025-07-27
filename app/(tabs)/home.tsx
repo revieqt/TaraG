@@ -9,7 +9,7 @@ import { useLocation } from '@/hooks/useLocation';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 export default function HomeScreen() {
   const { session } = useSession();
@@ -42,7 +42,7 @@ export default function HomeScreen() {
           <View style={styles.headerContent}>
             <View style={styles.notificationContainer}>
               <TouchableOpacity onPress={() => router.push('/(tabs)/maps')}>
-                <ThemedView roundness={20}style={styles.redirectToMap}>  
+                <ThemedView roundness={20} color='primary' style={styles.redirectToMap}>  
                   <ThemedIcons library="MaterialIcons" name="map" size={20}/>
                   <ThemedText>More on Maps</ThemedText>
                 </ThemedView>
@@ -57,6 +57,8 @@ export default function HomeScreen() {
               <ThemedText type='defaultSemiBold' style={{opacity: 0.7}}>Welcome to TaraG!</ThemedText>
             </View>
           </View>
+
+          <Image source={require('@/assets/images/tara-cheerful.png')} style={styles.taraImage} />
         </View>
       }
         headerHeight={100}
@@ -131,13 +133,21 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     zIndex: 1,
   },
+  taraImage: {
+    position: 'absolute',
+    bottom: -80,
+    right: -20,
+    width: 160,
+    height: 250,
+    zIndex: 2,
+  },
   gradientOverlay: {
     height: 100,
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    zIndex: 2,
+    zIndex: 3,
     pointerEvents: 'none', // Allow touches to pass through to map
   },
   headerContent: {

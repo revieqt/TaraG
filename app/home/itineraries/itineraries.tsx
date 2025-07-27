@@ -110,6 +110,7 @@ export default function ItinerariesScreen() {
           </ThemedView>
         </View>]}
       />
+
       <FabMenu
         mainLabel="Create Itinerary"
         mainIcon={<ThemedIcons library='MaterialIcons' name="add" size={32} color="#fff" />}

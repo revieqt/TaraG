@@ -11,7 +11,7 @@ export default function useChangeProfileImage() {
     
     // 1. Pick image
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: 'images',
       allowsEditing: true,
       aspect: [1, 1],
       quality: 0.7,
@@ -34,7 +34,15 @@ export default function useChangeProfileImage() {
     } as any);
     
     try {
-      const response = await fetch(`https://tarag-backend.onrender.com/api/users/upload-profile-image?userId=${userId}`, {
+      // Test basic connectivity first
+      console.log('Testing connectivity to backend...');
+      const testResponse = await fetch('http://10.0.2.2:5000/health');
+      console.log('Health check response:', testResponse.status, testResponse.statusText);
+      
+      console.log('Starting upload to:', `http://10.0.2.2:5000/api/users/upload-profile-image?userId=${userId}`);
+      console.log('FormData content:', formData);
+      
+      const response = await fetch(`http://10.0.2.2:5000/api/users/upload-profile-image?userId=${userId}`, {
         method: 'POST',
         body: formData,
         headers: {
@@ -42,12 +50,16 @@ export default function useChangeProfileImage() {
         },
       });
       
+      console.log('Response received:', response.status, response.statusText);
+      
       if (!response.ok) {
         const errorData = await response.json();
+        console.log('Error response:', errorData);
         throw new Error(errorData.error || 'Upload failed');
       }
       
       const data = await response.json();
+      console.log('Success response:', data);
       if (!data.imageUrl) throw new Error('No image URL returned');
       
       // 3. Update session context
@@ -55,6 +67,9 @@ export default function useChangeProfileImage() {
       Alert.alert('Success', 'Profile image updated!');
     } catch (err: any) {
       console.error('Profile image upload error:', err);
+      console.error('Error type:', typeof err);
+      console.error('Error message:', err.message);
+      console.error('Error stack:', err.stack);
       Alert.alert('Error', err.message || 'Failed to update profile image.');
     }
   };

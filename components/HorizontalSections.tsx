@@ -125,8 +125,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'stretch',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
     height: 48,
   },
   fullTabButton: {

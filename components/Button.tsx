@@ -1,3 +1,5 @@
+import { Colors } from '@/constants/Colors';
+import { useColorScheme } from '@/hooks/useColorScheme';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { StyleSheet, Text, TextStyle, TouchableOpacity, ViewStyle } from 'react-native';
@@ -10,7 +12,6 @@ interface ButtonProps {
   type?: 'outline' | 'primary';
   disabled?: boolean;
   loading?: boolean;
-  gradientColors?: readonly [string, string, ...string[]];
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -21,8 +22,13 @@ const Button: React.FC<ButtonProps> = ({
   type = 'outline',
   disabled = false,
   loading = false,
-  gradientColors = ['#00CAFF', '#00FFDE'],
 }) => {
+  const colorScheme = useColorScheme();
+  const gradientColors: readonly [string, string] = [
+    Colors[colorScheme ?? 'light'].secondary,
+    Colors[colorScheme ?? 'light'].accent,
+  ];
+
   if (type === 'primary') {
     return (
       <TouchableOpacity
@@ -72,7 +78,7 @@ const styles = StyleSheet.create({
   outlineButton: {
     paddingVertical: 8,
     paddingHorizontal: 15,
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: '#205781',
     backgroundColor: 'transparent',
     justifyContent: 'center',

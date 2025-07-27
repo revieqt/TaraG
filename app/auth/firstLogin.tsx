@@ -1,13 +1,13 @@
+import Button from '@/components/Button';
 import HorizontalSections from '@/components/HorizontalSections';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import ToggleButton from '@/components/ToggleButton';
 import { auth, db } from '@/services/firestore/config';
-import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { doc, updateDoc } from 'firebase/firestore';
 import React, { useState } from 'react';
-import { Dimensions, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, Image, ScrollView, StyleSheet, View } from 'react-native';
 
 const { width } = Dimensions.get('window');
 
@@ -121,26 +121,13 @@ export default function FirstLoginScreen() {
           ))}
         </View>
       </ScrollView>
-      <TouchableOpacity
-        style={[styles.finishButton, selectedInterests.length < 3 && styles.disabledButton, { marginTop: 30 }]}
+      <Button
+        title="Get Started"
         onPress={handleFinish}
+        type="primary"
         disabled={selectedInterests.length < 3}
-        activeOpacity={0.8}
-      >
-        <LinearGradient
-          colors={selectedInterests.length >= 3 ? ['#00FFDE', '#0065F8'] : ['#ccc', '#ccc']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={styles.gradientButton}
-        >
-          <Text style={[
-            styles.buttonText,
-            selectedInterests.length < 3 && styles.disabledText
-          ]}>
-            Get Started
-          </Text>
-        </LinearGradient>
-      </TouchableOpacity>
+        buttonStyle={{ marginTop: 30 }}
+      />
     </View>
   ];
 

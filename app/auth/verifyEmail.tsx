@@ -51,7 +51,7 @@ export default function VerifyEmailScreen() {
       await reload(user);
       if (user.emailVerified) {
         Alert.alert('Success', 'Your email has been verified.');
-        router.replace('/(tabs)/home'); // Change to your desired path
+        router.replace('/auth/firstLogin'); // Change to your desired path
       } else {
         Alert.alert('Not Verified', 'Your email is still not verified.');
       }
@@ -101,7 +101,6 @@ export default function VerifyEmailScreen() {
           }
           onPress={handleSendVerification}
           type="primary"
-          gradientColors={['#00FFDE', '#0065F8']}
           buttonStyle={{ width: '100%', marginTop: 16 }}
           disabled={sending || cooldown > 0}
         />

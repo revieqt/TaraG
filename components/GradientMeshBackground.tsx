@@ -1,6 +1,8 @@
+import { Colors } from '@/constants/Colors';
+import { useColorScheme } from '@/hooks/useColorScheme';
+import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 
 const { width, height } = Dimensions.get('window');
 
@@ -10,6 +12,12 @@ type GradientMeshBackgroundProps = {
 };
 
 const GradientMeshBackground: React.FC<GradientMeshBackgroundProps> = ({ gradientBackground = false, style }) => {
+  const colorScheme = useColorScheme();
+  const gradientColors: readonly [string, string] = [
+    Colors[colorScheme ?? 'light'].secondary,
+    Colors[colorScheme ?? 'light'].accent,
+  ];
+  
   // Use the height from style if provided, else fallback to window height
   const containerHeight = (style && style.height) || height;
 
@@ -18,7 +26,7 @@ const GradientMeshBackground: React.FC<GradientMeshBackgroundProps> = ({ gradien
       {/* Always render the gradient as the back layer */}
       {gradientBackground && (
         <LinearGradient
-          colors={['#00eaff', '#03A6A1']}
+          colors={gradientColors}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={[StyleSheet.absoluteFill, { height: containerHeight, width: '100%', zIndex: -10 }]}

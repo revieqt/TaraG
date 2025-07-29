@@ -330,7 +330,6 @@ export default function CreateItineraryScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 18,
     paddingBottom: 40,
   },
   rowBetween: {

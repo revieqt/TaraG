@@ -30,8 +30,8 @@ export default function HomeScreen() {
     <ThemedView style={{ flex: 1 }}>
       <ParallaxHeader
        header={
-          <View style={styles.headerContainer}>
-          <TaraMap mapStyle={styles.mapBackground} />
+          <View style={{flex: 1}}>
+          <TaraMap/>
           <LinearGradient
             colors={['transparent', backgroundColor]}
             start={{ x: 0.5, y: 0 }}
@@ -67,28 +67,28 @@ export default function HomeScreen() {
           <View style={styles.menu}>
             <TouchableOpacity style={styles.menuOptions} onPress={() => router.push('/home/routes')}>
               <ThemedView roundness={20} color='secondary' style={styles.menuButton}>
-                <ThemedIcons library='MaterialIcons' name='route' size={25} color='#fff'/>
+                <ThemedIcons library='MaterialIcons' name='route' size={27} color='#fff'/>
               </ThemedView>
               <ThemedText>Routes</ThemedText>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.menuOptions} onPress={() => router.push('/home/itineraries/itineraries')}>
               <ThemedView roundness={20} color='secondary' style={styles.menuButton}>
-              <ThemedIcons library='MaterialIcons' name='event-note' size={25} color='#fff'/>
+              <ThemedIcons library='MaterialIcons' name='event-note' size={27} color='#fff'/>
               </ThemedView>
               <ThemedText>Itineraries</ThemedText>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.menuOptions} onPress={() => router.push('/home/safety')}>
               <ThemedView roundness={20} color='secondary' style={styles.menuButton}>
-              <ThemedIcons library='MaterialDesignIcons' name='car-brake-alert' size={25} color='#fff'/>
+              <ThemedIcons library='MaterialDesignIcons' name='car-brake-alert' size={27} color='#fff'/>
               </ThemedView>
               <ThemedText>Safety</ThemedText>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.menuOptions} onPress={() => router.push('/home/aiChat')}>
               <ThemedView roundness={20} color='secondary' style={styles.menuButton}>
-                <ThemedIcons library='MaterialDesignIcons' name='robot-happy-outline' size={25} color='#fff'/>
+                <ThemedIcons library='MaterialDesignIcons' name='robot-happy-outline' size={27} color='#fff'/>
               </ThemedView>
               <ThemedText>TaraAI</ThemedText>
             </TouchableOpacity>
@@ -125,14 +125,6 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  headerContainer: {
-    flex: 1,
-    position: 'relative',
-  },
-  mapBackground: {
-    ...StyleSheet.absoluteFillObject,
-    zIndex: 1,
-  },
   taraImage: {
     position: 'absolute',
     bottom: -80,
@@ -193,7 +185,7 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   menuButton:{
-    width: 55,
+    width: 60,
     aspectRatio: 1,
     justifyContent: 'center',
     alignItems: 'center',

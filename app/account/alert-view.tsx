@@ -6,7 +6,7 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Image, StyleSheet, View } from 'react-native';
 
-export default function MapScreen() {
+export default function AlertView() {
   let fadeColor = 'red';
   let title = 'Be Alert';
   let subtitle = 'You might be in a typhoon\'s path';

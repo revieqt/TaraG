@@ -19,6 +19,7 @@ export type User = {
   gender: string;
   contactNumber: string;
   profileImage: string;
+  bio?: string;
   status: string;
   type: string;
   createdOn: Date;

@@ -1,6 +1,7 @@
 import { useSession } from '@/context/SessionContext';
 import * as ImagePicker from 'expo-image-picker';
 import { Alert, Platform } from 'react-native';
+import { BACKEND_URL } from '@/constants/Config';
 
 export default function useChangeProfileImage() {
   const { session, updateSession } = useSession();
@@ -26,23 +27,25 @@ export default function useChangeProfileImage() {
     let fileName = asset.fileName || 'profile.jpg';
     let fileType = asset.type || 'image/jpeg';
     
-
     formData.append('image', {
       uri,
       type: fileType,
       name: fileName,
     } as any);
     
+    // Add userID to form data as expected by backend
+    formData.append('userID', userId);
+    
     try {
       // Test basic connectivity first
       console.log('Testing connectivity to backend...');
-      const testResponse = await fetch('http://10.0.2.2:5000/health');
+      const testResponse = await fetch(`${BACKEND_URL}/health`);
       console.log('Health check response:', testResponse.status, testResponse.statusText);
       
-      console.log('Starting upload to:', `http://10.0.2.2:5000/api/users/upload-profile-image?userId=${userId}`);
+      console.log('Starting upload to:', `${BACKEND_URL}/api/user/update-profile-image`);
       console.log('FormData content:', formData);
       
-      const response = await fetch(`http://10.0.2.2:5000/api/users/upload-profile-image?userId=${userId}`, {
+      const response = await fetch(`${BACKEND_URL}/api/user/update-profile-image`, {
         method: 'POST',
         body: formData,
         headers: {

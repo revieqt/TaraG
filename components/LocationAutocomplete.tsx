@@ -4,8 +4,6 @@ import { ThemedText } from '@/components/ThemedText';
 import React, { useState } from 'react';
 import { ActivityIndicator, StyleSheet, TouchableOpacity, View } from 'react-native';
 
-const GOOGLE_API_KEY = 'AIzaSyDI_dL8xl7gnjcPps-CXgDJM9DtF3oZPVI';
-
 export interface LocationItem {
   locationName: string;
   latitude: number | null;
@@ -25,9 +23,8 @@ const LocationAutocomplete: React.FC<LocationAutocompleteProps> = ({ value, onSe
   const [loading, setLoading] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
 
-  const fetchSuggestions = async (text: string) => {
-    setInput(text);
-    if (!text) {
+  const fetchSuggestions = async () => {
+    if (!input.trim()) {
       setSuggestions([]);
       setShowDropdown(false);
       return;
@@ -35,12 +32,10 @@ const LocationAutocomplete: React.FC<LocationAutocompleteProps> = ({ value, onSe
     setLoading(true);
     try {
       const res = await fetch(
-        `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(
-          text
-        )}&key=${GOOGLE_API_KEY}`
+        `https://photon.komoot.io/api/?q=${encodeURIComponent(input.trim())}&limit=10`
       );
       const data = await res.json();
-      setSuggestions(data.predictions || []);
+      setSuggestions(data.features || []);
       setShowDropdown(true);
     } catch (e) {
       setSuggestions([]);
@@ -49,48 +44,71 @@ const LocationAutocomplete: React.FC<LocationAutocompleteProps> = ({ value, onSe
     }
   };
 
+  const handleInputChange = (text: string) => {
+    setInput(text);
+    if (!text) {
+      setSuggestions([]);
+      setShowDropdown(false);
+    }
+  };
+
   const handleSelect = async (item: any) => {
-    setInput(item.description);
+    const locationName = item.properties?.display_name || item.properties?.name || 'Unknown location';
+    setInput(locationName);
     setShowDropdown(false);
-    // Fetch place details for lat/lng
-    const detailsRes = await fetch(
-      `https://maps.googleapis.com/maps/api/place/details/json?place_id=${item.place_id}&fields=geometry&key=${GOOGLE_API_KEY}`
-    );
-    const details = await detailsRes.json();
-    const loc = details.result?.geometry?.location;
+    
+    // Extract coordinates from the Photon API response
+    const coordinates = item.geometry?.coordinates;
+    const longitude = coordinates?.[0] || null;
+    const latitude = coordinates?.[1] || null;
+    
     onSelect({
-      locationName: item.description,
-      latitude: loc?.lat || null,
-      longitude: loc?.lng || null,
+      locationName: locationName,
+      latitude: latitude,
+      longitude: longitude,
       note: '',
     });
   };
 
   return (
     <View style={{ zIndex: 10 }}>
-      <TextField
-        placeholder={placeholder}
-        value={input}
-        onChangeText={fetchSuggestions}
-        onFocus={() => setShowDropdown(!!input)}
-        onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
-      />
+      <View style={styles.inputContainer}>
+        <TextField
+          placeholder={placeholder}
+          value={input}
+          onChangeText={handleInputChange}
+          onFocus={() => setShowDropdown(!!input && suggestions.length > 0)}
+          onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+          style={styles.textField}
+        />
+        <TouchableOpacity
+          onPress={fetchSuggestions}
+          style={styles.searchButton}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator size="small"/>
+          ) : (
+            <ThemedIcons library="MaterialIcons" name="search" size={20}/>
+          )}
+        </TouchableOpacity>
+      </View>
       {showDropdown && (
         <View style={styles.dropdown}>
-          {loading ? (
-            <ActivityIndicator size="small" />
-          ) : suggestions.length === 0 ? (
+          {suggestions.length === 0 ? (
             <ThemedText style={styles.dropdownItem}>No results</ThemedText>
           ) : (
-            suggestions.map((item) => (
+            suggestions.map((item, index) => (
               <TouchableOpacity
-                key={item.place_id}
+                key={`${item.properties?.osm_id || index}`}
                 onPress={() => handleSelect(item)}
                 style={styles.dropdownItemBtn}
               >
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <ThemedIcons library="MaterialIcons" name="place" size={18} color="#008000" />
-                  <ThemedText style={[styles.dropdownItem, { marginLeft: 6 }]}>{item.description}</ThemedText>
+                  <ThemedText style={[styles.dropdownItem, { marginLeft: 6 }]}>
+                    {item.properties?.display_name || item.properties?.name || 'Unknown location'}
+                  </ThemedText>
                 </View>
               </TouchableOpacity>
             ))
@@ -102,6 +120,21 @@ const LocationAutocomplete: React.FC<LocationAutocompleteProps> = ({ value, onSe
 };
 
 const styles = StyleSheet.create({
+  inputContainer: {
+    position: 'relative',
+  },
+  textField: {
+    paddingRight: 50, // Make space for the search button
+  },
+  searchButton: {
+    position: 'absolute',
+    right: 8,
+    top: 8,
+    width: 32,
+    height: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   dropdown: {
     position: 'absolute',
     top: 50,

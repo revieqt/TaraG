@@ -2,7 +2,7 @@ import TextField from '@/components/TextField';
 import ThemedIcons from '@/components/ThemedIcons';
 import { ThemedText } from '@/components/ThemedText';
 import React, { useState } from 'react';
-import { ActivityIndicator, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 export interface LocationItem {
   locationName: string;
@@ -15,9 +15,10 @@ interface LocationAutocompleteProps {
   value: string;
   onSelect: (loc: LocationItem) => void;
   placeholder: string;
+  style?: any;
 }
 
-const LocationAutocomplete: React.FC<LocationAutocompleteProps> = ({ value, onSelect, placeholder }) => {
+const LocationAutocomplete: React.FC<LocationAutocompleteProps> = ({ value, onSelect, placeholder, style }) => {
   const [input, setInput] = useState<string>(value || '');
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -71,7 +72,7 @@ const LocationAutocomplete: React.FC<LocationAutocompleteProps> = ({ value, onSe
   };
 
   return (
-    <View style={{ zIndex: 10 }}>
+    <View style={[{ zIndex: 10 }, style]}>
       <View style={styles.inputContainer}>
         <TextField
           placeholder={placeholder}
@@ -95,24 +96,29 @@ const LocationAutocomplete: React.FC<LocationAutocompleteProps> = ({ value, onSe
       </View>
       {showDropdown && (
         <View style={styles.dropdown}>
-          {suggestions.length === 0 ? (
-            <ThemedText style={styles.dropdownItem}>No results</ThemedText>
-          ) : (
-            suggestions.map((item, index) => (
-              <TouchableOpacity
-                key={`${item.properties?.osm_id || index}`}
-                onPress={() => handleSelect(item)}
-                style={styles.dropdownItemBtn}
-              >
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <ThemedIcons library="MaterialIcons" name="place" size={18} color="#008000" />
-                  <ThemedText style={[styles.dropdownItem, { marginLeft: 6 }]}>
-                    {item.properties?.display_name || item.properties?.name || 'Unknown location'}
-                  </ThemedText>
-                </View>
-              </TouchableOpacity>
-            ))
-          )}
+          <ScrollView 
+            style={styles.scrollView}
+            showsVerticalScrollIndicator={false}
+            nestedScrollEnabled={true}
+          >
+            {suggestions.length === 0 ? (
+              <ThemedText style={styles.dropdownItem}>No results</ThemedText>
+            ) : (
+              suggestions.map((item, index) => (
+                <TouchableOpacity
+                  key={`${item.properties?.osm_id || item.properties?.place_id || index}-${index}`}
+                  onPress={() => handleSelect(item)}
+                  style={styles.dropdownItemBtn}
+                >
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <ThemedText style={[styles.dropdownItem, { marginLeft: 6 }]}>
+                      {item.properties?.display_name || item.properties?.name || 'Unknown location'}
+                    </ThemedText>
+                  </View>
+                </TouchableOpacity>
+              ))
+            )}
+          </ScrollView>
         </View>
       )}
     </View>
@@ -146,7 +152,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 4,
-    zIndex: 100,
+    zIndex: 100000,
+    maxHeight: 180,
+  },
+  scrollView: {
+    flex: 1,
     maxHeight: 180,
   },
   dropdownItemBtn: {

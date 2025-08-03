@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://tarag-backend.onrender.com/api/notifications';
+const API_BASE_URL = 'http://192.168.56.1:5000/api/notifications';
 
 export type Notification = {
   id: string;

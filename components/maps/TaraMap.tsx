@@ -1,205 +1,9 @@
 import { useSession } from '@/context/SessionContext';
-import { useColorScheme } from '@/hooks/useColorScheme';
 import { useLocation } from '@/hooks/useLocation';
 import React, { ReactNode, useEffect, useRef } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
-import MapView, { Camera, PROVIDER_GOOGLE, Region } from 'react-native-maps';
+import MapView, { Camera, PROVIDER_DEFAULT, Region } from 'react-native-maps';
 import TaraMarker from './TaraMarker';
-
-const mapLayoutLight = [
-  {
-      "featureType": "all",
-      "elementType": "labels.text",
-      "stylers": [
-          {
-              "color": "#878787"
-          }
-      ]
-  },
-  {
-      "featureType": "all",
-      "elementType": "labels.text.stroke",
-      "stylers": [
-          {
-              "visibility": "off"
-          }
-      ]
-  },
-  {
-      "featureType": "landscape",
-      "elementType": "all",
-      "stylers": [
-          {
-              "color": "#f9f5ed"
-          }
-      ]
-  },
-  {
-      "featureType": "road.highway",
-      "elementType": "all",
-      "stylers": [
-          {
-              "color": "#f5f5f5"
-          }
-      ]
-  },
-  {
-      "featureType": "road.highway",
-      "elementType": "geometry.stroke",
-      "stylers": [
-          {
-              "color": "#c9c9c9"
-          }
-      ]
-  },
-  {
-      "featureType": "water",
-      "elementType": "all",
-      "stylers": [
-          {
-              "color": "#aee0f4"
-          }
-      ]
-  }
-];
-
-const mapLayoutDark = [
-  {
-      "featureType": "all",
-      "elementType": "labels.text.fill",
-      "stylers": [
-          {
-              "color": "#ffffff"
-          }
-      ]
-  },
-  {
-      "featureType": "all",
-      "elementType": "labels.text.stroke",
-      "stylers": [
-          {
-              "color": "#000000"
-          },
-          {
-              "lightness": 13
-          }
-      ]
-  },
-  {
-      "featureType": "administrative",
-      "elementType": "geometry.fill",
-      "stylers": [
-          {
-              "color": "#000000"
-          }
-      ]
-  },
-  {
-      "featureType": "administrative",
-      "elementType": "geometry.stroke",
-      "stylers": [
-          {
-              "color": "#144b53"
-          },
-          {
-              "lightness": 14
-          },
-          {
-              "weight": 1.4
-          }
-      ]
-  },
-  {
-      "featureType": "landscape",
-      "elementType": "all",
-      "stylers": [
-          {
-              "color": "#08304b"
-          }
-      ]
-  },
-  {
-      "featureType": "poi",
-      "elementType": "geometry",
-      "stylers": [
-          {
-              "color": "#0c4152"
-          },
-          {
-              "lightness": 5
-          }
-      ]
-  },
-  {
-      "featureType": "road.highway",
-      "elementType": "geometry.fill",
-      "stylers": [
-          {
-              "color": "#000000"
-          }
-      ]
-  },
-  {
-      "featureType": "road.highway",
-      "elementType": "geometry.stroke",
-      "stylers": [
-          {
-              "color": "#0b434f"
-          },
-          {
-              "lightness": 25
-          }
-      ]
-  },
-  {
-      "featureType": "road.arterial",
-      "elementType": "geometry.fill",
-      "stylers": [
-          {
-              "color": "#000000"
-          }
-      ]
-  },
-  {
-      "featureType": "road.arterial",
-      "elementType": "geometry.stroke",
-      "stylers": [
-          {
-              "color": "#0b3d51"
-          },
-          {
-              "lightness": 16
-          }
-      ]
-  },
-  {
-      "featureType": "road.local",
-      "elementType": "geometry",
-      "stylers": [
-          {
-              "color": "#000000"
-          }
-      ]
-  },
-  {
-      "featureType": "transit",
-      "elementType": "all",
-      "stylers": [
-          {
-              "color": "#146474"
-          }
-      ]
-  },
-  {
-      "featureType": "water",
-      "elementType": "all",
-      "stylers": [
-          {
-              "color": "#021019"
-          }
-      ]
-  }
-];
 
 type CameraProps = {
   center: { latitude: number; longitude: number };
@@ -230,7 +34,6 @@ const TaraMap: React.FC<TaraMapProps> = ({
   cameraProps,
 }) => {
   const { session } = useSession();
-  const colorScheme = useColorScheme();
   const { latitude, longitude } = useLocation();
   const mapRef = useRef<MapView>(null);
 
@@ -269,8 +72,6 @@ const TaraMap: React.FC<TaraMapProps> = ({
     }
   }, [cameraProps?.center?.latitude, cameraProps?.center?.longitude, cameraProps?.pitch, cameraProps?.heading, cameraProps?.zoom, cameraProps?.altitude, cameraProps?.animationDuration]);
 
-  const customMapStyle = colorScheme === 'dark' ? mapLayoutDark : mapLayoutLight;
-
   // Use userCoordinates as region if region prop is not provided
   const initialRegion: Region = region ?? {
     latitude: latitude || 14.5995,
@@ -285,9 +86,8 @@ const TaraMap: React.FC<TaraMapProps> = ({
         mapType='standard'
         ref={mapRef}
         style={[styles.map, mapStyle]}
-        provider={PROVIDER_GOOGLE}
+        provider={PROVIDER_DEFAULT}
         initialRegion={initialRegion}
-        customMapStyle={customMapStyle}
       >
         {showMarker && session && latitude !== 0 && longitude !== 0 && (
           <TaraMarker

@@ -65,8 +65,8 @@ function AppContent() {
         <Stack.Screen name="account/viewProfile" />
         <Stack.Screen name="account/notifications" />
 
-        <Stack.Screen name="home/routes" />
-        <Stack.Screen name="home/routes-create" />
+        <Stack.Screen name="home/routes/routes" />
+        <Stack.Screen name="home/routes/routes-create" />
         <Stack.Screen name="home/itineraries/itineraries" />
         <Stack.Screen name="home/itineraries/itineraries-create" />
         <Stack.Screen name="home/itineraries/[id]" />

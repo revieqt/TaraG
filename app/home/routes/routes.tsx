@@ -1,4 +1,4 @@
-import FabMenu from '@/components/FabMenu';
+import CubeButton from '@/components/CubeButton'; 
 import Header from '@/components/Header';
 import HorizontalSections from '@/components/HorizontalSections';
 import OptionsPopup from '@/components/OptionsPopup';
@@ -34,12 +34,13 @@ export default function RoutesScreen() {
           </ThemedView>
         </View>]}
       />
-      
-      <FabMenu
-        mainLabel="Create Itinerary"
-        mainIcon={<ThemedIcons library='MaterialIcons' name="add" size={32} color="#fff" />}
-        mainOnPress={() => router.push('/home/itineraries/itineraries-create')}
-        actions={[]}
+
+      <CubeButton
+        size={60}
+        iconName="add"
+        iconColor="#fff"
+        onPress={() => router.push('/home/routes/routes-create')}
+        style={{position: 'absolute', bottom: 20, right: 20}}
       />
     </ThemedView>
   );

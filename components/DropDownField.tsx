@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingLeft: 16,
+    paddingLeft: 3,
     paddingRight: 16,
     borderRadius: 15,
     marginBottom: 15,
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
   picker: {
     flex: 1,
     fontSize: 16,
-    height: 48,
+    height: 50,
     backgroundColor: 'transparent',
     borderColor: 'transparent',
   },

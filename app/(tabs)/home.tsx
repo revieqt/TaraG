@@ -10,6 +10,7 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import CubeButton from '@/components/CubeButton';
 
 export default function HomeScreen() {
   const { session } = useSession();
@@ -65,33 +66,51 @@ export default function HomeScreen() {
       >
         <View style={{ paddingHorizontal: 20 }}>
           <View style={styles.menu}>
-            <TouchableOpacity style={styles.menuOptions} onPress={() => router.push('/home/routes')}>
-              <ThemedView roundness={20} color='secondary' style={styles.menuButton}>
-                <ThemedIcons library='MaterialIcons' name='route' size={27} color='#fff'/>
-              </ThemedView>
+            <View style={styles.menuOptions}>
+              <CubeButton
+                size={60}
+                iconName="route"
+                iconSize={27}
+                iconColor="#fff"
+                onPress={() => router.push('/home/routes/routes')}
+              />
               <ThemedText>Routes</ThemedText>
-            </TouchableOpacity>
+            </View>
 
-            <TouchableOpacity style={styles.menuOptions} onPress={() => router.push('/home/itineraries/itineraries')}>
-              <ThemedView roundness={20} color='secondary' style={styles.menuButton}>
-              <ThemedIcons library='MaterialIcons' name='event-note' size={27} color='#fff'/>
-              </ThemedView>
+            <View style={styles.menuOptions}>
+              <CubeButton
+                size={60}
+                iconName="event-note"
+                iconSize={27}
+                iconColor="#fff"
+                onPress={() => router.push('/home/itineraries/itineraries')}
+              />
               <ThemedText>Itineraries</ThemedText>
-            </TouchableOpacity>
+            </View>
 
-            <TouchableOpacity style={styles.menuOptions} onPress={() => router.push('/home/safety')}>
-              <ThemedView roundness={20} color='secondary' style={styles.menuButton}>
-              <ThemedIcons library='MaterialDesignIcons' name='car-brake-alert' size={27} color='#fff'/>
-              </ThemedView>
+            <View style={styles.menuOptions}>
+              <CubeButton
+                size={60}
+                iconLibrary="MaterialDesignIcons"
+                iconName="car-brake-alert"
+                iconSize={27}
+                iconColor="#fff"
+                onPress={() => router.push('/home/safety')}
+              />
               <ThemedText>Safety</ThemedText>
-            </TouchableOpacity>
+            </View>
 
-            <TouchableOpacity style={styles.menuOptions} onPress={() => router.push('/home/aiChat')}>
-              <ThemedView roundness={20} color='secondary' style={styles.menuButton}>
-                <ThemedIcons library='MaterialDesignIcons' name='robot-happy-outline' size={27} color='#fff'/>
-              </ThemedView>
+            <View style={styles.menuOptions}>
+              <CubeButton
+                size={60}
+                iconLibrary="MaterialDesignIcons"
+                iconName="robot-happy-outline"
+                iconSize={27}
+                iconColor="#fff"
+                onPress={() => router.push('/home/aiChat')}
+              />
               <ThemedText>TaraAI</ThemedText>
-            </TouchableOpacity>
+            </View>
           </View>
 
           <ThemedView shadow color='primary' style={styles.locationContent}>
@@ -183,13 +202,6 @@ const styles = StyleSheet.create({
     width: '20%',
     justifyContent: 'center',
     alignItems: 'center'
-  },
-  menuButton:{
-    width: 60,
-    aspectRatio: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 5,
   },
   locationContent: {
     width: '100%',

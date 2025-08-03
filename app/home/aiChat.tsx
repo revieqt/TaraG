@@ -110,7 +110,7 @@ export default function AIChatScreen() {
                       paddingHorizontal: 14,
                       alignSelf: 'flex-start'
                     }}
-                    onPress={() => router.push('/home/routes')}
+                    onPress={() => router.push('/home/routes/routes')}
                   >
                     <ThemedText style={{ color: '#fff', fontWeight: 'bold' }}>Go to Routes</ThemedText>
                   </TouchableOpacity>

@@ -1,4 +1,4 @@
-import FabMenu from '@/components/FabMenu';
+
 import Header from '@/components/Header';
 import HorizontalSections from '@/components/HorizontalSections';
 import { ThemedIcons } from '@/components/ThemedIcons';
@@ -11,6 +11,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { deleteItinerary } from '@/services/firestore/itinerariesDbService';
 import OptionsPopup from '@/components/OptionsPopup';
 import LoadingAnimation from '@/components/LoadingAnimation';
+import CubeButton from '@/components/CubeButton';
 
 export default function ItinerariesScreen() {
   const getItineraries = useGetItinerariesByUser();
@@ -111,11 +112,12 @@ export default function ItinerariesScreen() {
         </View>]}
       />
 
-      <FabMenu
-        mainLabel="Create Itinerary"
-        mainIcon={<ThemedIcons library='MaterialIcons' name="add" size={32} color="#fff" />}
-        mainOnPress={() => router.push('/home/itineraries/itineraries-create')}
-        actions={[]}
+      <CubeButton
+        size={60}
+        iconName="add"
+        iconColor="#fff"
+        onPress={() => router.push('/home/itineraries/itineraries-create')}
+        style={{position: 'absolute', bottom: 20, right: 20}}
       />
     </ThemedView>
   );

@@ -72,6 +72,7 @@ export default function RegisterScreen() {
           gender,
           contactNumber: areaCode + contactNumber,
           username,
+          isProUser: false,
           status: 'Active',
           profileImage: '@/assets/images/defaultUser.jpg', // You can set a default URL if you want
           type: 'user',
@@ -193,7 +194,6 @@ export default function RegisterScreen() {
             title={loading ? 'Registering...' : 'Register'}
             onPress={handleRegister}
             type="primary"
-            gradientColors={['#00FFDE', '#0065F8']}
             buttonStyle={{ width: '100%', marginTop: 16 }}
             loading={loading}
           />

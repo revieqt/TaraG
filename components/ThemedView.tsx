@@ -6,7 +6,6 @@ export type ThemedViewProps = ViewProps & {
   darkColor?: string;
   color?: 'primary' | 'secondary' | 'accent';
   shadow?: boolean;
-  border?: 'thin-gray' | 'thin-black' | 'thin-white';
   opacity?: number;
   roundness?: number;
 };
@@ -17,7 +16,6 @@ export function ThemedView({
   darkColor,
   color,
   shadow,
-  border,
   opacity,
   roundness,
   ...otherProps
@@ -45,18 +43,6 @@ export function ThemedView({
       elevation: 10,
     };
   }
-
-  // Border style
-  let borderStyle = {};
-  if (border === 'thin-gray') {
-    borderStyle = { borderWidth: 1, borderColor: '#ccc' };
-  } else if (border === 'thin-black') {
-    borderStyle = { borderWidth: 1, borderColor: 'black' };
-  } else if (border === 'thin-white') {
-    borderStyle = { borderWidth: 1, borderColor: 'white' };
-  }
-
-  // Roundness style
   const roundnessStyle = typeof roundness === 'number' ? { borderRadius: roundness } : {};
 
   const viewOpacity = typeof opacity === 'number' ? opacity : 1;
@@ -69,7 +55,6 @@ export function ThemedView({
           opacity: viewOpacity,
         },
         shadowStyle,
-        borderStyle,
         roundnessStyle,
         style,
       ]}

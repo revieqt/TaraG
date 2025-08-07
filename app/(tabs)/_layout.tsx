@@ -39,14 +39,14 @@ export default function TabLayout() {
             paddingBottom: 12,
             paddingTop: 5,
             height: 60,
-            backgroundColor: Colors[colorScheme ?? 'light'].background,
+            backgroundColor: Colors[colorScheme ?? 'light'].primary,
           },
           default: {
             paddingHorizontal: 10,
             paddingBottom: 12,
             paddingTop: 5,
             height: 60,
-            backgroundColor: Colors[colorScheme ?? 'light'].background,
+            backgroundColor: Colors[colorScheme ?? 'light'].primary,
           },
         }),
       }}

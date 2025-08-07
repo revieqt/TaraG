@@ -1,6 +1,5 @@
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { useEffect, useRef } from 'react';
-import { Animated, type ViewProps } from 'react-native';
+import { type ViewProps, View } from 'react-native';
 
 export type ThemedViewProps = ViewProps & {
   lightColor?: string;
@@ -35,25 +34,6 @@ export function ThemedView({
 
   const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, colorKey);
 
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const translateY = useRef(new Animated.Value(40)).current; // Start further below for a more pronounced "peek"
-
-  useEffect(() => {
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 400,
-        useNativeDriver: true,
-      }),
-      Animated.spring(translateY, {
-        toValue: 0,
-        useNativeDriver: true,
-        speed: 12,
-        bounciness: 8,
-      }),
-    ]).start();
-  }, [fadeAnim, translateY]);
-
   // Soft shadow style
   let shadowStyle = {};
   if (shadow) {
@@ -79,15 +59,14 @@ export function ThemedView({
   // Roundness style
   const roundnessStyle = typeof roundness === 'number' ? { borderRadius: roundness } : {};
 
-  const viewOpacity = typeof opacity === 'number' ? opacity : fadeAnim;
+  const viewOpacity = typeof opacity === 'number' ? opacity : 1;
 
   return (
-    <Animated.View
+    <View
       style={[
         {
           backgroundColor,
           opacity: viewOpacity,
-          transform: [{ translateY }],
         },
         shadowStyle,
         borderStyle,

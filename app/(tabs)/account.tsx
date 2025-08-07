@@ -26,7 +26,7 @@ export default function AccountScreen() {
   };
 
   return (
-    <ThemedView>
+    <ThemedView style={{ flex: 1 }}>
       <ScrollView
         style={{ width: '100%' }}
         contentContainerStyle={styles.container}
@@ -53,60 +53,14 @@ export default function AccountScreen() {
           </TouchableOpacity>
         </ThemedView>
         
-        <ThemedView style={styles.options}>
+        <View style={styles.options}>
           <ThemedText style={styles.optionsTitle} type='defaultSemiBold'>Privacy and Security</ThemedText>
-          <TouchableOpacity>
-            <ThemedView style={styles.optionsChild} >
-              <ThemedIcons library='MaterialIcons' name='notifications' size={15}/><ThemedText>Push Notifications</ThemedText>
-            </ThemedView>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => router.push('/auth/changePassword')}>
-            <ThemedView style={styles.optionsChild} >
+            <TouchableOpacity onPress={() => router.push('/auth/changePassword')}>
+            <View style={styles.optionsChild} >
               <ThemedIcons library='MaterialIcons' name='vpn-key' size={15}/><ThemedText>Change Password</ThemedText>
-            </ThemedView>
-          </TouchableOpacity>
-
-          {/* Tour Guide Settings */}
-          <ThemedText style={styles.optionsTitle} type='defaultSemiBold'>Tour Guide Settings</ThemedText>
-          {user?.type === 'tourGuide' ? 
-            <View>
-              <TouchableOpacity>
-                <ThemedView style={styles.optionsChild} >
-                  <ThemedIcons library='MaterialIcons' name='tour' size={15}/><ThemedText >View Tour Guide Information</ThemedText>
-                </ThemedView>
-              </TouchableOpacity>
-              <TouchableOpacity >
-                <ThemedView style={styles.optionsChild} >
-                  <ThemedIcons library='MaterialIcons' name='tour' size={15}/><ThemedText >Manage Tours</ThemedText>
-                </ThemedView>
-              </TouchableOpacity>
             </View>
-            :
-            <TouchableOpacity>
-              <ThemedView style={styles.optionsChild} >
-                <ThemedIcons library='MaterialIcons' name='tour' size={15}/><ThemedText >Apply as Tour Guide</ThemedText>
-              </ThemedView>
-            </TouchableOpacity>
-          }
-
-          {/* Help and Support */}
-          <ThemedText style={styles.optionsTitle} type='defaultSemiBold'>Help and Support</ThemedText>
-          <TouchableOpacity>
-            <ThemedView style={styles.optionsChild}>
-              <ThemedIcons library='FontAwesome' name='file-text' size={15}/><ThemedText >App Manual</ThemedText>
-            </ThemedView>
           </TouchableOpacity>
-          <TouchableOpacity>
-            <ThemedView style={styles.optionsChild}>
-              <ThemedIcons library='FontAwesome' name='paste' size={15}/><ThemedText >Terms and Conditions</ThemedText>
-            </ThemedView>
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <ThemedView style={styles.optionsChild}>
-              <ThemedIcons library='MaterialIcons' name='contact-support' size={15}/><ThemedText >Contact Support</ThemedText>
-            </ThemedView>
-          </TouchableOpacity>
-        </ThemedView>
+        </View>
 
         {/* Logout Button */}
         <Button

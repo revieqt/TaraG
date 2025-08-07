@@ -73,7 +73,7 @@ export default function ItinerariesScreen() {
             <ThemedView><ThemedText>No itinerary found.</ThemedText></ThemedView>
           )}
           {!loading && !error && itineraries.map((itinerary) => (
-            <ThemedView key={itinerary.id} shadow roundness={12} style={{ padding: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <View key={itinerary.id} style={styles.itineraryRow}>
               <View style={{ flex: 1 }}>
                 <TouchableOpacity onPress={() => goToViewItinerary(itinerary.id)} activeOpacity={0.7}>
                   <ThemedText type='defaultSemiBold'>{itinerary.title}</ThemedText>
@@ -98,7 +98,7 @@ export default function ItinerariesScreen() {
               >
                 <ThemedIcons library="MaterialCommunityIcons" name="dots-vertical" size={24} color="#888" />
               </OptionsPopup>
-            </ThemedView>
+            </View>
           ))}
         </View>,
         <View key="history" style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -120,6 +120,12 @@ export default function ItinerariesScreen() {
 
 const styles = StyleSheet.create({
   itineraryRow:{
-    padding: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
   },
 });

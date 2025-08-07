@@ -1,5 +1,6 @@
-import { SessionProvider } from '@/context/SessionContext';
+import { SessionProvider, useSession } from '@/context/SessionContext';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { socketService } from '@/services/socketService';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -8,8 +9,6 @@ import { useEffect } from 'react';
 import 'react-native-get-random-values';
 import 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { socketService } from '@/services/socketService';
-import { useSession } from '@/context/SessionContext';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -23,7 +22,7 @@ function AppContent() {
   });
 
   // Get the themed background color
-  const backgroundColor = useThemeColor({}, 'background');
+  const backgroundColor = useThemeColor({}, 'primary');
 
   useEffect(() => {
     if (loaded) {
@@ -50,7 +49,6 @@ function AppContent() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor }} edges={['top', 'bottom']}>
-        
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" />
         

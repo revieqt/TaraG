@@ -1,5 +1,4 @@
 import Button from '@/components/Button';
-import GradientMeshBackground from '@/components/GradientMeshBackground';
 import PasswordField from '@/components/PasswordField';
 import TextField from '@/components/TextField';
 import { ThemedText } from '@/components/ThemedText';
@@ -64,7 +63,6 @@ export default function LoginScreen() {
 
   return (
     <ThemedView style={styles.background}>
-      <GradientMeshBackground />
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -102,7 +100,6 @@ export default function LoginScreen() {
             onPress={handleLogin}
             type="primary"
             loading={loading}
-            gradientColors={['#00FFDE', '#0065F8']}
             buttonStyle={{ width: '100%', marginTop: 16 }}
           />
 

@@ -26,7 +26,7 @@ export default function ExploreScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedView style={styles.header}>
+      <ThemedView style={styles.header} color='primary'>
         <ThemedText type='subtitle'>Explore</ThemedText>
         <View style={{flexDirection: 'row', gap: 20, alignItems: 'center'}}>
           <TouchableOpacity onPress={() => setSearchModalVisible(true)}>

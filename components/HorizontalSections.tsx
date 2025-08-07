@@ -1,6 +1,7 @@
-import React, { useRef, useState } from 'react';
-import { Dimensions, ScrollView, StyleSheet, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, Dimensions, ScrollView, StyleSheet, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { ThemedText } from './ThemedText';
+import { ThemedView } from './ThemedView';
 
 interface HorizontalSectionsProps {
   labels: string[];
@@ -27,6 +28,26 @@ const HorizontalSections: React.FC<HorizontalSectionsProps> = ({
 }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
+  const opacityAnim = useRef(labels.map(() => new Animated.Value(0.3))).current;
+
+  useEffect(() => {
+    Animated.timing(opacityAnim[activeIndex], {
+      toValue: 1,
+      duration: 350,
+      useNativeDriver: true,
+    }).start();
+
+    // Reset previous sections to low opacity
+    opacityAnim.forEach((anim, idx) => {
+      if (idx !== activeIndex) {
+        Animated.timing(anim, {
+          toValue: 0.3,
+          duration: 0,
+          useNativeDriver: true,
+        }).start();
+      }
+    });
+  }, [activeIndex, opacityAnim]);
 
   const handleTabPress = (idx: number) => {
     setActiveIndex(idx);
@@ -40,9 +61,8 @@ const HorizontalSections: React.FC<HorizontalSectionsProps> = ({
     setActiveIndex(newIndex);
   };
 
-  // Tab Chooser: fullTab style (like Explore)
   const renderFullTab = () => (
-    <View style={[styles.fullTabRow, tabStyle]}> 
+    <ThemedView color='primary' style={[styles.fullTabRow, tabStyle]}> 
       {labels.map((label, idx) => (
         <TouchableOpacity
           key={label}
@@ -69,10 +89,9 @@ const HorizontalSections: React.FC<HorizontalSectionsProps> = ({
           ].filter(Boolean) as ViewStyle[]} />
         </TouchableOpacity>
       ))}
-    </View>
+    </ThemedView>
   );
 
-  // Dot identifier (like onboarding)
   const renderDotIdentifier = () => (
     <View style={styles.dotsContainer}>
       {labels.map((_, idx) => (
@@ -102,7 +121,9 @@ const HorizontalSections: React.FC<HorizontalSectionsProps> = ({
       >
         {sections.map((section, idx) => (
           <View key={idx} style={[styles.section, { width }]}> 
-            {section}
+            <Animated.View style={{ flex: 1, opacity: opacityAnim[idx] }}>
+              {section}
+            </Animated.View>
           </View>
         ))}
       </ScrollView>
@@ -122,10 +143,12 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   fullTabRow: {
-    flexDirection: 'row',
+    flexDirection: 'row',   
     justifyContent: 'space-between',
     alignItems: 'stretch',
     height: 48,
+    borderBottomColor: 'rgba(0, 0, 0, 0.1)',
+    borderBottomWidth: 1,
   },
   fullTabButton: {
     justifyContent: 'center',
@@ -181,4 +204,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HorizontalSections; 
+export default HorizontalSections;

@@ -1,15 +1,14 @@
-import { ThemedView } from '@/components/ThemedView';
 import CollapsibleHeader from '@/components/CollapsibleHeader';
-import React, { useState } from 'react';
-import { StyleSheet, View, TouchableOpacity, Image } from 'react-native';
-import BackButton from '@/components/custom/BackButton';
-import GradientMeshBackground from '@/components/GradientMeshBackground';
-import { useSession } from '@/context/SessionContext';
-import { useLocalSearchParams } from 'expo-router';
-import { ThemedText } from '@/components/ThemedText';
 import OptionsPopup from '@/components/OptionsPopup';
+import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from '@/components/ThemedView';
+import BackButton from '@/components/custom/BackButton';
 import ViewImageModal from '@/components/custom/ViewImage';
+import { useSession } from '@/context/SessionContext';
 import useChangeProfileImage from '@/hooks/useChangeProfileImage';
+import { useLocalSearchParams } from 'expo-router';
+import React, { useState } from 'react';
+import { Image, StyleSheet, View } from 'react-native';
 
 
 export default function ProfileScreen() {
@@ -60,7 +59,6 @@ export default function ProfileScreen() {
         onClose={() => setViewImageVisible(false)}
       />
       <CollapsibleHeader disableExpand defaultHeight={150}>
-        <GradientMeshBackground gradientBackground/>
       </CollapsibleHeader>
 
       <View style={{paddingTop: 45, alignItems: 'center'}}>

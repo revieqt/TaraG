@@ -107,7 +107,6 @@ export default function ForgotPasswordScreen() {
           }
           onPress={handleSendReset}
           type="primary"
-          gradientColors={['#00FFDE', '#0065F8']}
           buttonStyle={{ width: '100%', marginTop: 16 }}
           disabled={sending || cooldown > 0}
         />

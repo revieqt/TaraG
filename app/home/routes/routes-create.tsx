@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import TaraMap from '@/components/maps/TaraMap';
-import { BackButton } from '@/components/custom/BackButton';
-import { LinearGradient } from 'expo-linear-gradient';
-import { ThemedText } from '@/components/ThemedText';
 import LocationAutocomplete, { LocationItem } from '@/components/LocationAutocomplete';
+import TaraMap from '@/components/maps/TaraMap';
+import { ThemedText } from '@/components/ThemedText';
+import { LinearGradient } from 'expo-linear-gradient';
+import React, { useState } from 'react';
+import { StyleSheet, View } from 'react-native';
 
 export default function CreateRouteScreen() {
   const [selectedLocation, setSelectedLocation] = useState<LocationItem | null>(null);

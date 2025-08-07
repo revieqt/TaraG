@@ -1,17 +1,15 @@
 
+import CubeButton from '@/components/CubeButton';
 import Header from '@/components/Header';
 import HorizontalSections from '@/components/HorizontalSections';
+import OptionsPopup from '@/components/OptionsPopup';
 import { ThemedIcons } from '@/components/ThemedIcons';
+import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { deleteItinerary, useGetItinerariesByUser } from '@/services/firestore/itinerariesDbService';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Alert, TouchableOpacity } from 'react-native';
-import { useGetItinerariesByUser } from '@/services/firestore/itinerariesDbService';
-import { ThemedText } from '@/components/ThemedText';
-import { deleteItinerary } from '@/services/firestore/itinerariesDbService';
-import OptionsPopup from '@/components/OptionsPopup';
-import LoadingAnimation from '@/components/LoadingAnimation';
-import CubeButton from '@/components/CubeButton';
+import { ActivityIndicator, Alert, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 export default function ItinerariesScreen() {
   const getItineraries = useGetItinerariesByUser();
@@ -68,10 +66,7 @@ export default function ItinerariesScreen() {
         sections={[
         <View key="pending" style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'stretch', padding: 16 }}>
           {loading && 
-          <ThemedView style={styles.loading}>
-            <LoadingAnimation />
-          </ThemedView>
-          
+            <ActivityIndicator size="large" style={{marginTop: 20}}/>
           }
           {error && <ThemedView><ThemedIcons library="MaterialIcons" name="error" size={24} color="red" /></ThemedView>}
           {!loading && !error && itineraries.length === 0 && (
@@ -127,9 +122,4 @@ const styles = StyleSheet.create({
   itineraryRow:{
     padding: 12,
   },
-  loading:{
-    width: '100%',
-    height: 100,
-    borderRadius: 10,
-  }
 });

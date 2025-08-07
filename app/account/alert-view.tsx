@@ -1,5 +1,4 @@
 import { BackButton } from '@/components/custom/BackButton';
-import GradientMeshBackground from '@/components/GradientMeshBackground';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useThemeColor } from '@/hooks/useThemeColor';
@@ -16,7 +15,6 @@ export default function AlertView() {
     <ThemedView style={{flex: 1, padding: 20}}>
       <BackButton type='floating' />
       <View style={{position: 'absolute', top: 0, left: 0, right: 0, height: 200}}>
-        <GradientMeshBackground/>
         <LinearGradient
           colors={[fadeColor, 'transparent']}
           style={{flex: 1, opacity: 0.5}}

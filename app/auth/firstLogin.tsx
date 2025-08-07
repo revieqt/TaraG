@@ -7,9 +7,7 @@ import { auth, db } from '@/services/firestore/config';
 import { router } from 'expo-router';
 import { doc, updateDoc } from 'firebase/firestore';
 import React, { useState } from 'react';
-import { Dimensions, Image, ScrollView, StyleSheet, View } from 'react-native';
-
-const { width } = Dimensions.get('window');
+import { Image, ScrollView, StyleSheet, View } from 'react-native';
 
 const interests = [
   "Nature", "Outdoors", "City Life", "Culture", "History", "Arts", 

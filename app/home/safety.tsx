@@ -1,17 +1,15 @@
-import { ThemedView } from '@/components/ThemedView';
+import Button from '@/components/Button';
 import CollapsibleHeader from '@/components/CollapsibleHeader';
-import { ThemedIcons } from '@/components/ThemedIcons';
-import React, { useState } from 'react';
-import { StyleSheet, View, TouchableOpacity} from 'react-native';
+import ContactNumberField from '@/components/ContactNumberField';
 import BackButton from '@/components/custom/BackButton';
 import SOSButton from '@/components/custom/SOSButton';
-import { ThemedText } from '@/components/ThemedText';
-import GradientMeshBackground from '@/components/GradientMeshBackground';
-import OptionsPopup from '@/components/OptionsPopup';
-import { useSession } from '@/context/SessionContext';
 import TextField from '@/components/TextField';
-import ContactNumberField from '@/components/ContactNumberField';
-import Button from '@/components/Button';
+import { ThemedIcons } from '@/components/ThemedIcons';
+import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from '@/components/ThemedView';
+import { useSession } from '@/context/SessionContext';
+import React, { useState } from 'react';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
 
 export default function SafetyScreen() {
@@ -84,7 +82,6 @@ export default function SafetyScreen() {
     <ThemedView style={{flex:1}}>
       <BackButton style={styles.backButton}/>
       <CollapsibleHeader disableExpand defaultHeight={210}>
-        <GradientMeshBackground gradientBackground/>
         <View style={styles.header}>
           <SOSButton/>
           <View style={{height: '100%', justifyContent: 'center'}}>

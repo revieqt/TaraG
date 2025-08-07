@@ -1,3 +1,4 @@
+import Button from '@/components/Button';
 import Carousel from '@/components/Carousel';
 import NotificationsButton from '@/components/custom/NotificationsButton';
 import HorizontalSections from '@/components/HorizontalSections';
@@ -93,7 +94,10 @@ export default function ExploreScreen() {
 
           <View key="your-groups" style={styles.tabContent}>
             <ScrollView showsVerticalScrollIndicator={false}>
-              
+              <View style={styles.groupButtonsContainer}>
+                <Button title='Create Group' onPress={() => alert('Done')}/>
+                <Button title='Join with Invite Code' onPress={() => alert('Done')}/>
+              </View>
             </ScrollView>
           </View>,
         ]}
@@ -119,8 +123,6 @@ const styles = StyleSheet.create({
   tabContent: {
     flex: 1,
     width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   carouselContainer:{
     width: '100%',
@@ -166,5 +168,11 @@ const styles = StyleSheet.create({
     color: '#3730A3',
     fontWeight: '600',
     fontSize: 14,
+  },
+  groupButtonsContainer: {
+    flexDirection: 'row',
+    gap: 10,
+    width: '100%',
+    padding: 20,
   },
 });

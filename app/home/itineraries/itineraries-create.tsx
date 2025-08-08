@@ -159,7 +159,7 @@ export default function CreateItineraryScreen() {
   function renderAddLocationUI(dayIdx: number | null) {
     const key = dayIdx !== null ? String(dayIdx) : 'main';
     return (
-      <ThemedView border='thin-gray' roundness={18} style={styles.addLocationContainer}>
+      <ThemedView roundness={18} style={styles.addLocationContainer}>
         <LocationAutocomplete
           value={pendingLocation[key]?.locationName || ''}
           onSelect={loc => setPendingLocation(prev => ({ ...prev, [key]: { ...prev[key], ...loc } }))}

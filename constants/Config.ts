@@ -16,4 +16,7 @@ export const getBackendUrl = () => {
   }
 };
 
-export const BACKEND_URL = getBackendUrl(); 
+export const BACKEND_URL = getBackendUrl();
+
+// Message limit for non-pro users
+export const MAX_FREE_MESSAGES_PER_DAY = 5;

@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 
 // 🧑‍💼 User type
 export type EmergencyContact = {
@@ -19,6 +19,7 @@ export type User = {
   gender: string;
   contactNumber: string;
   profileImage: string;
+  isProUser: boolean;
   bio?: string;
   status: string;
   type: string;

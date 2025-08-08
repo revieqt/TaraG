@@ -1,15 +1,25 @@
+import Button from '@/components/Button';
 import Header from '@/components/Header';
 import OptionsPopup from '@/components/OptionsPopup';
 import TextField from '@/components/TextField';
 import { ThemedIcons } from '@/components/ThemedIcons';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { MAX_FREE_MESSAGES_PER_DAY } from '@/constants/Config';
+import { useSession } from '@/context/SessionContext';
 import { useAIChat } from '@/hooks/useAIChat';
 import { MaterialIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import * as Speech from 'expo-speech';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+
 import { ActivityIndicator, FlatList, Image, KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
+
+function getTodayKey() {
+  const today = new Date();
+  return `aiChatCount_${today.getFullYear()}_${today.getMonth()}_${today.getDate()}`;
+}
 
 export default function AIChatScreen() {
   const { messages, loading, error, sendMessage, resetChat } = useAIChat();
@@ -17,16 +27,49 @@ export default function AIChatScreen() {
   const [ttsEnabled, setTtsEnabled] = useState(false);
   const flatListRef = useRef<FlatList>(null);
   const router = useRouter();
+  const { session } = useSession();
+
+  const [messageCount, setMessageCount] = useState(0);
+
+  // Load message count from AsyncStorage on mount
+  useEffect(() => {
+    const loadCount = async () => {
+      const key = getTodayKey();
+      const stored = await AsyncStorage.getItem(key);
+      setMessageCount(stored ? parseInt(stored, 10) : 0);
+    };
+    loadCount();
+  }, []);
+
+  // Save message count to AsyncStorage when it changes
+  useEffect(() => {
+    const saveCount = async () => {
+      const key = getTodayKey();
+      await AsyncStorage.setItem(key, messageCount.toString());
+    };
+    saveCount();
+  }, [messageCount]);
+
+  const isProUser = !!session?.user?.isProUser;
+  const hasMessagesLeft = isProUser || messageCount < MAX_FREE_MESSAGES_PER_DAY;
 
   const handleSend = () => {
-    if (input.trim()) {
-      sendMessage(input.trim());
-      setInput('');
+    if (!input.trim()) return;
+
+    if (!isProUser) {
+      if (messageCount >= MAX_FREE_MESSAGES_PER_DAY) {
+        // No need for Alert, just hide input below
+        return;
+      }
+      setMessageCount((prev) => prev + 1);
     }
+
+    sendMessage(input.trim());
+    setInput('');
   };
 
   // Speak the latest assistant message if TTS is enabled
-  React.useEffect(() => {
+  useEffect(() => {
     if (
       ttsEnabled &&
       messages.length > 0 &&
@@ -36,7 +79,7 @@ export default function AIChatScreen() {
     }
   }, [messages, ttsEnabled]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (flatListRef.current && messages.length > 0) {
       flatListRef.current.scrollToEnd({ animated: true });
     }
@@ -46,24 +89,22 @@ export default function AIChatScreen() {
 
   return (
     <ThemedView style={{ flex: 1, padding: 0 }}>
-
       <Header label='TaraAI' rightButton={[
         <OptionsPopup
           actions={[
-          {
-            label: ttsEnabled ? 'Disable Text-to-Speech' : 'Enable Text-to-Speech',
-            icon: <MaterialIcons name="record-voice-over" size={20} color="#222" />,
-            onPress: () => setTtsEnabled((prev) => !prev),
-          },
-          {
-            label: 'Reset Chat',
-            icon: <MaterialIcons name="refresh" size={20} color="#222" />,
-            onPress: resetChat,
-          },
-        ]}>
+            {
+              label: ttsEnabled ? 'Disable Text-to-Speech' : 'Enable Text-to-Speech',
+              icon: <MaterialIcons name="record-voice-over" size={20} color="#222" />,
+              onPress: () => setTtsEnabled((prev) => !prev),
+            },
+            {
+              label: 'Reset Chat',
+              icon: <MaterialIcons name="refresh" size={20} color="#222" />,
+              onPress: resetChat,
+            },
+          ]}>
           <ThemedIcons library="MaterialCommunityIcons" name="dots-vertical" size={24}/>
         </OptionsPopup>
-    
       ]}/>
       {showIntro ? (
         <ThemedView style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 32 }}>
@@ -133,16 +174,31 @@ export default function AIChatScreen() {
         keyboardVerticalOffset={80}
       >
         <View style={styles.inputRow}>
-          <TextField
-            value={input}
-            onChangeText={setInput}
-            placeholder="Type your message..."
-            onSubmitEditing={handleSend}
-            style={{ flex: 1, marginBottom: 0 }}
-          />
-          <TouchableOpacity style={styles.sendBtn} onPress={handleSend} disabled={loading || !input.trim()}>
-            <ThemedIcons library='MaterialIcons' name='send' size={30} color='#00FFDE'/>
-          </TouchableOpacity>
+          {hasMessagesLeft ? (
+            <>
+              <TextField
+                value={input}
+                onChangeText={setInput}
+                placeholder="Type your message..."
+                onSubmitEditing={handleSend}
+                style={{ flex: 1, marginBottom: 0 }}
+              />
+              <TouchableOpacity style={styles.sendBtn} onPress={handleSend} disabled={loading || !input.trim()}>
+                <ThemedIcons library='MaterialIcons' name='send' size={30} color='#00FFDE'/>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <View style={{height: 100}}>
+              <ThemedText style={{ textAlign: 'center', flex: 1 }}>
+                You have reached the free limit of {MAX_FREE_MESSAGES_PER_DAY} messages to Tara today. Upgrade to Pro for unlimited access.
+              </ThemedText>
+              <Button
+                title="Upgrade to Pro"
+                onPress={() => router.push('/account/getPro')}
+                type="primary"
+                />
+            </View>
+          )}
         </View>
       </KeyboardAvoidingView>
     </ThemedView>

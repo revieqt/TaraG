@@ -52,6 +52,13 @@ export default function AccountScreen() {
             
           </TouchableOpacity>
         </ThemedView>
+
+        <TouchableOpacity>
+          <Button
+            title="Get Pro"
+            onPress={() => router.push('/account/getPro')}
+          />
+        </TouchableOpacity>
         
         <View style={styles.options}>
           <ThemedText style={styles.optionsTitle} type='defaultSemiBold'>Privacy and Security</ThemedText>

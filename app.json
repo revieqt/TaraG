@@ -13,7 +13,16 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.revieqt.tarag",
       "infoPlist": {
-        "UIBackgroundModes": ["remote-notification"]
+        "UIBackgroundModes": ["remote-notification"],
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true,
+          "NSExceptionDomains": {
+            "192.168.1.57": {
+              "NSExceptionAllowsInsecureHTTPLoads": true,
+              "NSExceptionMinimumTLSVersion": "1.0"
+            }
+          }
+        }
       }
     },
     "android": {
@@ -23,7 +32,15 @@
       },
       "edgeToEdgeEnabled": true,
       "package": "com.revieqt.tarag",
-      "useNextNotificationsApi": true
+      "useNextNotificationsApi": true,
+      "networkSecurityConfig": {
+        "domain-config": [
+          {
+            "domain": "192.168.1.57",
+            "cleartextTrafficPermitted": true
+          }
+        ]
+      }
     },
     "web": {
       "bundler": "metro",

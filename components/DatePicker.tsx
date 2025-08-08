@@ -102,6 +102,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingLeft: 16,
+    paddingTop: 4,
     paddingRight: 16,
     borderRadius: 15,
     marginBottom: 15,
@@ -112,9 +113,10 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    fontSize: 16,
+    fontSize: 14,
     height: 48,
     backgroundColor: 'transparent',
+    fontFamily: 'Poppins',
   },
   iconButton: {
     marginLeft: 10,

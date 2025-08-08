@@ -18,7 +18,6 @@ function AppContent() {
     Poppins: require('../assets/fonts/Poppins-Regular.ttf'),
     PoppinsSemiBold: require('../assets/fonts/Poppins-SemiBold.ttf'),
     PoppinsBold: require('../assets/fonts/Poppins-Bold.ttf'),
-    Roboto: require('../assets/fonts/Roboto-VariableFont_wdth,wght.ttf'),
   });
 
   // Get the themed background color

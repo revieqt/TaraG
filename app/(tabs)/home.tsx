@@ -1,3 +1,4 @@
+import CubeButton from '@/components/CubeButton';
 import NotificationsButton from '@/components/custom/NotificationsButton';
 import TaraMap from '@/components/maps/TaraMap';
 import ParallaxHeader from '@/components/ParallaxHeader';
@@ -9,17 +10,16 @@ import { useLocation } from '@/hooks/useLocation';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
-import CubeButton from '@/components/CubeButton';
+import { ActivityIndicator, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 export default function HomeScreen() {
   const { session } = useSession();
   const user = session?.user;
   const { suburb, city, state, loading, error } = useLocation();
   const backgroundColor = useThemeColor({}, 'background');
+  const tintColor = useThemeColor({}, 'tint');
 
   const getLocationText = () => {
-    if (loading) return 'Getting your location...';
     if (error) return 'Location unavailable';
     if (suburb && city) return `${suburb}, ${city}`;
     if (city) return city;
@@ -32,7 +32,12 @@ export default function HomeScreen() {
       <ParallaxHeader
        header={
           <View style={{flex: 1}}>
-          <TaraMap/>
+          <TouchableOpacity 
+            style={{flex: 1}} 
+            onPress={() => router.push('/(tabs)/maps')}
+          >
+            <TaraMap/>
+          </TouchableOpacity>
           <LinearGradient
             colors={['transparent', backgroundColor]}
             start={{ x: 0.5, y: 0 }}
@@ -113,30 +118,39 @@ export default function HomeScreen() {
             </View>
           </View>
 
-          <ThemedView shadow color='primary' style={styles.locationContent}>
-            <TouchableOpacity onPress={() => router.push('/(tabs)/maps')}>
-              <ThemedText>You're currently at</ThemedText>
-              <ThemedText type='subtitle'>{getLocationText()}</ThemedText>
-            </TouchableOpacity>
-            
-          </ThemedView>
-
-          <View style={styles.grid}>
-            <ThemedView shadow color='primary' style={[{padding: 15},styles.gridItem]}>
-              <ThemedText type='defaultSemiBold'>{city}</ThemedText>
-              <ThemedText type='subtitle'>30</ThemedText>
-              
-            </ThemedView>
-
-            <View style={styles.gridItem}>
-              <ThemedView shadow color='primary' style={styles.gridItemChild}>
-                <ThemedText>Emergency State</ThemedText>
+          
+          
+          {loading ? (
+             <View style={styles.loadingContainer}>
+               <ActivityIndicator size="large" color={tintColor} />
+             </View>
+           ) : (
+            <>
+              <ThemedView shadow color='primary' style={styles.locationContent}>
+                <TouchableOpacity onPress={() => router.push('/(tabs)/maps')}>
+                  <ThemedText>You're currently at</ThemedText>
+                  <ThemedText type='subtitle'>{getLocationText()}</ThemedText>
+                </TouchableOpacity>
+                
               </ThemedView>
-              <ThemedView shadow color='primary'style={styles.gridItemChild}>
-                <ThemedText>Explore more features in the app!</ThemedText>
-              </ThemedView>
-            </View>
-          </View>
+              <View style={styles.grid}>
+                <ThemedView shadow color='primary' style={[{padding: 15},styles.gridItem]}>
+                  <ThemedText type='defaultSemiBold'>{city}</ThemedText>
+                  <ThemedText type='subtitle'>30</ThemedText>
+                  
+                </ThemedView>
+
+                <View style={styles.gridItem}>
+                  <ThemedView shadow color='primary' style={styles.gridItemChild}>
+                    <ThemedText>Emergency State</ThemedText>
+                  </ThemedView>
+                  <ThemedView shadow color='primary'style={styles.gridItemChild}>
+                    <ThemedText>Explore more features in the app!</ThemedText>
+                  </ThemedView>
+                </View>
+              </View>
+            </>
+          )}
         </View>
       </ParallaxHeader>
     </ThemedView>
@@ -244,5 +258,17 @@ const styles = StyleSheet.create({
     padding: 10,
     height: '47%', // This ensures equal height for both children
     marginBottom: 10,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
+    paddingVertical: 40,
+  },
+  loadingText: {
+    marginTop: 10,
+    textAlign: 'center',
+    opacity: 0.7,
   },
 });

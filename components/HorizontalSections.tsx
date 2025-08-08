@@ -118,6 +118,7 @@ const HorizontalSections: React.FC<HorizontalSectionsProps> = ({
         contentContainerStyle={{ width: width * labels.length }}
         onMomentumScrollEnd={handleMomentumScrollEnd}
         style={{ flex: 1 }}
+        nestedScrollEnabled={true}
       >
         {sections.map((section, idx) => (
           <View key={idx} style={[styles.section, { width }]}> 
@@ -141,6 +142,7 @@ const styles = StyleSheet.create({
   section: {
     flex: 1,
     height: '100%',
+    minHeight: '100%',
   },
   fullTabRow: {
     flexDirection: 'row',   

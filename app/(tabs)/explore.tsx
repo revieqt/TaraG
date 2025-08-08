@@ -1,15 +1,14 @@
 import Button from '@/components/Button';
 import Carousel from '@/components/Carousel';
 import NotificationsButton from '@/components/custom/NotificationsButton';
-import HorizontalSections from '@/components/HorizontalSections';
 import { ThemedIcons } from '@/components/ThemedIcons';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useSession } from '@/context/SessionContext';
 import { hasUnreadNotifications } from '@/services/firestore/userDbService';
 import { router } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { Image, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, Image, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import ExploreSearchModal from '../explore/explore-search';
 
 export default function ExploreScreen() {
@@ -17,37 +16,163 @@ export default function ExploreScreen() {
   const userId = session?.user?.id;
   const [hasUnread, setHasUnread] = useState(false);
   const [searchModalVisible, setSearchModalVisible] = useState(false);
+  const [activeTab, setActiveTab] = useState(0);
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const lastScrollY = useRef(0);
+  const scrollViewRef = useRef<ScrollView>(null);
+  const headerHeight = 80;
+  const tabHeight = 48;
 
   useEffect(() => {
     if (!userId) return;
     hasUnreadNotifications(userId).then(setHasUnread);
   }, [userId]);
 
+  // Initialize lastScrollY when component mounts
+  useEffect(() => {
+    lastScrollY.current = 0;
+  }, []);
+
+  // Handle tab press - scroll to top if clicking active tab
+  const handleTabPress = (idx: number) => {
+    if (idx === activeTab) {
+      // If clicking the current active tab, scroll to top
+      scrollViewRef.current?.scrollTo({ y: 0, animated: true });
+    } else {
+      // If clicking a different tab, switch to that tab
+      setActiveTab(idx);
+    }
+  };
+
+  // Custom scroll handler to detect scroll direction
+  const handleScroll = (event: any) => {
+    const currentScrollY = event.nativeEvent.contentOffset.y;
+    const isScrollingUp = currentScrollY < lastScrollY.current;
+    const scrollDifference = Math.abs(currentScrollY - lastScrollY.current);
+    
+    console.log('Scroll Debug:', {
+      currentScrollY,
+      lastScrollY: lastScrollY.current,
+      isScrollingUp,
+      scrollDifference,
+      stickyHeight
+    });
+    
+    // Update the scrollY animated value
+    scrollY.setValue(currentScrollY);
+    
+    // If scrolling up and difference is significant enough
+    if (isScrollingUp && scrollDifference > 10) {
+      console.log('SHOWING HEADER - Scrolling up');
+      Animated.parallel([
+        Animated.timing(headerVisible, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(headerTranslateY, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        })
+      ]).start();
+    } else if (!isScrollingUp && currentScrollY > stickyHeight) {
+      // If scrolling down and past the sticky height
+      console.log('HIDING HEADER - Scrolling down');
+      Animated.parallel([
+        Animated.timing(headerVisible, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(headerTranslateY, {
+          toValue: -stickyHeight,
+          duration: 200,
+          useNativeDriver: true,
+        })
+      ]).start();
+    }
+    
+    lastScrollY.current = currentScrollY;
+  };
+
   // Render function for Explore section
   const renderExploreSection = () => (
-    <View key="explore" style={styles.tabContent}>
-      <ScrollView showsVerticalScrollIndicator={false} style={{width: '100%'}}>
+    <ScrollView 
+      ref={activeTab === 0 ? scrollViewRef : null}
+      showsVerticalScrollIndicator={false} 
+      style={{width: '100%', height: '100%'}}
+      contentContainerStyle={{ paddingTop: stickyHeight }}
+      onScroll={handleScroll}
+      scrollEventThrottle={16}
+    >
         {/* Post input UI */}
-        <TouchableOpacity
-          style={styles.postInputContainer}
-          onPress={() => router.push("/explore/explore-post")}
+        <View
+          style={styles.postInput}
         >
-          <Image
-            source={{ uri: session?.user?.profileImage || 'https://ui-avatars.com/api/?name=User' }}
-            style={styles.profileImage}
+          <TouchableOpacity onPress={() => router.push("/account/viewProfile")}>
+            <Image
+              source={{ uri: session?.user?.profileImage || 'https://ui-avatars.com/api/?name=User' }}
+              style={styles.profileImage}
+            />
+          </TouchableOpacity>
+          
+          <Button
+            title='Share something to the world'
+            onPress={() => router.push("/explore/explore-post")}
+            buttonStyle={{
+              flex: 1,
+              marginBottom: 15,
+              alignItems: 'flex-start',
+            }}
           />
-          <View style={styles.postInputBox}>
-            <ThemedText>Share something to the world</ThemedText>
-          </View>
-        </TouchableOpacity>
-      </ScrollView>
-    </View>
-  );
+        </View>
+
+        <ThemedView color='primary' shadow style={styles.postContainer}>
+          <TouchableOpacity onPress={() => router.push("/account/viewProfile")} style={{flexDirection: 'row'}}>
+            <Image
+              source={{ uri: session?.user?.profileImage || 'https://ui-avatars.com/api/?name=User' }}
+              style={styles.postProfileImage}
+            />
+            <View style={{marginTop: -5, marginLeft: 10}}>
+              <ThemedText>username_of_user</ThemedText>
+              <ThemedText style={{marginTop: -5, fontSize: 12, opacity: 0.5}}>type_of_user</ThemedText>
+            </View>
+          </TouchableOpacity>
+        </ThemedView>
+
+        {/* Additional content to make scrolling more noticeable */}
+        {Array.from({ length: 10 }).map((_, index) => (
+          <ThemedView key={index} color='primary' shadow style={styles.postContainer}>
+            <TouchableOpacity onPress={() => router.push("/account/viewProfile")} style={{flexDirection: 'row'}}>
+              <Image
+                source={{ uri: session?.user?.profileImage || 'https://ui-avatars.com/api/?name=User' }}
+                style={styles.postProfileImage}
+              />
+              <View style={{marginTop: -5, marginLeft: 10}}>
+                <ThemedText>Sample Post {index + 1}</ThemedText>
+                <ThemedText style={{marginTop: -5, fontSize: 12, opacity: 0.5}}>This is sample content to test scrolling</ThemedText>
+              </View>
+            </TouchableOpacity>
+            <View style={{marginTop: 10}}>
+              <ThemedText>This is additional content to make the post longer and enable vertical scrolling. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</ThemedText>
+            </View>
+          </ThemedView>
+                 ))}
+         
+       </ScrollView>
+   );
 
   // Render function for Tours section
   const renderToursSection = () => (
-    <View key="tours" style={styles.tabContent}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+    <ScrollView 
+      ref={activeTab === 1 ? scrollViewRef : null}
+      showsVerticalScrollIndicator={false}
+      style={{width: '100%', height: '100%'}}
+      contentContainerStyle={{ paddingTop: stickyHeight }}
+      onScroll={handleScroll}
+      scrollEventThrottle={16}
+    >
         <View style={styles.carouselContainer}>
           <Carousel
             images={[
@@ -63,43 +188,118 @@ export default function ExploreScreen() {
             navigationArrows
           />
         </View>
-      </ScrollView>
-    </View>
-  );
+
+        {/* Additional content for Tours section */}
+        {Array.from({ length: 5 }).map((_, index) => (
+          <ThemedView key={index} color='primary' shadow style={styles.postContainer}>
+            <ThemedText type='subtitle'>Tour {index + 1}</ThemedText>
+            <ThemedText>This is a sample tour description that makes the content longer for testing vertical scrolling.</ThemedText>
+          </ThemedView>
+                 ))}
+       </ScrollView>
+   );
 
   // Render function for Your Groups section
   const renderGroupsSection = () => (
-    <View key="your-groups" style={styles.tabContent}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+    <ScrollView 
+      ref={activeTab === 2 ? scrollViewRef : null}
+      showsVerticalScrollIndicator={false}
+      style={{width: '100%', height: '100%'}}
+      contentContainerStyle={{ paddingTop: stickyHeight }}
+      onScroll={handleScroll}
+      scrollEventThrottle={16}
+    >
         <View style={styles.groupButtonsContainer}>
           <Button title='Create Group' onPress={() => alert('Done')}/>
           <Button title='Join with Invite Code' onPress={() => alert('Done')}/>
-        </View>
-      </ScrollView>
-    </View>
-  );
+                 </View>
+       </ScrollView>
+   );
+
+  // Calculate the total height of sticky elements
+  const stickyHeight = headerHeight + tabHeight;
+  
+  // Create a separate animated value for header visibility
+  const headerVisible = useRef(new Animated.Value(1)).current;
+  const headerTranslateY = useRef(new Animated.Value(0)).current;
+  
+  // Use the headerVisible value for opacity
+  const headerOpacity = headerVisible;
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedView style={styles.header} color='primary'>
-        <ThemedText type='subtitle'>Explore</ThemedText>
-        <View style={{flexDirection: 'row', gap: 20, alignItems: 'center'}}>
-          <TouchableOpacity onPress={() => setSearchModalVisible(true)}>
-            <ThemedIcons library="MaterialIcons" name="search" size={25}/>
-          </TouchableOpacity>
-          <NotificationsButton userId={userId} />
-        </View>
-      </ThemedView>
-      <ExploreSearchModal visible={searchModalVisible} onClose={() => setSearchModalVisible(false)} />
-      <HorizontalSections
-        labels={['Explore', 'Tours', 'Your Groups']}
-        sections={[
-          renderExploreSection(),
-          renderToursSection(),
-          renderGroupsSection(),
+      {/* Sticky Header */}
+      <Animated.View 
+        style={[
+          styles.stickyHeader,
+          {
+            transform: [{ translateY: headerTranslateY }],
+            opacity: headerOpacity,
+          }
         ]}
-        type="fullTab"
-      />
+      >
+        <ThemedView style={styles.header} color='primary'>
+          <ThemedText type='subtitle'>Explore</ThemedText>
+          <View style={{flexDirection: 'row', gap: 20, alignItems: 'center'}}>
+            <TouchableOpacity onPress={() => setSearchModalVisible(true)}>
+              <ThemedIcons library="MaterialIcons" name="search" size={25}/>
+            </TouchableOpacity>
+            <NotificationsButton userId={userId} />
+          </View>
+        </ThemedView>
+      </Animated.View>
+
+      <ExploreSearchModal visible={searchModalVisible} onClose={() => setSearchModalVisible(false)} />
+      
+      {/* Sticky Tab Chooser */}
+      <Animated.View 
+        style={[
+          styles.stickyTabContainer,
+          {
+            transform: [{ translateY: headerTranslateY }],
+            opacity: headerOpacity,
+          }
+        ]}
+      >
+        <ThemedView color='primary' style={styles.tabRow}>
+          {['Explore', 'Tours', 'Your Groups'].map((label, idx) => (
+            <TouchableOpacity
+              key={label}
+              style={[
+                styles.tabButton,
+                activeTab === idx && styles.activeTabButton,
+                { flex: 1 },
+              ]}
+              onPress={() => handleTabPress(idx)}
+              activeOpacity={0.7}
+            >
+              <View style={styles.tabInnerContainer}>
+                <ThemedText style={[
+                  styles.tabText,
+                  activeTab === idx && styles.activeTabText,
+                ]}>{label}</ThemedText>
+              </View>
+              <View style={[
+                styles.tabUnderline,
+                activeTab === idx && styles.activeTabUnderline,
+              ]} />
+            </TouchableOpacity>
+          ))}
+        </ThemedView>
+      </Animated.View>
+
+      {/* Content */}
+      <View style={styles.contentContainer}>
+        <View style={[styles.sectionContainer, { display: activeTab === 0 ? 'flex' : 'none' }]}>
+          {renderExploreSection()}
+        </View>
+        <View style={[styles.sectionContainer, { display: activeTab === 1 ? 'flex' : 'none' }]}>
+          {renderToursSection()}
+        </View>
+        <View style={[styles.sectionContainer, { display: activeTab === 2 ? 'flex' : 'none' }]}>
+          {renderGroupsSection()}
+        </View>
+      </View>
     </ThemedView>
   );
 }
@@ -120,50 +320,113 @@ const styles = StyleSheet.create({
   tabContent: {
     flex: 1,
     width: '100%',
+    height: '100%',
   },
   carouselContainer:{
     width: '100%',
     height: 350,
   },
-  postInputContainer: {
+  postInput: {
     margin: 20,
     flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderColor: '#ccc',
-  },
-  postInputBox: {
-    flex: 1,
-    height: 50,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    paddingHorizontal: 12,
-    marginRight: 8,
-    justifyContent: 'center',
-    marginBottom: 15,
   },
   profileImage: {
-    width: 50,
-    height: 50,
+    width: 45, 
+    height: 45,
     borderRadius: 30,
-    marginRight: 10,
+    marginRight: 15,
   },
-  attachButton: {
-    backgroundColor: '#E0E7FF',
-    borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    marginRight: 8,
+  postContainer:{
+    padding: 15,
+    marginHorizontal: 20,
+    marginBottom: 20,
+    borderRadius: 10,
+    minHeight: 100,
   },
-  attachButtonText: {
-    color: '#3730A3',
-    fontWeight: '600',
-    fontSize: 14,
+  postProfileImage:{
+    width: 35,
+    aspectRatio: 1,
+    borderRadius: 30,
   },
+
+
+
+
   groupButtonsContainer: {
     flexDirection: 'row',
     gap: 10,
     width: '100%',
     padding: 20,
+  },
+  stickyHeader: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1000,
+    backgroundColor: 'transparent',
+  },
+  collapsibleHeader: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 999,
+  },
+  stickyTabContainer: {
+    position: 'absolute',
+    top: 78,
+    left: 0,
+    right: 0,
+    zIndex: 998,
+    backgroundColor: 'transparent',
+  },
+  tabRow: {
+    flexDirection: 'row',   
+    justifyContent: 'space-between',
+    alignItems: 'stretch',
+    height: 48,
+    borderBottomColor: 'rgba(0, 0, 0, 0.1)',
+    borderBottomWidth: 1,
+  },
+  tabButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%',
+  },
+  activeTabButton: {
+    backgroundColor: 'transparent',
+  },
+  tabInnerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 44,
+  },
+  tabText: {
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  activeTabText: {
+    color: '#007AFF',
+    fontWeight: 'bold',
+  },
+  tabUnderline: {
+    height: 3,
+    width: '80%',
+    backgroundColor: 'transparent',
+    borderRadius: 10,
+  },
+  activeTabUnderline: {
+    backgroundColor: '#007AFF',
+  },
+  contentContainer: {
+    flex: 1,
+    marginTop: 0, // No margin needed since content will scroll under the sticky elements
+  },
+  sectionContainer: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
   },
 });

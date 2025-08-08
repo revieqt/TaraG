@@ -108,23 +108,24 @@ const styles = StyleSheet.create({
   leftPart: {
     minWidth: 80,
     maxWidth: 100,
-    flexShrink: 0,
+    height: 70,
     marginLeft: 8,
     marginRight: 8,
+    flex: 1,
   },
   picker: {
     flex: 1,
-    fontSize: 16,
-    height: 48,
+    fontSize: 14,
     backgroundColor: 'transparent',
     borderColor: 'transparent',
+    fontFamily: 'Poppins',
   },
   input: {
     flex: 1,
-    fontSize: 16,
-    height: 48,
+    fontSize: 14,
     backgroundColor: 'transparent',
     paddingLeft: 8,
+    fontFamily: 'Poppins',
   },
 });
 

@@ -1,6 +1,6 @@
 import { useThemeColor } from '@/hooks/useThemeColor';
 import React from 'react';
-import { StyleSheet, TextStyle, TouchableOpacity, ViewStyle } from 'react-native';
+import { ActivityIndicator, StyleSheet, TextStyle, TouchableOpacity, ViewStyle } from 'react-native';
 import { ThemedText } from './ThemedText';
 
 interface ButtonProps {
@@ -42,11 +42,11 @@ const Button: React.FC<ButtonProps> = ({
     >
       {isPrimary ? (
         <ThemedText style={[styles.primaryText, textStyle]}>
-          {loading ? 'Loading...' : title}
+          {loading ? <ActivityIndicator size="small" color="#fff" /> : title}
         </ThemedText>
       ) : (
         <ThemedText style={[styles.outlineText, textStyle]}>
-          {loading ? 'Loading...' : title}
+          {loading ? <ActivityIndicator size="small" color="#000" /> : title}
         </ThemedText>
       )}
     </TouchableOpacity>
@@ -71,8 +71,7 @@ const styles = StyleSheet.create({
   },
   primaryText: {
     color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 14,
+    fontFamily: 'PoppinsSemiBold',
     textAlign: 'center',
   },
 });

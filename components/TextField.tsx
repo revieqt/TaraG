@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { View, TextInput, StyleSheet, TextInputProps, NativeSyntheticEvent, TextInputContentSizeChangeEventData } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import React, { useState } from 'react';
+import { NativeSyntheticEvent, StyleSheet, TextInput, TextInputContentSizeChangeEventData, TextInputProps, View } from 'react-native';
 
 interface TextFieldProps {
   placeholder: string;
@@ -92,6 +92,7 @@ const styles = StyleSheet.create({
     paddingLeft: 16,
     paddingRight: 16,
     borderRadius: 15,
+    paddingTop: 4,
     marginBottom: 15,
     borderWidth: 1,
     position: 'relative',
@@ -100,9 +101,9 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    fontSize: 16,
-    height: 48,
+    fontSize: 14,
     backgroundColor: 'transparent',
+    fontFamily: 'Poppins',
   },
 });
 

@@ -1,4 +1,5 @@
 import { useSession } from '@/context/SessionContext';
+import { BACKEND_URL } from '@/constants/Config';
 import { useState } from 'react';
 
 export type ChatMessage = {
@@ -37,25 +38,44 @@ Make your responses short and concise, with a helpful tone, upbeat, and cheerful
     setError(null);
 
     try {
-      // Call your backend endpoint instead of OpenRouter directly
-      const response = await fetch('https://tarag-backend.onrender.com/api/aiChat', {
+      // Use the local backend with conversation history
+      const conversationHistory = messages
+        .filter(msg => msg.role !== 'system')
+        .map(msg => ({
+          role: msg.role as 'user' | 'assistant',
+          content: msg.content
+        }));
+
+      const response = await fetch(`${BACKEND_URL}/api/ai-chat/chat-with-history`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ message: text.trim() }),
+        body: JSON.stringify({ 
+          message: text.trim(),
+          conversationHistory 
+        }),
       });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to get response from Tara');
+      }
 
       const data = await response.json();
 
-      if (!data.message) {
-        throw new Error('Tara didn’t respond. Please try again.');
+      if (!data.response) {
+        throw new Error('Tara didn\'t respond. Please try again.');
       }
 
-      let content = data.message.trim();
+      let content = data.response.trim();
       let showGoToRoutes = false;
 
-      // Optionally, you can parse for special actions here if needed
+      // Check if the response mentions routes or planning to show the "Go to Routes" button
+      const routeKeywords = ['route', 'planning', 'itinerary', 'plan', 'schedule'];
+      if (routeKeywords.some(keyword => content.toLowerCase().includes(keyword))) {
+        showGoToRoutes = true;
+      }
 
       const aiReply: ChatMessage = {
         role: 'assistant',
@@ -64,7 +84,8 @@ Make your responses short and concise, with a helpful tone, upbeat, and cheerful
       };
       setMessages((prev) => [...prev, aiReply]);
     } catch (err: any) {
-      setError(err.message || 'Something went wrong.');
+      console.error('AI Chat Error:', err);
+      setError(err.message || 'Something went wrong. Please try again.');
     } finally {
       setLoading(false);
     }

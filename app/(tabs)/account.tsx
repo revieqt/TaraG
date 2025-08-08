@@ -53,15 +53,22 @@ export default function AccountScreen() {
           </TouchableOpacity>
         </ThemedView>
 
-        {!user?.isProUser && (
-          <Button
-            title='Unlock the full TaraG experience'
-            onPress={() => router.push('/account/getPro')}
-            buttonStyle={{
-              width: '100%',
-              marginBottom: 15,
-            }}
-          />
+        {!user?.isProUser ? (
+          <>
+            <Button
+              title='Unlock the full TaraG experience'
+              onPress={() => router.push('/account/getPro')}
+              buttonStyle={{
+                width: '100%',
+                marginBottom: 15,
+              }}
+            />
+          </>
+          
+        ):(
+          <>
+
+          </>
         )}
         
         <View style={styles.options}>

@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { View, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { Ionicons } from '@expo/vector-icons';
+import React, { useState } from 'react';
+import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 
 interface PasswordFieldProps {
   placeholder: string;
@@ -80,6 +80,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingLeft: 16,
     paddingRight: 16,
+    paddingTop: 4,
     borderRadius: 15,
     marginBottom: 15,
     borderWidth: 1,
@@ -89,9 +90,9 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    fontSize: 16,
-    height: 48,
+    fontSize: 14,
     backgroundColor: 'transparent',
+    fontFamily: 'Poppins',
   },
   eyeButton: {
     marginLeft: 10,

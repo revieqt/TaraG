@@ -80,6 +80,7 @@ const styles = StyleSheet.create({
     height: 50,
     backgroundColor: 'transparent',
     borderColor: 'transparent',
+    fontFamily: 'Poppins',
   },
 });
 

@@ -32,7 +32,7 @@ export default function AccountScreen() {
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={true}
       >
-        <ThemedView style={styles.header}>
+        <ThemedView shadow color='primary' style={styles.header}>
           <TouchableOpacity style={styles.profileButton} onPress={() => {router.push({ pathname: '/account/viewProfile', params: { userId: user?.id } })}}>
             <Image
               source={
@@ -53,12 +53,16 @@ export default function AccountScreen() {
           </TouchableOpacity>
         </ThemedView>
 
-        <TouchableOpacity>
+        {!user?.isProUser && (
           <Button
-            title="Get Pro"
+            title='Unlock the full TaraG experience'
             onPress={() => router.push('/account/getPro')}
+            buttonStyle={{
+              width: '100%',
+              marginBottom: 15,
+            }}
           />
-        </TouchableOpacity>
+        )}
         
         <View style={styles.options}>
           <ThemedText style={styles.optionsTitle} type='defaultSemiBold'>Privacy and Security</ThemedText>
@@ -89,8 +93,11 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'space-between',
     alignItems: 'center',
-    height: 100,
-    marginTop: 10,
+    height: 80,
+    marginTop: 30,
+    padding: 20,
+    borderRadius: 15,
+    marginBottom: 20,
   },
   container: {
     justifyContent: 'flex-start',
@@ -107,14 +114,6 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
     borderRadius: 50,
     marginRight: 16,
-  },
-  notifications:{
-    width: 80,
-    aspectRatio: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 20,
-    backgroundColor: '#f0f0f0',
   },
   fullName: {
     fontSize: 22,

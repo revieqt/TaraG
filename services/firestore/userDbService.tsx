@@ -59,8 +59,12 @@ export async function changeUserPassword(currentPassword: string, newPassword: s
 
 export async function loginUserAndFetchProfile(email: string, password: string) {
   const user = await loginUser(email, password);
+  return await fetchUserProfile(user.uid, email);
+}
+
+export async function fetchUserProfile(userId: string, email?: string) {
   const db = getFirestore();
-  const userDoc = await getDoc(doc(db, 'users', user.uid));
+  const userDoc = await getDoc(doc(db, 'users', userId));
   if (!userDoc.exists()) {
     throw 'User profile not found. Please contact support.';
   }
@@ -76,17 +80,18 @@ export async function loginUserAndFetchProfile(email: string, password: string) 
   }
 
   return {
-    id: user.uid,
+    id: userId,
     fname: userData.fname,
     mname: userData.mname,
     lname: userData.lname,
     username: userData.username,
-    email: email,
+    email: email || userData.email,
     bdate: userData.bdate?.toDate ? userData.bdate.toDate() : userData.bdate,
     age: userData.age,
     gender: userData.gender,
     contactNumber: userData.contactNumber,
     profileImage: userData.profileImage,
+    isProUser: userData.isProUser ?? false,
     status: userData.status,
     type: userData.type,
     createdOn: userData.createdOn?.toDate ? userData.createdOn.toDate() : userData.createdOn,

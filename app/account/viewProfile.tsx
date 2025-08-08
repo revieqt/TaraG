@@ -1,4 +1,3 @@
-import CollapsibleHeader from '@/components/CollapsibleHeader';
 import OptionsPopup from '@/components/OptionsPopup';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -58,8 +57,6 @@ export default function ProfileScreen() {
         imageUrl={user?.profileImage || ''}
         onClose={() => setViewImageVisible(false)}
       />
-      <CollapsibleHeader disableExpand defaultHeight={150}>
-      </CollapsibleHeader>
 
       <View style={{paddingTop: 45, alignItems: 'center'}}>
         {

@@ -1,6 +1,6 @@
 import CubeButton from '@/components/CubeButton';
 import NotificationsButton from '@/components/custom/NotificationsButton';
-import TaraMap from '@/components/maps/TaraMap';
+import HomeMap from '@/components/maps/HomeMap';
 import ParallaxHeader from '@/components/ParallaxHeader';
 import { ThemedIcons } from '@/components/ThemedIcons';
 import { ThemedText } from '@/components/ThemedText';
@@ -36,7 +36,7 @@ export default function HomeScreen() {
             style={{flex: 1}} 
             onPress={() => router.push('/(tabs)/maps')}
           >
-            <TaraMap/>
+            <HomeMap/>
           </TouchableOpacity>
           <LinearGradient
             colors={['transparent', backgroundColor]}

@@ -188,15 +188,20 @@ export default function AIChatScreen() {
               </TouchableOpacity>
             </>
           ) : (
-            <View style={{height: 100}}>
+            <View style={{height: 180}}>
               <ThemedText style={{ textAlign: 'center', flex: 1 }}>
-                You have reached the free limit of {MAX_FREE_MESSAGES_PER_DAY} messages to Tara today. Upgrade to Pro for unlimited access.
+                You have reached the free daily credits for messages to Tara today. Upgrade to Pro for unlimited access or come back tomorrow.
               </ThemedText>
               <Button
                 title="Upgrade to Pro"
                 onPress={() => router.push('/account/getPro')}
                 type="primary"
                 />
+              <Button
+                title="Watch Ad for Additional Messages"
+                onPress={() => router.push('/account/getPro')}
+                buttonStyle={{marginTop: 10}}
+              />
             </View>
           )}
         </View>

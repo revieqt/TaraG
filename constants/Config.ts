@@ -1,10 +1,9 @@
-import { Platform } from 'react-native';
 
 // Backend URL configuration
 export const getBackendUrl = () => {
   if (__DEV__) {
     // Development environment - use the local backend IP
-    return 'http://192.168.1.57:5000';
+    return 'http://192.168.1.57:5000/api';
   } else {
     return 'https://tarag-backend.onrender.com';
   }

@@ -1,10 +1,9 @@
+import { BACKEND_URL } from '@/constants/Config';
 import { useSession } from '@/context/SessionContext';
-
-const BASE_URL = 'https://tarag-backend.onrender.com/api';
 
 export async function saveItinerary(itinerary: any) {
   try {
-    const response = await fetch(`${BASE_URL}/itinerary`, {
+    const response = await fetch(`${BACKEND_URL}/itinerary`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(itinerary),
@@ -27,7 +26,7 @@ export function useGetItinerariesByUser() {
   const getItineraries = async () => {
     if (!userID) return { success: false, errorMessage: 'No user ID', data: undefined };
     try {
-      const response = await fetch(`${BASE_URL}/itinerary/user/${userID}`);
+      const response = await fetch(`${BACKEND_URL}/itinerary/user/${userID}`);
       const data = await response.json();
       if (response.ok) {
         return { success: true, errorMessage: undefined, data: data.itineraries };
@@ -44,7 +43,7 @@ export function useGetItinerariesByUser() {
 // Get itinerary by ID
 export async function getItinerariesById(id: string) {
   try {
-    const response = await fetch(`${BASE_URL}/itinerary/${id}`);
+    const response = await fetch(`${BACKEND_URL}/itinerary/${id}`);
     const data = await response.json();
     if (response.ok) {
       return { success: true, errorMessage: undefined, data };
@@ -59,7 +58,7 @@ export async function getItinerariesById(id: string) {
 // Delete itinerary by ID
 export async function deleteItinerary(id: string) {
   try {
-    const response = await fetch(`${BASE_URL}/itinerary/${id}`, {
+    const response = await fetch(`${BACKEND_URL}/itinerary/${id}`, {
       method: 'DELETE',
     });
     const data = await response.json();

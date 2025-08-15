@@ -1,11 +1,8 @@
 import React, { ReactNode } from 'react';
 import {
-  View,
   Animated,
-  ScrollView,
   StyleSheet,
-  NativeScrollEvent,
-  NativeSyntheticEvent,
+  View,
 } from 'react-native';
 
 interface ParallaxHeaderProps {

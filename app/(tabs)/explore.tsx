@@ -50,15 +50,6 @@ export default function ExploreScreen() {
     const isScrollingUp = currentScrollY < lastScrollY.current;
     const scrollDifference = Math.abs(currentScrollY - lastScrollY.current);
     
-    console.log('Scroll Debug:', {
-      currentScrollY,
-      lastScrollY: lastScrollY.current,
-      isScrollingUp,
-      scrollDifference,
-      stickyHeight
-    });
-    
-    // Update the scrollY animated value
     scrollY.setValue(currentScrollY);
     
     // If scrolling up and difference is significant enough
@@ -77,8 +68,6 @@ export default function ExploreScreen() {
         })
       ]).start();
     } else if (!isScrollingUp && currentScrollY > stickyHeight) {
-      // If scrolling down and past the sticky height
-      console.log('HIDING HEADER - Scrolling down');
       Animated.parallel([
         Animated.timing(headerVisible, {
           toValue: 0,
@@ -96,7 +85,6 @@ export default function ExploreScreen() {
     lastScrollY.current = currentScrollY;
   };
 
-  // Render function for Explore section
   const renderExploreSection = () => (
     <ScrollView 
       ref={activeTab === 0 ? scrollViewRef : null}
@@ -348,10 +336,6 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
     borderRadius: 30,
   },
-
-
-
-
   groupButtonsContainer: {
     flexDirection: 'row',
     gap: 10,

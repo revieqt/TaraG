@@ -21,7 +21,7 @@ function AppContent() {
   });
 
   // Get the themed background color
-  const backgroundColor = useThemeColor({}, 'primary');
+  const backgroundColor = useThemeColor({}, 'background');
 
   useEffect(() => {
     if (loaded) {

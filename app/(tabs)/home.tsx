@@ -17,6 +17,7 @@ export default function HomeScreen() {
   const user = session?.user;
   const { suburb, city, state, loading, error } = useLocation();
   const backgroundColor = useThemeColor({}, 'background');
+  const secondaryColor = useThemeColor({}, 'secondary');
   const tintColor = useThemeColor({}, 'tint');
 
   const getLocationText = () => {
@@ -57,7 +58,7 @@ export default function HomeScreen() {
             </View>
             
             <View style={styles.textContainer}>
-              <ThemedText type='title'>
+              <ThemedText type='title' style={{color: secondaryColor}}>
                 Hello {user?.fname ? `${user.fname}` : ''}!
               </ThemedText>
               <ThemedText type='defaultSemiBold' style={{opacity: 0.7}}>Welcome to TaraG!</ThemedText>

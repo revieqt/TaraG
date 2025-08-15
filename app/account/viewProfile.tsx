@@ -58,7 +58,7 @@ export default function ProfileScreen() {
         onClose={() => setViewImageVisible(false)}
       />
 
-      <View style={{paddingTop: 45, alignItems: 'center'}}>
+      <View style={{marginTop: 200, alignItems: 'center'}}>
         {
           user ? (
             <>
@@ -114,5 +114,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     zIndex: 100,
     overflow: 'hidden',
+  },
+  content:{
+
   }
 });

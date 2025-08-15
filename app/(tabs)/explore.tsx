@@ -10,6 +10,7 @@ import { router } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Image, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import ExploreSearchModal from '../explore/explore-search';
+import GradientHeader from '@/components/GradientHeader';
 
 export default function ExploreScreen() {
   const { session } = useSession();
@@ -94,7 +95,7 @@ export default function ExploreScreen() {
       onScroll={handleScroll}
       scrollEventThrottle={16}
     >
-        {/* Post input UI */}
+        <GradientHeader/>
         <View
           style={styles.postInput}
         >
@@ -134,7 +135,7 @@ export default function ExploreScreen() {
           <ThemedView key={index} color='primary' shadow style={styles.postContainer}>
             <TouchableOpacity onPress={() => router.push("/account/viewProfile")} style={{flexDirection: 'row'}}>
               <Image
-                source={{ uri: session?.user?.profileImage || 'https://ui-avatars.com/api/?name=User' }}
+                source={{ uri: session?.user?.profileImage}}
                 style={styles.postProfileImage}
               />
               <View style={{marginTop: -5, marginLeft: 10}}>
@@ -146,7 +147,7 @@ export default function ExploreScreen() {
               <ThemedText>This is additional content to make the post longer and enable vertical scrolling. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</ThemedText>
             </View>
           </ThemedView>
-                 ))}
+        ))}
          
        </ScrollView>
    );

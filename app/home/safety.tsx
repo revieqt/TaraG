@@ -17,8 +17,6 @@ import MapView, { Marker } from 'react-native-maps';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useThemeColor } from '@/hooks/useThemeColor';
 
-const { width } = Dimensions.get('window');
-
 export default function SafetyScreen() {
   const { session, updateSession } = useSession();
   const user = session?.user;
@@ -28,11 +26,10 @@ export default function SafetyScreen() {
   const [formNumber, setFormNumber] = useState('');
   const [formIndex, setFormIndex] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
-  const backgroundColor = useThemeColor({}, 'background');
 
   const emergencyContact = user?.emergencyContact && user.emergencyContact.length > 0 ? user.emergencyContact[0] : null;
 
-  const { latitude, longitude, loading: locationLoading, error: locationError } = useLocation();
+  const { latitude, longitude, loading: locationLoading} = useLocation();
 
   const [amenities, setAmenities] = useState<any[]>([]);
   const [amenityLoading, setAmenityLoading] = useState(false);
@@ -50,35 +47,62 @@ export default function SafetyScreen() {
     console.log('Fetching amenities:', { amenityType, latitude, longitude });
     
     try {
-      const requestBody = { 
-        amenity: amenityType, 
-        latitude, 
-        longitude 
-      };
+      // Define which amenities to fetch based on the button clicked
+      let amenitiesToFetch: string[] = [];
       
-      console.log('Request body:', requestBody);
-      console.log('Request URL:', `${BACKEND_URL}/emergency/nearest`);
-      
-      const res = await fetch(`${BACKEND_URL}/emergency/nearest`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(requestBody),
-      });
-      
-      console.log('Response status:', res.status);
-      
-      if (!res.ok) {
-        const errorText = await res.text();
-        console.error('Response error:', errorText);
-        throw new Error(`Failed to fetch amenities: ${res.status} ${errorText}`);
+      if (amenityType === 'hospital') {
+        amenitiesToFetch = ['hospital', 'clinic', 'doctors'];
+      } else if (amenityType === 'fire_station') {
+        amenitiesToFetch = ['fire_station', 'rescue_station'];
+      } else {
+        amenitiesToFetch = [amenityType];
       }
       
-      const data = await res.json();
-      console.log('Response data:', data);
-      setAmenities(data);
+      // Fetch all amenities in parallel
+      const amenityPromises = amenitiesToFetch.map(async (amenity) => {
+        const requestBody = { 
+          amenity: amenity, 
+          latitude, 
+          longitude 
+        };
+        
+        console.log(`Request body for ${amenity}:`, requestBody);
+        console.log(`Request URL for ${amenity}:`, `${BACKEND_URL}/amenities/nearest`);
+        
+        const res = await fetch(`${BACKEND_URL}/amenities/nearest`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(requestBody),
+        });
+        
+        console.log(`Response status for ${amenity}:`, res.status);
+        
+        if (!res.ok) {
+          const errorText = await res.text();
+          console.error(`Response error for ${amenity}:`, errorText);
+          throw new Error(`Failed to fetch ${amenity}: ${res.status} ${errorText}`);
+        }
+        
+        const data = await res.json();
+        console.log(`Response data for ${amenity}:`, data);
+        
+        // Add amenity type to each result
+        return data.map((item: any) => ({
+          ...item,
+          amenityType: amenity
+        }));
+      });
+      
+      const results = await Promise.all(amenityPromises);
+      
+      // Flatten and combine all results
+      const allAmenities = results.flat();
+      
+      // Sort by distance (you could implement distance calculation here)
+      setAmenities(allAmenities);
     } catch (err: any) {
       console.error('Fetch amenities error:', err);
-      setAmenityError(`Could not fetch emergency services: ${err.message}`);
+      setAmenityError('You might have network issues. Please try again');
     } finally {
       setAmenityLoading(false);
     }
@@ -88,7 +112,7 @@ export default function SafetyScreen() {
     const newContact = { name: formName, contactNumber: formAreaCode + formNumber };
     let updatedContacts = user?.emergencyContact ? [...user.emergencyContact] : [];
     let method: 'POST' | 'PUT' = formIndex !== null ? 'PUT' : 'POST';
-    let url = `${process.env.EXPO_PUBLIC_API_URL || 'https://tarag-backend.onrender.com/api'}/users/${user?.id}/emergency-contact`;
+    let url = `${BACKEND_URL}/users/${user?.id}/emergency-contact`;
     let body: any;
     if (formIndex !== null && updatedContacts[formIndex]) {
       updatedContacts[formIndex] = newContact;
@@ -166,9 +190,14 @@ export default function SafetyScreen() {
       
       {/* Info Section */}
       <View style={{padding: 16}}>
-        <ThemedText type="defaultSemiBold" style={{marginBottom: 8}}>
-          {amenity.name}
-        </ThemedText>
+        <View style={styles.amenityHeader}>
+          <ThemedText type="defaultSemiBold" style={{marginBottom: 8, flex: 1}}>
+            {amenity.name}
+          </ThemedText>
+          <ThemedText style={styles.amenityType}>
+            {amenity.amenityType?.charAt(0).toUpperCase() + amenity.amenityType?.slice(1) || 'Unknown'}
+          </ThemedText>
+        </View>
         
         {amenity.address && (
           <View style={styles.infoRow}>
@@ -196,6 +225,10 @@ export default function SafetyScreen() {
             </ThemedText>
           </View>
         )}
+
+        <View style={styles.infoRow}>
+          <Button title="Get Directions" onPress={() => {}} buttonStyle={{}}/>
+        </View>
       </View>
     </ThemedView>
   );
@@ -222,11 +255,6 @@ export default function SafetyScreen() {
             <ThemedText style={{textAlign: 'center', paddingTop: 20}}>
               Who do you need to reach in your emergency?
             </ThemedText>
-          
-          <LinearGradient
-            colors={[backgroundColor,backgroundColor,backgroundColor, 'transparent']}
-            style={styles.helpMenuGradient}
-          />
           <View style={styles.helpMenu}>
             
               <ThemedView shadow color='primary' style={styles.helpButton}>
@@ -262,17 +290,6 @@ export default function SafetyScreen() {
             style={styles.scrollContent}
             showsVerticalScrollIndicator={false}
           >
-            {locationLoading && (
-              <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#4300FF" />
-              </View>
-            )}
-            
-            {locationError && (
-              <View style={styles.errorContainer}>
-                <ThemedText type="error">{locationError}</ThemedText>
-              </View>
-            )}
             
             {amenityLoading && (
               <View style={styles.loadingContainer}>
@@ -347,15 +364,11 @@ const styles = StyleSheet.create({
     left: 16,
   },
   helpMenu:{
-    position: 'absolute',
-    top: 60,
-    left: 0,
-    right: 0,
-    zIndex: 100,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 40,
+    marginTop: 20,
   },
   helpButton:{
     padding: 15,
@@ -372,7 +385,6 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     marginTop: 10,
-    paddingTop: 80,
     paddingHorizontal: 16,
     paddingBottom: 200,
   },
@@ -404,7 +416,7 @@ const styles = StyleSheet.create({
   infoRow: {
     alignItems: 'center',
     flexDirection: 'row',
-    marginBottom: 6,
+    marginTop: 6,
     gap: 8,
     opacity: 0.5,
   },
@@ -413,13 +425,17 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  helpMenuGradient: {
-    width: '100%',
-    height: 110,
-    position: 'absolute',
-    top: 50,
-    left: 0,
-    right: 0,
-    zIndex: 100,
+  amenityHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  amenityType: {
+    backgroundColor: '#e0e0e0',
+    borderRadius: 5,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    fontSize: 12,
+    fontWeight: 'bold',
   },
 });

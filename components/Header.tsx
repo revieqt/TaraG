@@ -14,7 +14,7 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ label, style, rightButton, leftButton }) => {
   if (leftButton) {
     return (
-      <ThemedView lightColor="transparent" darkColor="transparent" style={[styles.container, style]}>
+      <ThemedView color='primary' style={[styles.container, style]}>
         {leftButton}
         <View style={{ flex: 1 }} />
         {rightButton}
@@ -22,7 +22,7 @@ const Header: React.FC<HeaderProps> = ({ label, style, rightButton, leftButton }
     );
   } else {
     return (
-      <ThemedView lightColor="transparent" darkColor="transparent" style={[styles.container, style]}>
+      <ThemedView color='primary' style={[styles.container, style]}>
         <BackButton />
         {label && <ThemedText type='subtitle' style={[styles.label, { flex: 1 }]}>{label}</ThemedText>}
         {rightButton}
@@ -39,7 +39,6 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     paddingHorizontal: 16,
     paddingBottom: 12,
-    backgroundColor: 'transparent',
   },
   label: {
     marginLeft: 12,

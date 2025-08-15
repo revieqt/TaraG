@@ -1,3 +1,4 @@
+import GradientHeader from '@/components/GradientHeader';
 import OptionsPopup from '@/components/OptionsPopup';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -30,6 +31,7 @@ export default function ProfileScreen() {
   return (
     <ThemedView style={{flex:1}}>
       <BackButton style={styles.backButton}/>
+      <GradientHeader/>
       {user && (
         <OptionsPopup
           actions={[

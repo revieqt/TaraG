@@ -37,13 +37,11 @@ const styles = StyleSheet.create({
   default: {
     fontFamily: 'Poppins',
     fontSize: 14,
-    lineHeight: 24,
     fontWeight: '500',
   },
   defaultSemiBold: {
     fontFamily: 'Poppins',
     fontSize: 16,
-    lineHeight: 24,
   },
   title: {
     fontFamily: 'PoppinsBold',

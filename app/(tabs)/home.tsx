@@ -7,7 +7,9 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useSession } from '@/context/SessionContext';
 import { useLocation } from '@/hooks/useLocation';
+import { useWeather } from '@/hooks/useWeather';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { getWeatherImage } from '@/utils/weatherUtils';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { ActivityIndicator, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
@@ -15,7 +17,8 @@ import { ActivityIndicator, Image, StyleSheet, TouchableOpacity, View } from 're
 export default function HomeScreen() {
   const { session } = useSession();
   const user = session?.user;
-  const { suburb, city, state, loading, error } = useLocation();
+  const { suburb, city, loading, error, latitude, longitude } = useLocation();
+  const { weatherData, loading: weatherLoading, error: weatherError } = useWeather(latitude || 0, longitude || 0);
   const backgroundColor = useThemeColor({}, 'background');
   const secondaryColor = useThemeColor({}, 'secondary');
   const tintColor = useThemeColor({}, 'tint');
@@ -128,12 +131,47 @@ export default function HomeScreen() {
            ) : (
             <>
               <ThemedView shadow color='primary' style={styles.locationContent}>
-                <TouchableOpacity onPress={() => router.push('/(tabs)/maps')}>
-                  <ThemedText>You're currently at</ThemedText>
-                  <ThemedText type='subtitle'>{getLocationText()}</ThemedText>
-                </TouchableOpacity>
+                {/* Weather Image */}
+                {weatherData && (
+                  <Image 
+                    source={getWeatherImage(weatherData.weatherCode)} 
+                    style={styles.weatherImage}
+                  />
+                )}
                 
+                <ThemedText style={{opacity: .5}}>You're currently at</ThemedText>
+                <ThemedText type='subtitle'>{getLocationText()}</ThemedText>
+                {weatherData && (
+                  <ThemedText style={{opacity: .5}}>
+                    {weatherData.weatherType}
+                  </ThemedText>
+                )}
+                <View style={{justifyContent: 'space-between', alignItems: 'center', flexDirection: 'row', gap: 10, marginTop: 30}}>
+                  <View style={styles.weather}>
+                    <ThemedIcons library='MaterialDesignIcons' name='thermometer' size={20} color='#B36B6B'/>
+                    <ThemedText type='defaultSemiBold' style={{marginTop: 3}}>
+                      {weatherData ? `${Math.round(weatherData.temperature)}°C` : '0°C'}
+                    </ThemedText>
+                    <ThemedText style={{opacity: .5}}>Temperature</ThemedText>
+                  </View>
+                  <View style={styles.weather}>
+                    <ThemedIcons library='MaterialDesignIcons' name='cloud' size={20} color='#6B8BA4'/>
+                    <ThemedText type='defaultSemiBold' style={{marginTop: 3}}>
+                      {weatherData ? `${weatherData.precipitation}mm` : '0mm'}
+                    </ThemedText>
+                    <ThemedText style={{opacity: .5}}>Precipitation</ThemedText>
+                  </View>
+                  <View style={styles.weather}>
+                    <ThemedIcons library='MaterialDesignIcons' name='water' size={20} color='#5A7D9A'/>
+                    <ThemedText type='defaultSemiBold' style={{marginTop: 3}}>
+                      {weatherData ? `${weatherData.humidity}%` : '0%'}
+                    </ThemedText>
+                    <ThemedText style={{opacity: .5}}>Air Humidity</ThemedText>
+                  </View>
+                </View>
               </ThemedView>
+
+
               <View style={styles.grid}>
                 <ThemedView shadow color='primary' style={[{padding: 15},styles.gridItem]}>
                   <ThemedText type='defaultSemiBold'>{city}</ThemedText>
@@ -220,9 +258,9 @@ const styles = StyleSheet.create({
   },
   locationContent: {
     width: '100%',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    padding: 20,
     borderRadius: 10,
+    overflow: 'hidden'
   },
   redirectToTara: {
     paddingHorizontal: 20,
@@ -267,9 +305,17 @@ const styles = StyleSheet.create({
     marginTop: 20,
     paddingVertical: 40,
   },
-  loadingText: {
-    marginTop: 10,
-    textAlign: 'center',
-    opacity: 0.7,
+  weather:{
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '30%'
+  },
+  weatherImage: {
+    position: 'absolute',
+    right: 0,
+    width: 150,
+    height: 150,
+    marginRight: -40,
+    marginTop: -15,
   },
 });

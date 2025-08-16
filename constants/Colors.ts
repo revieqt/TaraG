@@ -16,13 +16,13 @@ export const Colors = {
   },
   dark: {
     text: '#ECEDEE',
-    background: '#020D19',
+    background: '#011222',
     tint: tintColorDark,
     icon: '#9BA1A6',
     tabIconDefault: '#9BA1A6',
     tabIconSelected: tintColorDark,
 
-    primary: '#011222',
+    primary: '#020D19',
     secondary: '#00CAFF',
     accent: '#0065F8',
   },

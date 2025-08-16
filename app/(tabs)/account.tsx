@@ -34,12 +34,9 @@ export default function AccountScreen() {
       >
         <ThemedView shadow color='primary' style={styles.header}>
           <TouchableOpacity style={styles.profileButton} onPress={() => {router.push({ pathname: '/account/viewProfile', params: { userId: user?.id } })}}>
+
             <Image
-              source={
-                user?.profileImage
-                  ? { uri: user?.profileImage }
-                  : require('@/assets/images/defaultUser.jpg')
-              }
+              source={{ uri: session?.user?.profileImage || 'https://ui-avatars.com/api/?name=User' }}
               style={styles.profileImage}
             />
             <View style={{justifyContent: 'center'}}>

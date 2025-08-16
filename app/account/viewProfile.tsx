@@ -48,10 +48,10 @@ export default function ProfileScreen() {
           ]}
           style={styles.profileImage}
         >
-          <Image
-            source={user.profileImage ? { uri: user.profileImage } : require('@/assets/images/defaultUser.jpg')}
-            style={{flex:1}}
-          />
+            <Image
+              source={{ uri: session?.user?.profileImage || 'https://ui-avatars.com/api/?name=User' }}
+              style={{flex: 1}}
+            />
         </OptionsPopup>
       )}
       <ViewImageModal

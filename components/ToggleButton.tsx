@@ -41,7 +41,6 @@ const ToggleButton: React.FC<ToggleButtonProps> = ({
       disabled={disabled}
       buttonStyle={buttonStyle}
       textStyle={textStyle}
-      gradientColors={isSelected ? gradientColors : undefined}
     />
   );
 };

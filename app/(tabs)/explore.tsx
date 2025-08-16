@@ -95,7 +95,6 @@ export default function ExploreScreen() {
       onScroll={handleScroll}
       scrollEventThrottle={16}
     >
-        <GradientHeader/>
         <View
           style={styles.postInput}
         >

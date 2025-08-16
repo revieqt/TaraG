@@ -1,18 +1,20 @@
 import CubeButton from '@/components/CubeButton';
 import NotificationsButton from '@/components/custom/NotificationsButton';
 import HomeMap from '@/components/maps/HomeMap';
-import ParallaxHeader from '@/components/ParallaxHeader';
 import { ThemedIcons } from '@/components/ThemedIcons';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useSession } from '@/context/SessionContext';
 import { useLocation } from '@/hooks/useLocation';
 import { useWeather } from '@/hooks/useWeather';
+import { useAlerts } from '@/hooks/useAlerts';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { getWeatherImage } from '@/utils/weatherUtils';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import { ActivityIndicator, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image, StyleSheet, TouchableOpacity, View, ScrollView } from 'react-native';
+import { AlertCard } from '@/components/AlertCard';
+import { Alert } from '@/hooks/useAlerts';
 
 export default function HomeScreen() {
   const { session } = useSession();
@@ -23,6 +25,16 @@ export default function HomeScreen() {
   const secondaryColor = useThemeColor({}, 'secondary');
   const tintColor = useThemeColor({}, 'tint');
 
+  // Use alerts hook with user location
+  const userLocation = {
+    suburb,
+    city,
+    state: '',
+    region: '',
+    country: ''
+  };
+  const { alerts, loading: alertsLoading, error: alertsError } = useAlerts(userLocation);
+
   const getLocationText = () => {
     if (error) return 'Location unavailable';
     if (suburb && city) return `${suburb}, ${city}`;
@@ -31,11 +43,23 @@ export default function HomeScreen() {
     return 'Location unavailable';
   };
 
+  const handleAlertPress = (alert: Alert) => {
+    router.push({
+      pathname: '/account/alert-view',
+      params: {
+        alertId: alert.id,
+        title: alert.title,
+        note: alert.note,
+        severity: alert.severity,
+        target: alert.target.join(', ')
+      }
+    });
+  };
+
   return (
     <ThemedView style={{ flex: 1 }}>
-      <ParallaxHeader
-       header={
-          <View style={{flex: 1}}>
+      <ScrollView>
+        <View style={{height: 300, overflow: 'hidden'}}>
           <TouchableOpacity 
             style={{flex: 1}} 
             onPress={() => router.push('/(tabs)/maps')}
@@ -70,9 +94,6 @@ export default function HomeScreen() {
 
           <Image source={require('@/assets/images/tara-cheerful.png')} style={styles.taraImage} />
         </View>
-      }
-        headerHeight={100}
-      >
         <View style={{ paddingHorizontal: 20 }}>
           <View style={styles.menu}>
             <View style={styles.menuOptions}>
@@ -171,27 +192,33 @@ export default function HomeScreen() {
                 </View>
               </ThemedView>
 
-
-              <View style={styles.grid}>
-                <ThemedView shadow color='primary' style={[{padding: 15},styles.gridItem]}>
-                  <ThemedText type='defaultSemiBold'>{city}</ThemedText>
-                  <ThemedText type='subtitle'>30</ThemedText>
-                  
-                </ThemedView>
-
-                <View style={styles.gridItem}>
-                  <ThemedView shadow color='primary' style={styles.gridItemChild}>
-                    <ThemedText>Emergency State</ThemedText>
-                  </ThemedView>
-                  <ThemedView shadow color='primary'style={styles.gridItemChild}>
-                    <ThemedText>Explore more features in the app!</ThemedText>
-                  </ThemedView>
+              {/* Alerts Section */}
+              {alerts.length > 0 && (
+                <View style={styles.alertsSection}>
+                  <View style={styles.alertsHeader}>
+                    <ThemedText type="subtitle">Local Alerts</ThemedText>
+                    <ThemedText style={styles.alertCount}>{alerts.length} alert{alerts.length !== 1 ? 's' : ''}</ThemedText>
+                  </View>
+                  <ScrollView 
+                    horizontal 
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.alertsScrollContainer}
+                  >
+                    {alerts.map((alert) => (
+                      <AlertCard
+                        key={alert.id}
+                        alert={alert}
+                        onPress={handleAlertPress}
+                      />
+                    ))}
+                  </ScrollView>
                 </View>
-              </View>
+              )}
             </>
           )}
         </View>
-      </ParallaxHeader>
+      </ScrollView>
+          
     </ThemedView>
   );
 }
@@ -280,23 +307,22 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     backgroundColor: 'rgba(255, 255, 255, 0.3)',
   },
-  grid: {
+  alertsSection: {
+    marginTop: 20,
+  },
+  alertsHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 20,
-    gap: 10,
+    alignItems: 'center',
+    marginBottom: 12,
   },
-  gridItem: {
-    width: '48%',
-    height: 150,
-    borderRadius: 10,
+  alertCount: {
+    fontSize: 12,
+    opacity: 0.6,
   },
-  gridItemChild: {
-    width: '100%',
-    borderRadius: 10,
-    padding: 10,
-    height: '47%', // This ensures equal height for both children
-    marginBottom: 10,
+  alertsScrollContainer: {
+    paddingLeft: 0,
+    paddingRight: 20,
   },
   loadingContainer: {
     flex: 1,

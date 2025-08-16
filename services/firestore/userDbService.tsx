@@ -74,6 +74,7 @@ export async function fetchUserProfile(userId: string, email?: string) {
     'fname', 'lname', 'username', 'email', 'bdate', 'age', 'gender',
     'contactNumber', 'profileImage', 'status', 'type', 'createdOn'
   ];
+  
   const missing = requiredFields.filter(field => userData[field] === undefined || userData[field] === null);
   if (missing.length > 0) {
     throw 'User profile is incomplete. Missing: ' + missing.join(', ');

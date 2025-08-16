@@ -1,6 +1,7 @@
 import axios from 'axios';
+import {BACKEND_URL} from '@/constants/Config'
 
-const API_BASE_URL = 'http://192.168.56.1:5000/api/notifications';
+const API_BASE_URL = `${BACKEND_URL}/notifications`;
 
 export type Notification = {
   id: string;

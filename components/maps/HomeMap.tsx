@@ -4,13 +4,13 @@ import { StyleSheet } from 'react-native';
 import TaraMap from './TaraMap';
 
 const HomeMap: React.FC = () => {
-  const { latitude, longitude } = useLocation();
+  const { latitude, longitude, loading } = useLocation();
   const animationRef = useRef<number | null>(null);
   const [currentHeading, setCurrentHeading] = useState(0);
 
   // Start 360-degree rotation animation
   useEffect(() => {
-    if (latitude !== 0 && longitude !== 0) {
+    if (latitude !== 0 && longitude !== 0 && !loading) {
       // Clear any existing animation
       if (animationRef.current) {
         clearInterval(animationRef.current);
@@ -29,20 +29,20 @@ const HomeMap: React.FC = () => {
         }
       };
     }
-  }, [latitude, longitude]);
+  }, [latitude, longitude, loading]);
 
-  // Camera props for 3D view with rotation
-  const cameraProps = {
+  // Camera props for 3D view with rotation - only when location is available
+  const cameraProps = latitude !== 0 && longitude !== 0 && !loading ? {
     center: {
-      latitude: latitude || 14.5995,
-      longitude: longitude || 120.9842,
+      latitude: latitude as number,
+      longitude: longitude as number,
     },
     pitch: 45, // Better tilt angle to see buildings
     heading: currentHeading,
     zoom: 18, // Closer zoom to the user
     altitude: 500, // Lower altitude for closer view
     animationDuration: 100, // Slower animation for smoother transitions
-  };
+  } : undefined;
 
   return (
     <TaraMap

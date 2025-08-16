@@ -23,7 +23,7 @@ const NotificationsButton: React.FC<NotificationsButtonProps> = ({ userId, style
       onPress={() => router.push('/account/notifications')}
       activeOpacity={0.8}
     >
-      <ThemedView roundness={16} border='thin-gray' style={[styles.button, style]}>
+      <ThemedView roundness={16} style={[styles.button, style]}>
         <ThemedIcons library="MaterialIcons" name="notifications" size={24} />
       {hasUnread && <View style={styles.redPatch} pointerEvents="none" />}
       </ThemedView>

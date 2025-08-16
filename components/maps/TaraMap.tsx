@@ -34,8 +34,16 @@ const TaraMap: React.FC<TaraMapProps> = ({
   cameraProps,
 }) => {
   const { session } = useSession();
-  const { latitude, longitude } = useLocation();
+  const { latitude, longitude, loading } = useLocation();
   const mapRef = useRef<MapView>(null);
+
+  // Philippines bounding box coordinates
+  const PHILIPPINES_REGION: Region = {
+    latitude: 12.8797, // Center latitude of Philippines
+    longitude: 121.7740, // Center longitude of Philippines
+    latitudeDelta: 12.0, // Covers the whole Philippines from north to south
+    longitudeDelta: 12.0, // Covers the whole Philippines from east to west
+  };
 
   // Always center the map on the user's current location (unless using cameraProps)
   useEffect(() => {
@@ -43,12 +51,13 @@ const TaraMap: React.FC<TaraMapProps> = ({
       !cameraProps &&
       latitude !== 0 &&
       longitude !== 0 &&
-      mapRef.current
+      mapRef.current &&
+      !loading // Only animate when location is loaded
     ) {
       mapRef.current.animateToRegion(
         {
-          latitude: latitude || 0,
-          longitude: longitude || 0,
+          latitude: latitude as number,
+          longitude: longitude as number,
           latitudeDelta: region?.latitudeDelta ?? 0.01,
           longitudeDelta: region?.longitudeDelta ?? 0.01,
         },
@@ -56,7 +65,7 @@ const TaraMap: React.FC<TaraMapProps> = ({
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [latitude, longitude]);
+  }, [latitude, longitude, loading]);
 
   // Animate camera if cameraProps is provided
   useEffect(() => {
@@ -72,13 +81,8 @@ const TaraMap: React.FC<TaraMapProps> = ({
     }
   }, [cameraProps?.center?.latitude, cameraProps?.center?.longitude, cameraProps?.pitch, cameraProps?.heading, cameraProps?.zoom, cameraProps?.altitude, cameraProps?.animationDuration]);
 
-  // Use userCoordinates as region if region prop is not provided
-  const initialRegion: Region = region ?? {
-    latitude: latitude || 14.5995,
-    longitude: longitude || 120.9842,
-    latitudeDelta: 0.01,
-    longitudeDelta: 0.01,
-  };
+  // Always start with Philippines view, then animate to user location when available
+  const initialRegion: Region = region ?? PHILIPPINES_REGION;
 
   return (
     <View style={{ flex: 1 }}>
@@ -89,11 +93,11 @@ const TaraMap: React.FC<TaraMapProps> = ({
         provider={PROVIDER_DEFAULT}
         initialRegion={initialRegion}
       >
-        {showMarker && session && latitude !== 0 && longitude !== 0 && (
+        {showMarker && session && latitude !== 0 && longitude !== 0 && !loading && (
           <TaraMarker
             coordinate={{
-              latitude: latitude || 0,
-              longitude: longitude || 0,
+              latitude: latitude as number,
+              longitude: longitude as number,
             }}
             color="#0065F8"
             icon={session.user?.profileImage}

@@ -8,14 +8,12 @@ import TextField from '@/components/TextField';
 import { ThemedIcons } from '@/components/ThemedIcons';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { useSession } from '@/context/SessionContext';
 import { BACKEND_URL } from '@/constants/Config';
+import { useSession } from '@/context/SessionContext';
 import { useLocation } from '@/hooks/useLocation';
 import React, { useState } from 'react';
-import { StyleSheet, TouchableOpacity, View, ScrollView, ActivityIndicator, Dimensions } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-import { LinearGradient } from 'expo-linear-gradient';
-import { useThemeColor } from '@/hooks/useThemeColor';
 
 export default function SafetyScreen() {
   const { session, updateSession } = useSession();
@@ -29,7 +27,7 @@ export default function SafetyScreen() {
 
   const emergencyContact = user?.emergencyContact && user.emergencyContact.length > 0 ? user.emergencyContact[0] : null;
 
-  const { latitude, longitude, loading: locationLoading} = useLocation();
+  const { latitude, longitude, loading: locationLoading } = useLocation();
 
   const [amenities, setAmenities] = useState<any[]>([]);
   const [amenityLoading, setAmenityLoading] = useState(false);
@@ -44,12 +42,8 @@ export default function SafetyScreen() {
     setAmenityError(null);
     setAmenities([]);
     
-    console.log('Fetching amenities:', { amenityType, latitude, longitude });
-    
     try {
-      // Define which amenities to fetch based on the button clicked
       let amenitiesToFetch: string[] = [];
-      
       if (amenityType === 'hospital') {
         amenitiesToFetch = ['hospital', 'clinic', 'doctors'];
       } else if (amenityType === 'fire_station') {
@@ -57,51 +51,31 @@ export default function SafetyScreen() {
       } else {
         amenitiesToFetch = [amenityType];
       }
-      
-      // Fetch all amenities in parallel
       const amenityPromises = amenitiesToFetch.map(async (amenity) => {
         const requestBody = { 
           amenity: amenity, 
           latitude, 
           longitude 
         };
-        
-        console.log(`Request body for ${amenity}:`, requestBody);
-        console.log(`Request URL for ${amenity}:`, `${BACKEND_URL}/amenities/nearest`);
-        
         const res = await fetch(`${BACKEND_URL}/amenities/nearest`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(requestBody),
         });
-        
-        console.log(`Response status for ${amenity}:`, res.status);
-        
         if (!res.ok) {
           const errorText = await res.text();
-          console.error(`Response error for ${amenity}:`, errorText);
           throw new Error(`Failed to fetch ${amenity}: ${res.status} ${errorText}`);
         }
-        
         const data = await res.json();
-        console.log(`Response data for ${amenity}:`, data);
-        
-        // Add amenity type to each result
         return data.map((item: any) => ({
           ...item,
           amenityType: amenity
         }));
       });
-      
       const results = await Promise.all(amenityPromises);
-      
-      // Flatten and combine all results
       const allAmenities = results.flat();
-      
-      // Sort by distance (you could implement distance calculation here)
       setAmenities(allAmenities);
     } catch (err: any) {
-      console.error('Fetch amenities error:', err);
       setAmenityError('You might have network issues. Please try again');
     } finally {
       setAmenityLoading(false);
@@ -163,7 +137,6 @@ export default function SafetyScreen() {
 
   const renderAmenityCard = (amenity: any, index: number) => (
     <ThemedView key={amenity.id || index} color='primary' shadow style={styles.amenityCard}>
-      {/* Map Section */}
       <View style={styles.mapContainer}>
         <MapView
           style={{flex: 1}}
@@ -187,8 +160,6 @@ export default function SafetyScreen() {
           />
         </MapView>
       </View>
-      
-      {/* Info Section */}
       <View style={{padding: 16}}>
         <View style={styles.amenityHeader}>
           <ThemedText type="defaultSemiBold" style={{marginBottom: 8, flex: 1}}>
@@ -198,7 +169,6 @@ export default function SafetyScreen() {
             {amenity.amenityType?.charAt(0).toUpperCase() + amenity.amenityType?.slice(1) || 'Unknown'}
           </ThemedText>
         </View>
-        
         {amenity.address && (
           <View style={styles.infoRow}>
             <ThemedIcons library="MaterialIcons" name="location-on" size={16}/>
@@ -207,7 +177,6 @@ export default function SafetyScreen() {
             </ThemedText>
           </View>
         )}
-        
         {amenity.phone && (
           <View style={styles.infoRow}>
             <ThemedIcons library="MaterialIcons" name="phone" size={16}/>
@@ -216,7 +185,6 @@ export default function SafetyScreen() {
             </ThemedText>
           </View>
         )}
-        
         {amenity.website && (
           <View style={styles.infoRow}>
             <ThemedIcons library="MaterialIcons" name="language" size={16}/>
@@ -225,7 +193,6 @@ export default function SafetyScreen() {
             </ThemedText>
           </View>
         )}
-
         <View style={styles.infoRow}>
           <Button title="Get Directions" onPress={() => {}} buttonStyle={{}}/>
         </View>
@@ -252,57 +219,58 @@ export default function SafetyScreen() {
         containerStyle={{ flex: 1 }}
         sections={[
         <View key="help" style={{ flex: 1 }}>
-            <ThemedText style={{textAlign: 'center', paddingTop: 20}}>
-              Who do you need to reach in your emergency?
-            </ThemedText>
-          <View style={styles.helpMenu}>
             
-              <ThemedView shadow color='primary' style={styles.helpButton}>
-                <TouchableOpacity 
-                  style={styles.helpButtonContent} 
-                  onPress={() => fetchAmenities('hospital')}
-                  disabled={locationLoading}
-                >
-                  <ThemedIcons library='MaterialIcons' name='local-hospital' size={30} color='red'/>
-                </TouchableOpacity>
-              </ThemedView>
-              <ThemedView shadow color='primary' style={styles.helpButton}>
-                <TouchableOpacity 
-                  style={styles.helpButtonContent} 
-                  onPress={() => fetchAmenities('police')}
-                  disabled={locationLoading}
-                >
-                  <ThemedIcons library='MaterialIcons' name='local-police' size={30} color='blue'/>
-                </TouchableOpacity>
-              </ThemedView>
-              <ThemedView shadow color='primary' style={styles.helpButton}>
-                <TouchableOpacity 
-                  style={styles.helpButtonContent} 
-                  onPress={() => fetchAmenities('fire_station')}
-                  disabled={locationLoading}
-                >
-                  <ThemedIcons library='MaterialIcons' name='local-fire-department' size={30} color='orange'/>
-                </TouchableOpacity>
-              </ThemedView>
-          </View>
+            {locationLoading ? (
+              <ActivityIndicator size="large" color="#4300FF" style={{marginTop: 40}} />
+            ) : (
+              <>
+                <ThemedText style={{textAlign: 'center', paddingTop: 20}}>
+                  Who do you need to reach in your emergency?
+                </ThemedText>
 
+                <View style={styles.helpMenu}>
+                  <ThemedView shadow color='primary' style={styles.helpButton}>
+                    <TouchableOpacity 
+                      style={styles.helpButtonContent} 
+                      onPress={() => fetchAmenities('hospital')}
+                    >
+                      <ThemedIcons library='MaterialIcons' name='local-hospital' size={30} color='red'/>
+                    </TouchableOpacity>
+                  </ThemedView>
+                  <ThemedView shadow color='primary' style={styles.helpButton}>
+                    <TouchableOpacity 
+                      style={styles.helpButtonContent} 
+                      onPress={() => fetchAmenities('police')}
+                    >
+                      <ThemedIcons library='MaterialIcons' name='local-police' size={30} color='blue'/>
+                    </TouchableOpacity>
+                  </ThemedView>
+                  <ThemedView shadow color='primary' style={styles.helpButton}>
+                    <TouchableOpacity 
+                      style={styles.helpButtonContent} 
+                      onPress={() => fetchAmenities('fire_station')}
+                    >
+                      <ThemedIcons library='MaterialIcons' name='local-fire-department' size={30} color='orange'/>
+                    </TouchableOpacity>
+                  </ThemedView>
+                </View>
+              </>
+              
+            )}
           <ScrollView 
             style={styles.scrollContent}
             showsVerticalScrollIndicator={false}
           >
-            
             {amenityLoading && (
               <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color="#4300FF" />
               </View>
             )}
-            
             {amenityError && (
               <View style={styles.errorContainer}>
                 <ThemedText type="error">{amenityError}</ThemedText>
               </View>
             )}
-            
             {amenities.length > 0 && (
               <View style={styles.amenitiesContainer}>
                 {amenities.map((amenity, index) => renderAmenityCard(amenity, index))}

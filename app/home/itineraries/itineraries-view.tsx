@@ -7,16 +7,21 @@ import BackButton from '@/components/custom/BackButton';
 import ViewItinerary from '@/components/custom/ViewItinerary';
 import TaraMap from '@/components/maps/TaraMap';
 import TaraMarker from '@/components/maps/TaraMarker';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, StyleSheet } from 'react-native';
-
+import { ActivityIndicator, StyleSheet, Alert } from 'react-native';
+import {
+  deleteItinerary as deleteItineraryApi,
+  markItineraryAsDone,
+  cancelItinerary as cancelItineraryApi,
+} from '@/services/firestore/itinerariesDbService';
 
 export default function ItineraryViewScreen() {
   const { itineraryData } = useLocalSearchParams<{ itineraryData?: string }>();
   const [itinerary, setItinerary] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     if (itineraryData) {
@@ -45,7 +50,7 @@ export default function ItineraryViewScreen() {
               ...location,
               dayIndex,
               locIndex,
-              label: `${dayIndex + 1}.${locIndex + 1}`
+              label: `${dayIndex + 1}.${locIndex + 1}`,
             });
           }
         });
@@ -54,12 +59,68 @@ export default function ItineraryViewScreen() {
           ...day,
           dayIndex: 0,
           locIndex: dayIndex,
-          label: `${dayIndex + 1}`
+          label: `${dayIndex + 1}`,
         });
       }
     });
     return locations;
   };
+
+  // Handlers for actions
+  const handleMarkAsCompleted = async () => {
+    if (!itinerary?.id) return;
+    setLoading(true);
+    const result = await markItineraryAsDone(itinerary.id);
+    setLoading(false);
+    if (result.success) {
+      setItinerary({ ...itinerary, status: 'completed', manuallyUpdated: true });
+      Alert.alert('Success', 'Itinerary marked as completed.');
+      router.replace('/home/itineraries/itineraries');
+    } else {
+      setError(result.errorMessage || 'Failed to mark as completed');
+    }
+  };
+
+  const handleCancel = async () => {
+    if (!itinerary?.id) return;
+    setLoading(true);
+    const result = await cancelItineraryApi(itinerary.id);
+    setLoading(false);
+    if (result.success) {
+      setItinerary({ ...itinerary, status: 'cancelled', manuallyUpdated: true });
+      Alert.alert('Success', 'Itinerary cancelled.');
+      router.replace('/home/itineraries/itineraries');
+    } else {
+      setError(result.errorMessage || 'Failed to cancel itinerary');
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!itinerary?.id) return;
+    Alert.alert(
+      'Delete Itinerary',
+      'Are you sure you want to delete this itinerary? Doing so will remove the itinerary permanently.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete', style: 'destructive', onPress: async () => {
+            setLoading(true);
+            const result = await deleteItineraryApi(itinerary.id);
+            setLoading(false);
+            if (result.success) {
+              Alert.alert('Deleted', 'Itinerary deleted.');
+              router.replace('/home/itineraries/itineraries');
+            } else {
+              setError(result.errorMessage || 'Failed to delete itinerary');
+            }
+          }
+        }
+      ]
+    );
+  };
+
+  const showFirstOptions =
+    itinerary && (itinerary.status === 'upcoming' || itinerary.status === 'current');
 
   return (
     <ThemedView style={{ flex: 1 }}>
@@ -79,37 +140,34 @@ export default function ItineraryViewScreen() {
         ))}
       </TaraMap>
 
-      <BottomSheet
-        snapPoints={[0.25, 0.9]}
-        defaultIndex={0}
-      >
-        {itinerary && (itinerary.status === 'upcoming' || itinerary.status === 'current') ? (
+      <BottomSheet snapPoints={[0.25, 0.9]} defaultIndex={0}>
+        {showFirstOptions ? (
           <OptionsPopup
             actions={[
               {
-                label: 'Create a Group Trip with this Itinerary',
+                label: 'Create a Group Trip with this Itinerary (n/a)',
                 icon: <ThemedIcons library="MaterialIcons" name="group" size={20} />,
                 onPress: () => [],
               },
               {
-                label: 'Update Itinerary',
+                label: 'Update Itinerary (n/a)',
                 icon: <ThemedIcons library="MaterialIcons" name="edit" size={20} />,
                 onPress: () => [],
               },
               {
                 label: 'Mark Itinerary as Completed',
                 icon: <ThemedIcons library="MaterialIcons" name="check" size={20} />,
-                onPress: () => [],
+                onPress: handleMarkAsCompleted,
               },
               {
                 label: 'Cancel Itinerary',
                 icon: <ThemedIcons library="MaterialIcons" name="cancel" size={20} />,
-                onPress: () => [],
+                onPress: handleCancel,
               },
               {
                 label: 'Delete Itinerary',
                 icon: <ThemedIcons library="MaterialIcons" name="delete" size={20} color="red" />,
-                onPress: () => [],
+                onPress: handleDelete,
               },
             ]}
             style={styles.options}
@@ -127,7 +185,7 @@ export default function ItineraryViewScreen() {
               {
                 label: 'Delete Itinerary',
                 icon: <ThemedIcons library="MaterialIcons" name="delete" size={20} color="red" />,
-                onPress: () => [],
+                onPress: handleDelete,
               },
             ]}
             style={styles.options}
@@ -142,7 +200,6 @@ export default function ItineraryViewScreen() {
     </ThemedView>
   );
 }
-
 
 const styles = StyleSheet.create({
   options: {

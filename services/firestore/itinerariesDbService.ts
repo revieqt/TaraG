@@ -71,3 +71,39 @@ export async function deleteItinerary(id: string) {
     return { success: false, errorMessage: err.message || 'Failed to delete itinerary' };
   }
 }
+
+// ...existing code...
+
+// Mark itinerary as completed
+export async function markItineraryAsDone(id: string) {
+  try {
+    const response = await fetch(`${BACKEND_URL}/itinerary/done/${id}`, {
+      method: 'POST',
+    });
+    const data = await response.json();
+    if (response.ok && data.success) {
+      return { success: true };
+    } else {
+      return { success: false, errorMessage: data.error || 'Failed to mark as completed' };
+    }
+  } catch (err: any) {
+    return { success: false, errorMessage: err.message || 'Failed to mark as completed' };
+  }
+}
+
+// Cancel itinerary
+export async function cancelItinerary(id: string) {
+  try {
+    const response = await fetch(`${BACKEND_URL}/itinerary/cancel/${id}`, {
+      method: 'POST',
+    });
+    const data = await response.json();
+    if (response.ok && data.success) {
+      return { success: true };
+    } else {
+      return { success: false, errorMessage: data.error || 'Failed to cancel itinerary' };
+    }
+  } catch (err: any) {
+    return { success: false, errorMessage: err.message || 'Failed to cancel itinerary' };
+  }
+}

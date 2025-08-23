@@ -22,7 +22,7 @@ export default function BottomSheet({
   snapPoints = [0.25, 0.5, 0.9],
   defaultIndex = 0,
 }: BottomSheetProps) {
-  const backgroundColor = useThemeColor({}, "background");
+  const backgroundColor = useThemeColor({}, "primary");
 
   // Hidden offset (only handle visible)
   const hiddenOffset = SCREEN_HEIGHT - 40;
@@ -110,7 +110,8 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   dragArea: {
-    paddingVertical: 12,
+    paddingVertical: 15,
+    marginBottom: 8,
     alignItems: "center",
     backgroundColor: "transparent",
   },
@@ -122,6 +123,6 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flex: 1,
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
   },
 });

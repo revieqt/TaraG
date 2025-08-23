@@ -8,9 +8,7 @@ import TaraMarker from '@/components/maps/TaraMarker';
 import { getItinerariesById } from '@/services/firestore/itinerariesDbService';
 import { useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Dimensions } from 'react-native';
-
-const { height: SCREEN_HEIGHT } = Dimensions.get('window');
+import { ActivityIndicator } from 'react-native';
 
 export default function ItineraryViewScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();

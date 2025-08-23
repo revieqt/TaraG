@@ -1,7 +1,9 @@
-import React from 'react';
-import { ThemedView } from '@/components/ThemedView';
+import LocationDisplay from '@/components/LocationDisplay';
+import OptionsPopup from '@/components/OptionsPopup';
+import { ThemedIcons } from '@/components/ThemedIcons';
 import { ThemedText } from '@/components/ThemedText';
-import { View } from 'react-native';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
 
 interface ViewItineraryProps {
   json: any;
@@ -10,36 +12,91 @@ interface ViewItineraryProps {
 const ViewItinerary: React.FC<ViewItineraryProps> = ({ json }) => {
   const itinerary = json;
 
+  const renderDayLocations = (loc: any) => {
+      return (
+        <LocationDisplay
+          content={loc.locations.map((l: any, i: number) => (
+            <View key={i}>
+              <ThemedText>{l.locationName} </ThemedText>
+              <ThemedText style={{opacity: .5}}>{l.note ? `${l.note}` : ''}</ThemedText>
+            </View>
+            
+          ))}
+        />
+      );
+  };
+
   return (
-    <ThemedView style={{ flex: 1 }}>
+    <View style={{ flex: 1 }}>
       {itinerary && (
-        <View style={{ padding: 20 }}>
-          <ThemedText type="title" style={{ marginBottom: 8 }}>{itinerary.title}</ThemedText>
-          <ThemedText>{itinerary.description}</ThemedText>
-          <ThemedText style={{ marginTop: 8 }}>Type: {itinerary.type}</ThemedText>
-          <ThemedText>Dates: {itinerary.startDate?.slice(0,10)} to {itinerary.endDate?.slice(0,10)}</ThemedText>
-          <ThemedText>Plan Daily: {itinerary.planDaily ? 'Yes' : 'No'}</ThemedText>
-          <ThemedText style={{ marginTop: 12, fontWeight: 'bold' }}>Locations:</ThemedText>
+        <>
+          <View style={{ flexDirection: 'row' }}>
+            <ThemedText type="title" style={{ marginBottom: 8, flex: 1 }}>{itinerary.title}</ThemedText>
+            <OptionsPopup
+              actions={[
+                {
+                  label: 'Update Itinerary',
+                  icon: <ThemedIcons library="MaterialIcons" name="visibility" size={20}/>,
+                  onPress: () => [],
+                },
+                {
+                  label: 'Create a Group Trip',
+                  icon: <ThemedIcons library="MaterialIcons" name="visibility" size={20}/>,
+                  onPress: () => [],
+                },
+                {
+                  label: 'Delete Itinerary',
+                  icon: <ThemedIcons library="MaterialIcons" name="delete" size={20} color="red" />,
+                  onPress: () => [],
+                },
+              ]}
+              style={styles.options}
+            >
+              <ThemedIcons library="MaterialCommunityIcons" name="dots-vertical" size={24} color="#888" />
+            </OptionsPopup>
+          </View>
+
+          <View style={styles.typesContainer}>
+            <ThemedIcons library="MaterialIcons" name="edit-calendar" size={15}/>
+            <ThemedText style={styles.type}>{itinerary.type}</ThemedText>
+            <ThemedIcons library="MaterialDesignIcons" name="calendar" size={15}/>
+            <ThemedText style={styles.type}>{itinerary.startDate?.slice(0,10)}  to  {itinerary.endDate?.slice(0,10)}</ThemedText>
+          </View>
+
+          <ThemedText style={{marginBottom: 25}}>{itinerary.description}</ThemedText>
           {Array.isArray(itinerary.locations) && itinerary.locations.length > 0 ? (
             itinerary.locations.map((loc: any, idx: number) => (
-              <View key={idx} style={{ marginBottom: 8, marginLeft: 8 }}>
-                {loc.date && <ThemedText style={{ fontWeight: 'bold' }}>Day {idx + 1} ({loc.date?.slice(0,10)})</ThemedText>}
-                {Array.isArray(loc.locations) ? (
-                  loc.locations.map((l: any, i: number) => (
-                    <ThemedText key={i} style={{ marginLeft: 8 }}>- {l.locationName} {l.note ? `(${l.note})` : ''}</ThemedText>
-                  ))
-                ) : (
-                  <ThemedText>- {loc.locationName} {loc.note ? `(${loc.note})` : ''}</ThemedText>
-                )}
+              <View key={idx}>
+                {loc.date && <>
+                  <ThemedText type='defaultSemiBold'>Day {idx + 1} </ThemedText>
+                  <ThemedText style={{marginBottom: 12, opacity: .5}}>({loc.date?.slice(0,10)})</ThemedText>
+                </>
+              }
+                {renderDayLocations(loc)}
               </View>
             ))
           ) : (
             <ThemedText style={{ marginLeft: 8 }}>No locations.</ThemedText>
           )}
-        </View>
+        </>
       )}
-    </ThemedView>
+    </View>
   );
 };
 
-export default ViewItinerary; 
+const styles = StyleSheet.create({
+  options:{
+    marginLeft: 12,
+  },
+  type:{
+    marginLeft: 4,
+    marginRight: 12,
+  },
+  typesContainer:{
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+    gap: 4
+  }
+});
+export default ViewItinerary;

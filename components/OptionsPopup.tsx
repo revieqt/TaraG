@@ -1,5 +1,5 @@
 import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { useThemeColor } from '@/hooks/useThemeColor';
 import React, { useRef, useState } from 'react';
 import { Animated, Easing, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
 
@@ -18,6 +18,7 @@ interface OptionsProps {
 const Options: React.FC<OptionsProps> = ({ actions, style, children }) => {
   const [visible, setVisible] = useState(false);
   const slideAnim = useRef(new Animated.Value(0)).current;
+  const primaryColor = useThemeColor({}, 'primary');
 
   const handleOpen = () => {
     setVisible(true);
@@ -56,11 +57,12 @@ const Options: React.FC<OptionsProps> = ({ actions, style, children }) => {
         onRequestClose={handleClose}
       >
         <Pressable style={styles.overlay} onPress={handleClose}>
-          <Animated.View style={[styles.menu, { transform: [{ translateY }] }]}>
+          <Animated.View style={[styles.menu, { backgroundColor: primaryColor, transform: [{ translateY }] }]}>
             {actions.map((action, index) => (
               <Pressable key={index} style={styles.menuItem} onPress={() => { handleClose(); action.onPress(); }}>
-                {action.icon && <ThemedView style={styles.icon}>{action.icon}</ThemedView>}
-                <ThemedText style={styles.label}>{action.label}</ThemedText>
+                {action.icon && action.icon}
+
+                <ThemedText>{action.label}</ThemedText>
               </Pressable>
             ))}
           </Animated.View>
@@ -85,7 +87,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.2)',
   },
   menu: {
-    backgroundColor: '#fff',
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
     paddingVertical: 8,
@@ -95,15 +96,12 @@ const styles = StyleSheet.create({
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 10,
+    paddingVertical: 13,
     paddingHorizontal: 16,
+    gap: 15
   },
   icon: {
     marginRight: 12,
-  },
-  label: {
-    fontSize: 16,
-    color: '#333',
   },
 });
 

@@ -85,7 +85,7 @@ export default function ItinerariesScreen() {
                 actions={[
                   {
                     label: 'View Itinerary',
-                    icon: <ThemedIcons library="MaterialIcons" name="visibility" size={20} color="#222" />,
+                    icon: <ThemedIcons library="MaterialIcons" name="visibility" size={20}/>,
                     onPress: () => goToViewItinerary(itinerary.id),
                   },
                   {

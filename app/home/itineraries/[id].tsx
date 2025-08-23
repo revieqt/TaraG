@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { Dimensions, ScrollView, ActivityIndicator } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
-import { ThemedView } from '@/components/ThemedView';
+import BottomSheet from '@/components/BottomSheet';
 import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from '@/components/ThemedView';
 import BackButton from '@/components/custom/BackButton';
 import ViewItinerary from '@/components/custom/ViewItinerary';
-import CollapsibleHeader from '@/components/CollapsibleHeader';
 import TaraMap from '@/components/maps/TaraMap';
 import TaraMarker from '@/components/maps/TaraMarker';
 import { getItinerariesById } from '@/services/firestore/itinerariesDbService';
+import { useLocalSearchParams } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Dimensions } from 'react-native';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -17,6 +17,7 @@ export default function ItineraryViewScreen() {
   const [itinerary, setItinerary] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isBottomSheetVisible, setBottomSheetVisible] = useState(true);
 
   useEffect(() => {
     if (id) {
@@ -34,10 +35,8 @@ export default function ItineraryViewScreen() {
     }
   }, [id]);
 
-  // Extract all locations from the itinerary
   const getAllLocations = () => {
     if (!itinerary?.locations) return [];
-    
     const locations: any[] = [];
     itinerary.locations.forEach((day: any, dayIndex: number) => {
       if (Array.isArray(day.locations)) {
@@ -52,7 +51,6 @@ export default function ItineraryViewScreen() {
           }
         });
       } else if (day.latitude && day.longitude) {
-        // For non-daily itineraries
         locations.push({
           ...day,
           dayIndex: 0,
@@ -66,29 +64,33 @@ export default function ItineraryViewScreen() {
 
   return (
     <ThemedView style={{ flex: 1 }}>
-      <BackButton type='floating'/>
+      <BackButton type='floating' />
+      {/* Map */}
+      <TaraMap showMarker={false}>
+        {getAllLocations().map((location, index) => (
+          <TaraMarker
+            key={`${location.dayIndex}-${location.locIndex}`}
+            coordinate={{
+              latitude: location.latitude,
+              longitude: location.longitude,
+            }}
+            color="#4300FF"
+            label={location.label}
+          />
+        ))}
+      </TaraMap>
+
       {loading && <ActivityIndicator style={{ marginTop: 32 }} />}
       {error && <ThemedText style={{ color: 'red', margin: 24 }}>{error}</ThemedText>}
+
       {!loading && !error && itinerary && (
-        <ScrollView>
-          <CollapsibleHeader defaultHeight={SCREEN_HEIGHT/2} expandedAllowance={75}>
-            <TaraMap showMarker={false}>
-              {getAllLocations().map((location, index) => (
-                <TaraMarker
-                  key={`${location.dayIndex}-${location.locIndex}`}
-                  coordinate={{
-                    latitude: location.latitude,
-                    longitude: location.longitude,
-                  }}
-                  color="#4300FF"
-                  label={location.label}
-                />
-              ))}
-            </TaraMap>
-          </CollapsibleHeader>
+        <BottomSheet
+          snapPoints={[ 0.5, 0.9]}
+          defaultIndex={0}
+        >
           <ViewItinerary json={itinerary} />
-        </ScrollView>
+        </BottomSheet>
       )}
     </ThemedView>
   );
-} 
+}

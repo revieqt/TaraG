@@ -7,29 +7,14 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-get-random-values';
-import 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 SplashScreen.preventAutoHideAsync();
 
-function AppContent() {
+// 🔑 This component safely runs session-dependent effects
+function SessionInitializer() {
   const { session } = useSession();
-  const [loaded] = useFonts({
-    Poppins: require('../assets/fonts/Poppins-Regular.ttf'),
-    PoppinsSemiBold: require('../assets/fonts/Poppins-SemiBold.ttf'),
-    PoppinsBold: require('../assets/fonts/Poppins-Bold.ttf'),
-  });
 
-  // Get the themed background color
-  const backgroundColor = useThemeColor({}, 'primary');
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  // Initialize Socket.io connection when user is logged in
   useEffect(() => {
     if (session?.user?.id) {
       socketService.connect(session.user.id);
@@ -42,47 +27,64 @@ function AppContent() {
     };
   }, [session?.user?.id]);
 
+  return null;
+}
+
+export default function RootLayout() {
+  const [loaded] = useFonts({
+    Poppins: require('../assets/fonts/Poppins-Regular.ttf'),
+    PoppinsSemiBold: require('../assets/fonts/Poppins-SemiBold.ttf'),
+    PoppinsBold: require('../assets/fonts/Poppins-Bold.ttf'),
+  });
+
+  // Themed background color
+  const backgroundColor = useThemeColor({}, 'primary');
+
+  useEffect(() => {
+    if (loaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded]);
+
   if (!loaded) {
     return null;
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor }} edges={['top', 'bottom']}>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(tabs)" />
-        
-        <Stack.Screen name="auth/login" />
-        <Stack.Screen name="auth/register" />
-        <Stack.Screen name="auth/verifyEmail" />
-        <Stack.Screen name="auth/warning" />
-        <Stack.Screen name="auth/forgotPassword" />
-        <Stack.Screen name="auth/changePassword" />
-        <Stack.Screen name="auth/firstLogin" />
-        
-        <Stack.Screen name="account/viewProfile" />
-        <Stack.Screen name="account/notifications" />
-        <Stack.Screen name="account/getPro" />
+      <SessionProvider>
+        <SafeAreaView style={{ flex: 1, backgroundColor }} edges={['top', 'bottom']}>
+          {/* ✅ Safe place to use useSession */}
+          <SessionInitializer />
 
-        <Stack.Screen name="home/routes/routes" />
-        <Stack.Screen name="home/routes/routes-create" />
-        <Stack.Screen name="home/itineraries/itineraries" />
-        <Stack.Screen name="home/itineraries/itineraries-create" />
-        <Stack.Screen name="home/itineraries/[id]" />
-        <Stack.Screen name="home/safety" />
-        <Stack.Screen name="home/aiChat" />
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="(tabs)" />
 
-        <Stack.Screen name="index" />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </SafeAreaView>
-  );
-}
+            <Stack.Screen name="auth/login" />
+            <Stack.Screen name="auth/register" />
+            <Stack.Screen name="auth/verifyEmail" />
+            <Stack.Screen name="auth/warning" />
+            <Stack.Screen name="auth/forgotPassword" />
+            <Stack.Screen name="auth/changePassword" />
+            <Stack.Screen name="auth/firstLogin" />
 
-export default function RootLayout() {
-  return (
-    <SessionProvider>
-      <AppContent />
-    </SessionProvider>
+            <Stack.Screen name="account/viewProfile" />
+            <Stack.Screen name="account/notifications" />
+            <Stack.Screen name="account/getPro" />
+
+            <Stack.Screen name="home/routes/routes" />
+            <Stack.Screen name="home/routes/routes-create" />
+            <Stack.Screen name="home/itineraries/itineraries" />
+            <Stack.Screen name="home/itineraries/itineraries-create" />
+            <Stack.Screen name="home/itineraries/[id]" />
+            <Stack.Screen name="home/safety" />
+            <Stack.Screen name="home/aiChat" />
+
+            <Stack.Screen name="index" />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+
+          <StatusBar style="auto" />
+        </SafeAreaView>
+      </SessionProvider>
   );
 }

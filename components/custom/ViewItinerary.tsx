@@ -30,31 +30,7 @@ const ViewItinerary: React.FC<ViewItineraryProps> = ({ json }) => {
     <View style={{ flex: 1 }}>
       {itinerary && (
         <>
-          <View style={{ flexDirection: 'row' }}>
-            <ThemedText type="title" style={{ marginBottom: 8, flex: 1 }}>{itinerary.title}</ThemedText>
-            <OptionsPopup
-              actions={[
-                {
-                  label: 'Update Itinerary',
-                  icon: <ThemedIcons library="MaterialIcons" name="visibility" size={20}/>,
-                  onPress: () => [],
-                },
-                {
-                  label: 'Create a Group Trip',
-                  icon: <ThemedIcons library="MaterialIcons" name="visibility" size={20}/>,
-                  onPress: () => [],
-                },
-                {
-                  label: 'Delete Itinerary',
-                  icon: <ThemedIcons library="MaterialIcons" name="delete" size={20} color="red" />,
-                  onPress: () => [],
-                },
-              ]}
-              style={styles.options}
-            >
-              <ThemedIcons library="MaterialCommunityIcons" name="dots-vertical" size={24} color="#888" />
-            </OptionsPopup>
-          </View>
+          <ThemedText type="title" style={{ marginBottom: 8, flex: 1 }}>{itinerary.title}</ThemedText>
 
           <View style={styles.typesContainer}>
             <ThemedIcons library="MaterialIcons" name="edit-calendar" size={15}/>

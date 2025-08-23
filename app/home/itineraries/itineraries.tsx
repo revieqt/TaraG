@@ -1,4 +1,3 @@
-
 import CubeButton from '@/components/CubeButton';
 import Header from '@/components/Header';
 import HorizontalSections from '@/components/HorizontalSections';
@@ -51,20 +50,23 @@ export default function ItinerariesScreen() {
     );
   };
 
-  // Helper for navigation to itinerary view
-  const goToViewItinerary = (id: string) => {
-    router.push(`/home/itineraries/${id}` as any);
+  // Pass the itinerary data directly to the view screen
+  const goToViewItinerary = (itinerary: any) => {
+    router.push({
+      pathname: '/home/itineraries/itineraries-view',
+      params: { itineraryData: JSON.stringify(itinerary) }
+    });
   };
 
   return (
     <ThemedView style={{ flex: 1 }}>
       <Header label="Itineraries" />
       <HorizontalSections
-        labels={['Pending', 'History']}
+        labels={['Current', 'Upcoming', 'History']}
         type="fullTab"
         containerStyle={{ flex: 1 }}
         sections={[
-        <View key="pending" style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'stretch', padding: 16 }}>
+        <View key="current" style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'stretch', padding: 16 }}>
           {loading && 
             <ActivityIndicator size="large" style={{marginTop: 20}}/>
           }
@@ -75,31 +77,23 @@ export default function ItinerariesScreen() {
           {!loading && !error && itineraries.map((itinerary) => (
             <View key={itinerary.id} style={styles.itineraryRow}>
               <View style={{ flex: 1 }}>
-                <TouchableOpacity onPress={() => goToViewItinerary(itinerary.id)} activeOpacity={0.7}>
+                <TouchableOpacity onPress={() => goToViewItinerary(itinerary)} activeOpacity={0.7}>
                   <ThemedText type='defaultSemiBold'>{itinerary.title}</ThemedText>
-                  <ThemedText>{`${itinerary.startDate?.slice(0,10)} to ${itinerary.endDate?.slice(0,10)}`}</ThemedText>
-                  <ThemedText>{itinerary.type}</ThemedText>
+                  <View style={styles.typesContainer}>
+                    <ThemedIcons library="MaterialIcons" name="edit-calendar" size={15}/>
+                    <ThemedText style={styles.type}>{itinerary.type}</ThemedText>
+                    <ThemedIcons library="MaterialDesignIcons" name="calendar" size={15}/>
+                    <ThemedText style={styles.type}>{itinerary.startDate?.slice(0,10)}  to  {itinerary.endDate?.slice(0,10)}</ThemedText>
+                  </View>
                 </TouchableOpacity>
               </View>
-              <OptionsPopup
-                actions={[
-                  {
-                    label: 'View Itinerary',
-                    icon: <ThemedIcons library="MaterialIcons" name="visibility" size={20}/>,
-                    onPress: () => goToViewItinerary(itinerary.id),
-                  },
-                  {
-                    label: 'Delete Itinerary',
-                    icon: <ThemedIcons library="MaterialIcons" name="delete" size={20} color="red" />,
-                    onPress: () => handleDelete(itinerary.id),
-                  },
-                ]}
-                style={{ marginLeft: 12 }}
-              >
-                <ThemedIcons library="MaterialCommunityIcons" name="dots-vertical" size={24} color="#888" />
-              </OptionsPopup>
             </View>
           ))}
+        </View>,
+        <View key="upcoming" style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ThemedView>
+            <ThemedText>Upcoming itineraries will be shown here.</ThemedText>
+          </ThemedView>
         </View>,
         <View key="history" style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <ThemedView>
@@ -111,7 +105,7 @@ export default function ItinerariesScreen() {
         size={60}
         iconName="add"
         iconColor="#fff"
-        onPress={() => router.push('/home/itineraries/itineraries-create')}
+        onPress={() => router.push('/home/itineraries/itineraries-form')}
         style={{position: 'absolute', bottom: 20, right: 20}}
       />
     </ThemedView>
@@ -128,4 +122,16 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
   },
+  type:{
+    marginLeft: 2,
+    marginRight: 10,
+    fontSize: 13,
+    opacity: .5
+  },
+  typesContainer:{
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+    gap: 4
+  }
 });

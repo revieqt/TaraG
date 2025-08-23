@@ -1,3 +1,4 @@
+import { useThemeColor } from '@/hooks/useThemeColor';
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Dimensions, ScrollView, StyleSheet, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { ThemedText } from './ThemedText';
@@ -30,6 +31,9 @@ const HorizontalSections: React.FC<HorizontalSectionsProps> = ({
   const scrollViewRef = useRef<ScrollView>(null);
   const opacityAnim = useRef(labels.map(() => new Animated.Value(0.3))).current;
 
+  // Get secondary color from theme
+  const secondaryColor = useThemeColor({}, 'secondary');
+
   useEffect(() => {
     Animated.timing(opacityAnim[activeIndex], {
       toValue: 1,
@@ -37,7 +41,6 @@ const HorizontalSections: React.FC<HorizontalSectionsProps> = ({
       useNativeDriver: true,
     }).start();
 
-    // Reset previous sections to low opacity
     opacityAnim.forEach((anim, idx) => {
       if (idx !== activeIndex) {
         Animated.timing(anim, {
@@ -68,7 +71,6 @@ const HorizontalSections: React.FC<HorizontalSectionsProps> = ({
           key={label}
           style={[
             styles.fullTabButton,
-            activeIndex === idx && styles.activeFullTabButton,
             activeIndex === idx && activeTabStyle,
             { flex: 1 },
           ].filter(Boolean) as ViewStyle[]}
@@ -79,13 +81,17 @@ const HorizontalSections: React.FC<HorizontalSectionsProps> = ({
             <ThemedText style={[
               styles.fullTabText,
               tabTextStyle,
-              activeIndex === idx && styles.activeFullTabText,
+              activeIndex === idx && {
+                color: secondaryColor, // Use secondary color for active tab text
+              },
               activeIndex === idx && activeTabTextStyle,
             ].filter(Boolean) as TextStyle[]}>{label}</ThemedText>
           </View>
           <View style={[
             styles.fullTabUnderline,
-            activeIndex === idx && styles.activeFullTabUnderline,
+            activeIndex === idx && {
+              backgroundColor: secondaryColor, // Use secondary color for active underline
+            },
           ].filter(Boolean) as ViewStyle[]} />
         </TouchableOpacity>
       ))}
@@ -157,9 +163,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     height: '100%',
   },
-  activeFullTabButton: {
-    backgroundColor: 'transparent',
-  },
   fullTabInnerContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -170,18 +173,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
   },
-  activeFullTabText: {
-    color: '#007AFF',
-    fontWeight: 'bold',
-  },
   fullTabUnderline: {
     height: 3,
     width: '80%',
     backgroundColor: 'transparent',
     borderRadius: 10,
-  },
-  activeFullTabUnderline: {
-    backgroundColor: '#007AFF',
   },
   dotsContainer: {
     flexDirection: 'row',

@@ -191,7 +191,7 @@ export default function CreateItineraryScreen() {
   }
 
   return (
-    <ThemedView style={{ flex: 1 }}>
+    <ThemedView color='primary' style={{ flex: 1 }}>
       <Header label="Create Itinerary" />
       <KeyboardAvoidingView
         style={{ flex: 1 }}
@@ -233,7 +233,7 @@ export default function CreateItineraryScreen() {
           
           {/* Only show planDaily toggle if more than 1 day */}
           {numDays > 1 && (
-            <ThemedView style={styles.rowBetween}>
+            <View style={styles.rowBetween}>
               <ThemedText>Plan Daily?</ThemedText>
               <ToggleButton
                 value="planDaily"
@@ -244,10 +244,10 @@ export default function CreateItineraryScreen() {
                   setDailyLocations([]);
                 }}
               />
-            </ThemedView>
+            </View>
           )}
           {planDaily ? (
-            <ThemedView style={{ marginTop: 10 }}>
+            <View style={{ marginTop: 10 }}>
               <ThemedText type='subtitle' style={styles.sectionTitle}>Daily Plans</ThemedText>
               {autoDailyLocations.map((day, dayIdx) => (
                 <ThemedView key={dayIdx} style={styles.dayBlock}>
@@ -276,9 +276,9 @@ export default function CreateItineraryScreen() {
                   )}
                 </ThemedView>
               ))}
-            </ThemedView>
+            </View>
           ) : (
-            <ThemedView style={{ marginTop: 10 }}>
+            <View style={{ marginTop: 10 }}>
               <ThemedText type="subtitle" style={styles.sectionTitle}>Locations</ThemedText>
               {locations.map((loc, idx) => (
                 <View key={idx} style={styles.locationRow}>
@@ -301,7 +301,7 @@ export default function CreateItineraryScreen() {
                   <ThemedText style={styles.addLocationText}>Add Location</ThemedText>
                 </TouchableOpacity>
               )}
-            </ThemedView>
+            </View>
           )}
           <Button
             title="Create Itinerary"

@@ -27,7 +27,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
   maximumDate,
   style, // <-- add this
 }) => {
-  const backgroundColor = useThemeColor({}, 'background');
+  const backgroundColor = useThemeColor({}, 'primary');
   const textColor = useThemeColor({}, 'text');
   const borderColor = useThemeColor({}, 'tint');
 

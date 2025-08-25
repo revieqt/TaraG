@@ -119,6 +119,17 @@ export default function ItineraryViewScreen() {
     );
   };
 
+  const handleGoToUpdateForm = () => {
+    if (!itinerary || typeof itinerary !== 'object') {
+      Alert.alert('Error', 'No itinerary data to update.');
+      return;
+    }
+    router.push({
+      pathname: '/home/itineraries/itineraries-form',
+      params: { itineraryData: JSON.stringify(itinerary) }
+    });
+  };
+
   const showFirstOptions =
     itinerary && (itinerary.status === 'upcoming' || itinerary.status === 'current');
 
@@ -150,7 +161,7 @@ export default function ItineraryViewScreen() {
                 onPress: () => [],
               },
               {
-                label: 'Update Itinerary (n/a)',
+                label: 'Update Itinerary',
                 icon: <ThemedIcons library="MaterialIcons" name="edit" size={20} />,
                 onPress: () => [],
               },

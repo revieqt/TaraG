@@ -107,3 +107,21 @@ export async function cancelItinerary(id: string) {
     return { success: false, errorMessage: err.message || 'Failed to cancel itinerary' };
   }
 }
+
+export async function updateItinerary(id: string, itinerary: any) {
+  try {
+    const response = await fetch(`${BACKEND_URL}/itinerary/update/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(itinerary),
+    });
+    const data = await response.json();
+    if (response.ok && data.success) {
+      return { success: true };
+    } else {
+      return { success: false, errorMessage: data.error || 'Failed to update itinerary' };
+    }
+  } catch (err: any) {
+    return { success: false, errorMessage: err.message || 'Failed to update itinerary' };
+  }
+}

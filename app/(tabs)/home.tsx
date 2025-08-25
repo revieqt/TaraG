@@ -214,8 +214,16 @@ export default function HomeScreen() {
                   </ScrollView>
                 </View>
               )}
+
+              
             </>
           )}
+
+          <ThemedView color='primary' shadow style={styles.adsContainer}>
+            <View style={{width: 300, height: 250, backgroundColor: 'orange', alignSelf: 'center'}}>
+
+            </View>
+          </ThemedView>
         </View>
       </ScrollView>
           
@@ -344,4 +352,9 @@ const styles = StyleSheet.create({
     marginRight: -40,
     marginTop: -15,
   },
+  adsContainer: {
+    padding: 20,
+    borderRadius: 10,
+    marginVertical: 30,
+  }
 });

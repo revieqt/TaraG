@@ -1,33 +1,21 @@
 import Button from '@/components/Button';
 import Carousel from '@/components/Carousel';
-import NotificationsButton from '@/components/custom/NotificationsButton';
-import { ThemedIcons } from '@/components/ThemedIcons';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useSession } from '@/context/SessionContext';
-import { hasUnreadNotifications } from '@/services/firestore/userDbService';
 import { router } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Image, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
-import ExploreSearchModal from '../explore/explore-search';
-import GradientHeader from '@/components/GradientHeader';
+import CubeButton from '@/components/CubeButton';
 
 export default function ExploreScreen() {
   const { session } = useSession();
-  const userId = session?.user?.id;
-  const [hasUnread, setHasUnread] = useState(false);
-  const [searchModalVisible, setSearchModalVisible] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
   const scrollY = useRef(new Animated.Value(0)).current;
   const lastScrollY = useRef(0);
   const scrollViewRef = useRef<ScrollView>(null);
   const headerHeight = 80;
   const tabHeight = 48;
-
-  useEffect(() => {
-    if (!userId) return;
-    hasUnreadNotifications(userId).then(setHasUnread);
-  }, [userId]);
 
   // Initialize lastScrollY when component mounts
   useEffect(() => {
@@ -128,26 +116,6 @@ export default function ExploreScreen() {
             </View>
           </TouchableOpacity>
         </ThemedView>
-
-        {/* Additional content to make scrolling more noticeable */}
-        {Array.from({ length: 10 }).map((_, index) => (
-          <ThemedView key={index} color='primary' shadow style={styles.postContainer}>
-            <TouchableOpacity onPress={() => router.push("/account/viewProfile")} style={{flexDirection: 'row'}}>
-              <Image
-                source={{ uri: session?.user?.profileImage}}
-                style={styles.postProfileImage}
-              />
-              <View style={{marginTop: -5, marginLeft: 10}}>
-                <ThemedText>Sample Post {index + 1}</ThemedText>
-                <ThemedText style={{marginTop: -5, fontSize: 12, opacity: 0.5}}>This is sample content to test scrolling</ThemedText>
-              </View>
-            </TouchableOpacity>
-            <View style={{marginTop: 10}}>
-              <ThemedText>This is additional content to make the post longer and enable vertical scrolling. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</ThemedText>
-            </View>
-          </ThemedView>
-        ))}
-         
        </ScrollView>
    );
 
@@ -176,14 +144,6 @@ export default function ExploreScreen() {
             navigationArrows
           />
         </View>
-
-        {/* Additional content for Tours section */}
-        {Array.from({ length: 5 }).map((_, index) => (
-          <ThemedView key={index} color='primary' shadow style={styles.postContainer}>
-            <ThemedText type='subtitle'>Tour {index + 1}</ThemedText>
-            <ThemedText>This is a sample tour description that makes the content longer for testing vertical scrolling.</ThemedText>
-          </ThemedView>
-                 ))}
        </ScrollView>
    );
 
@@ -197,11 +157,7 @@ export default function ExploreScreen() {
       onScroll={handleScroll}
       scrollEventThrottle={16}
     >
-        <View style={styles.groupButtonsContainer}>
-          <Button title='Create Group' onPress={() => alert('Done')}/>
-          <Button title='Join with Invite Code' onPress={() => alert('Done')}/>
-                 </View>
-       </ScrollView>
+    </ScrollView>
    );
 
   // Calculate the total height of sticky elements
@@ -228,29 +184,10 @@ export default function ExploreScreen() {
       >
         <ThemedView style={styles.header} color='primary'>
           <ThemedText type='subtitle'>Explore</ThemedText>
-          <View style={{flexDirection: 'row', gap: 20, alignItems: 'center'}}>
-            <TouchableOpacity onPress={() => setSearchModalVisible(true)}>
-              <ThemedIcons library="MaterialIcons" name="search" size={25}/>
-            </TouchableOpacity>
-            <NotificationsButton userId={userId} />
-          </View>
         </ThemedView>
-      </Animated.View>
 
-      <ExploreSearchModal visible={searchModalVisible} onClose={() => setSearchModalVisible(false)} />
-      
-      {/* Sticky Tab Chooser */}
-      <Animated.View 
-        style={[
-          styles.stickyTabContainer,
-          {
-            transform: [{ translateY: headerTranslateY }],
-            opacity: headerOpacity,
-          }
-        ]}
-      >
         <ThemedView color='primary' style={styles.tabRow}>
-          {['Explore', 'Tours', 'Your Groups'].map((label, idx) => (
+          {['Feed', 'Tours', 'Your Groups'].map((label, idx) => (
             <TouchableOpacity
               key={label}
               style={[
@@ -277,7 +214,7 @@ export default function ExploreScreen() {
       </Animated.View>
 
       {/* Content */}
-      <View style={styles.contentContainer}>
+      <View style={{flex: 1}}>
         <View style={[styles.sectionContainer, { display: activeTab === 0 ? 'flex' : 'none' }]}>
           {renderExploreSection()}
         </View>
@@ -286,6 +223,23 @@ export default function ExploreScreen() {
         </View>
         <View style={[styles.sectionContainer, { display: activeTab === 2 ? 'flex' : 'none' }]}>
           {renderGroupsSection()}
+          <CubeButton
+            size={60}
+            iconName="add"
+            iconColor="#fff"
+            onPress={() => router.push('/home/itineraries/itineraries-form')}
+            style={{position: 'absolute', bottom: 20, right: 15}}
+          />
+
+          <CubeButton
+            size={60}
+            iconName="group-add"
+            iconSize={25}
+            iconColor="#fff"
+            color='#33A1E0'
+            onPress={() => router.push('/home/itineraries/itineraries-form')}
+            style={{position: 'absolute', bottom: 95, right: 15}}
+          />
         </View>
       </View>
     </ThemedView>
@@ -297,9 +251,7 @@ const styles = StyleSheet.create({
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingBottom: 10,
-    paddingTop: 20,
+    padding: 20,
     alignItems: 'center',
   },
   container: {

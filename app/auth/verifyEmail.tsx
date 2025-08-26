@@ -2,7 +2,7 @@ import Button from '@/components/Button';
 import { ThemedIcons } from '@/components/ThemedIcons';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { verifyUserEmail } from '@/services/firestore/userDbService';
+import { verifyUserEmail } from '@/services/userApiService';
 import { useRouter } from 'expo-router';
 import { getAuth, reload } from 'firebase/auth';
 import React, { useEffect, useState } from 'react';

@@ -9,7 +9,7 @@ import {
   updatePassword,
 } from 'firebase/auth';
 import { collection, doc, getDoc, getDocs, getFirestore, query, setDoc, where } from 'firebase/firestore';
-import { auth, db } from './config';
+import { auth, db } from './firebaseConfig';
 
 // Login user with email and password
 export async function loginUser(email: string, password: string) {

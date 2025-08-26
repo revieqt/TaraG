@@ -3,7 +3,7 @@ import HorizontalSections from '@/components/HorizontalSections';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import ToggleButton from '@/components/ToggleButton';
-import { auth, db } from '@/services/firestore/config';
+import { auth, db } from '@/services/firebaseConfig';
 import { router } from 'expo-router';
 import { doc, updateDoc } from 'firebase/firestore';
 import React, { useState } from 'react';

@@ -1,20 +1,20 @@
 import BottomSheet from '@/components/BottomSheet';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
 import OptionsPopup from '@/components/OptionsPopup';
 import { ThemedIcons } from '@/components/ThemedIcons';
+import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from '@/components/ThemedView';
 import BackButton from '@/components/custom/BackButton';
 import ViewItinerary from '@/components/custom/ViewItinerary';
 import TaraMap from '@/components/maps/TaraMap';
 import TaraMarker from '@/components/maps/TaraMarker';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, StyleSheet, Alert } from 'react-native';
 import {
+  cancelItinerary as cancelItineraryApi,
   deleteItinerary as deleteItineraryApi,
   markItineraryAsDone,
-  cancelItinerary as cancelItineraryApi,
-} from '@/services/firestore/itinerariesDbService';
+} from '@/services/itinerariesApiService';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Alert, StyleSheet } from 'react-native';
 
 export default function ItineraryViewScreen() {
   const { itineraryData } = useLocalSearchParams<{ itineraryData?: string }>();

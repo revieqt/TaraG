@@ -3,6 +3,7 @@ import DatePicker from '@/components/DatePicker';
 import DropDownField from '@/components/DropDownField';
 import Header from '@/components/Header';
 import LocationAutocomplete, { LocationItem } from '@/components/LocationAutocomplete';
+import LocationDisplay from '@/components/LocationDisplay';
 import LoadingModal from '@/components/modals/LoadingModal';
 import TextField from '@/components/TextField';
 import ThemedIcons from '@/components/ThemedIcons';
@@ -10,10 +11,9 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import ToggleButton from '@/components/ToggleButton';
 import { useSession } from '@/context/SessionContext';
-import { saveItinerary, updateItinerary as updateItineraryApi } from '@/services/firestore/itinerariesDbService';
-import LocationDisplay from '@/components/LocationDisplay';
+import { saveItinerary, updateItinerary as updateItineraryApi } from '@/services/itinerariesApiService';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 const ITINERARY_TYPES = [

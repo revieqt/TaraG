@@ -1,10 +1,10 @@
-import { auth } from '@/services/firestore/config';
 import { useSession } from '@/context/SessionContext';
-import { fetchUserProfile } from '@/services/firestore/userDbService';
+import { auth } from '@/services/firebaseConfig';
+import { fetchUserProfile } from '@/services/userApiService';
 import * as Google from 'expo-auth-session/providers/google';
+import { router } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
-import { router } from 'expo-router';
 import { useEffect } from 'react';
 
 WebBrowser.maybeCompleteAuthSession();

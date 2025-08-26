@@ -6,7 +6,7 @@ import PasswordField from '@/components/PasswordField';
 import TextField from '@/components/TextField';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { registerUser } from '@/services/firestore/userDbService';
+import { registerUser } from '@/services/userApiService';
 import { calculateAge } from '@/utils/calculateAge';
 import { router } from 'expo-router';
 import React, { useRef, useState } from 'react';

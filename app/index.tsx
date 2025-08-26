@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { onAuthStateChanged } from 'firebase/auth';
 import { useEffect } from 'react';
-import { auth } from '../services/firestore/config';
+import { auth } from '../services/firebaseConfig';
 
 export default function Index() {
   useEffect(() => {

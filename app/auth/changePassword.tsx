@@ -2,7 +2,7 @@ import Button from '@/components/Button';
 import PasswordField from '@/components/PasswordField';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { changeUserPassword } from '@/services/firestore/userDbService';
+import { changeUserPassword } from '@/services/userApiService';
 import { useNavigation } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';

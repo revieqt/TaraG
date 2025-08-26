@@ -7,7 +7,7 @@ import WebViewModal from '@/components/WebView';
 import { SUPPORT_FORM_URL } from '@/constants/Config';
 import { useSession } from '@/context/SessionContext';
 import { fetchDocument } from '@/services/documentsApiService';
-import { auth } from '@/services/firestore/config';
+import { auth } from '@/services/firebaseConfig';
 import { router } from 'expo-router';
 import { signOut } from 'firebase/auth';
 import React, { useState } from 'react';

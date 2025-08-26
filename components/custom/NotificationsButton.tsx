@@ -1,6 +1,6 @@
 import { ThemedIcons } from '@/components/ThemedIcons';
 import { ThemedView } from '@/components/ThemedView';
-import { hasUnreadNotifications } from '@/services/firestore/userDbService';
+import { hasUnreadNotifications } from '@/services/userApiService';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';

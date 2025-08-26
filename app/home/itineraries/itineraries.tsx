@@ -1,11 +1,10 @@
 import CubeButton from '@/components/CubeButton';
 import Header from '@/components/Header';
 import HorizontalSections from '@/components/HorizontalSections';
-import OptionsPopup from '@/components/OptionsPopup';
 import { ThemedIcons } from '@/components/ThemedIcons';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { deleteItinerary, useGetItinerariesByUser } from '@/services/firestore/itinerariesDbService';
+import { deleteItinerary, useGetItinerariesByUser } from '@/services/itinerariesApiService';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, StyleSheet, TouchableOpacity, View } from 'react-native';

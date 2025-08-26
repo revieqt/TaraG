@@ -136,7 +136,6 @@ export default function ItineraryViewScreen() {
   return (
     <ThemedView style={{ flex: 1 }}>
       <BackButton type='floating' />
-      {/* Map */}
       <TaraMap showMarker={false}>
         {getAllLocations().map((location, index) => (
           <TaraMarker

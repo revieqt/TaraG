@@ -356,10 +356,6 @@ const styles = StyleSheet.create({
   activeTabUnderline: {
     backgroundColor: '#007AFF',
   },
-  contentContainer: {
-    flex: 1,
-    marginTop: 0, // No margin needed since content will scroll under the sticky elements
-  },
   sectionContainer: {
     flex: 1,
     width: '100%',

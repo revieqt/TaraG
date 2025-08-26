@@ -70,12 +70,13 @@ export default function RootLayout() {
             <Stack.Screen name="account/viewProfile" />
             <Stack.Screen name="account/notifications" />
             <Stack.Screen name="account/getPro" />
+            <Stack.Screen name="account/info-view" />
 
             <Stack.Screen name="home/routes/routes" />
             <Stack.Screen name="home/routes/routes-create" />
             <Stack.Screen name="home/itineraries/itineraries" />
             <Stack.Screen name="home/itineraries/itineraries-form" />
-            <Stack.Screen name="home/itineraries/[id]" />
+            <Stack.Screen name="home/itineraries/itineraries-view" />
             <Stack.Screen name="home/safety" />
             <Stack.Screen name="home/aiChat" />
 

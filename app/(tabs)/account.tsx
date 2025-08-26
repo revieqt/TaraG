@@ -4,6 +4,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useSession } from '@/context/SessionContext';
 import { auth } from '@/services/firestore/config';
+import { fetchDocument } from '@/services/documentsApiService';
 import { router } from 'expo-router';
 import { signOut } from 'firebase/auth';
 import React from 'react';
@@ -25,6 +26,19 @@ export default function AccountScreen() {
     }
   };
 
+  // Helper to load a document and navigate
+  const openDocument = async (docName: 'terms-mobileApp' | 'privacyPolicy-mobileApp' | 'manual-mobileApp') => {
+    try {
+      const doc = await fetchDocument(docName);
+      router.push({
+        pathname: '/account/info-view',
+        params: { data: JSON.stringify(doc) }, // pass JSON as string
+      });
+    } catch (error) {
+      Alert.alert('Error', `Failed to load ${docName}.`);
+    }
+  };
+
   return (
     <ThemedView style={{ flex: 1 }}>
       <ScrollView
@@ -32,62 +46,84 @@ export default function AccountScreen() {
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={true}
       >
+        {/* User Header */}
         <ThemedView shadow color='primary' style={styles.header}>
-          <TouchableOpacity style={styles.profileButton} onPress={() => {router.push({ pathname: '/account/viewProfile', params: { userId: user?.id } })}}>
-
+          <TouchableOpacity
+            style={styles.profileButton}
+            onPress={() =>
+              router.push({
+                pathname: '/account/viewProfile',
+                params: { userId: user?.id },
+              })
+            }
+          >
             <Image
               source={{ uri: session?.user?.profileImage || 'https://ui-avatars.com/api/?name=User' }}
               style={styles.profileImage}
             />
-            <View style={{justifyContent: 'center'}}>
+            <View style={{ justifyContent: 'center' }}>
               <ThemedText type='defaultSemiBold'>{fullName}</ThemedText>
-              <ThemedText >@{user?.username}</ThemedText>
+              <ThemedText>@{user?.username}</ThemedText>
             </View>
-            <View style={{position: 'absolute', right: 0}}>
-              <ThemedIcons library='MaterialIcons' name='arrow-forward-ios' size={20}/>
+            <View style={{ position: 'absolute', right: 0 }}>
+              <ThemedIcons library='MaterialIcons' name='arrow-forward-ios' size={20} />
             </View>
-            
           </TouchableOpacity>
         </ThemedView>
 
+        {/* Pro User Prompt */}
         {!user?.isProUser ? (
-          <>
-            <Button
-              title='Unlock the full TaraG experience'
-              onPress={() => router.push('/account/getPro')}
-              buttonStyle={{
-                width: '100%',
-                marginBottom: 15,
-              }}
-            />
-          </>
-          
-        ):(
-          <>
+          <Button
+            title='Unlock the full TaraG experience'
+            onPress={() => router.push('/account/getPro')}
+            buttonStyle={{
+              width: '100%',
+              marginBottom: 15,
+            }}
+          />
+        ) : null}
 
-          </>
-        )}
-        
+        {/* Options */}
         <View style={styles.options}>
-          <ThemedText style={styles.optionsTitle} type='defaultSemiBold'>Privacy and Security</ThemedText>
-            <TouchableOpacity onPress={() => router.push('/auth/changePassword')}>
-            <View style={styles.optionsChild} >
-              <ThemedIcons library='MaterialIcons' name='vpn-key' size={15}/><ThemedText>Change Password</ThemedText>
-            </View>
+          <ThemedText style={styles.optionsTitle} type='defaultSemiBold'>
+            Privacy and Security
+          </ThemedText>
+          <TouchableOpacity
+            onPress={() => router.push('/auth/changePassword')}
+            style={styles.optionsChild}
+          >
+            <ThemedIcons library='MaterialIcons' name='vpn-key' size={15} />
+            <ThemedText>Change Password</ThemedText>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => openDocument('privacyPolicy-mobileApp')} style={styles.optionsChild}>
+            <ThemedIcons library='MaterialDesignIcons' name='file-alert' size={15} />
+            <ThemedText>Privacy Policy</ThemedText>
+          </TouchableOpacity>
+
+          <ThemedText style={styles.optionsTitle} type='defaultSemiBold'>
+            Help and Support
+          </ThemedText>
+          <TouchableOpacity onPress={() => openDocument('manual-mobileApp')} style={styles.optionsChild}>
+            <ThemedIcons library='MaterialDesignIcons' name='file-alert' size={15} />
+            <ThemedText>App Manual</ThemedText>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => openDocument('terms-mobileApp')} style={styles.optionsChild}>
+            <ThemedIcons library='MaterialDesignIcons' name='file-alert' size={15} />
+            <ThemedText>Terms and Conditions</ThemedText>
           </TouchableOpacity>
         </View>
 
         {/* Logout Button */}
         <Button
-          title="Logout"
+          title='Logout'
           onPress={handleLogout}
-          type="primary"
+          type='primary'
           buttonStyle={styles.logoutButton}
           textStyle={styles.logoutText}
         />
       </ScrollView>
     </ThemedView>
-    
   );
 }
 
@@ -118,11 +154,6 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
     borderRadius: 50,
     marginRight: 16,
-  },
-  fullName: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 4,
   },
   options: {
     gap: 10,

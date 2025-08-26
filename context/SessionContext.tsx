@@ -32,7 +32,7 @@ export type User = {
 export type ActiveRoute = {
   routeID: string;
   userID: string;
-  location: { latitude: number; longitude: number }[];
+  location: { latitude: number; longitude: number; locationName: string}[];
   status: string;
   createdOn: Date;
 };

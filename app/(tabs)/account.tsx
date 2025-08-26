@@ -1,17 +1,17 @@
 import Button from '@/components/Button';
+import GradientHeader from '@/components/GradientHeader';
 import { ThemedIcons } from '@/components/ThemedIcons';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import WebViewModal from '@/components/WebView';
+import { SUPPORT_FORM_URL } from '@/constants/Config';
 import { useSession } from '@/context/SessionContext';
-import { auth } from '@/services/firestore/config';
 import { fetchDocument } from '@/services/documentsApiService';
+import { auth } from '@/services/firestore/config';
 import { router } from 'expo-router';
 import { signOut } from 'firebase/auth';
 import React, { useState } from 'react';
-import { Alert, Image, ScrollView, StyleSheet, TouchableOpacity, View, Modal } from 'react-native';
-import { WebView } from 'react-native-webview';
-import { SUPPORT_FORM_URL } from '@/constants/Config';
-import GradientHeader from '@/components/GradientHeader';
+import { Alert, Image, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 export default function AccountScreen() {
   const { session, clearSession } = useSession();
@@ -48,7 +48,7 @@ export default function AccountScreen() {
     <ThemedView style={{ flex: 1 }}>
       <GradientHeader/>
       <ScrollView
-        style={{ width: '100%', zIndex: 1000, marginBottom: 20 }}
+        style={{ width: '100%', zIndex: 1000}}
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={true}
       >
@@ -82,7 +82,7 @@ export default function AccountScreen() {
               <ThemedText type='subtitle' style={{fontSize: 17, color: 'skyblue', marginBottom: 10}}>Basic Traveler</ThemedText>
               <Button
                 title='Unlock the full TaraG experience'
-                onPress={() => router.push('/account/getPro')}
+                onPress={() => []}
                 buttonStyle={{
                   width: '100%',
                   marginBottom: 15,
@@ -160,17 +160,11 @@ export default function AccountScreen() {
       </ScrollView>
 
       {/* Support Modal */}
-      <Modal visible={showSupport} animationType="slide">
-        <View style={{ flex: 1 }}>
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => setShowSupport(false)}
-          >
-            <ThemedText style={{ color: '#fff', fontWeight: 'bold' }}>Close</ThemedText>
-          </TouchableOpacity>
-          <WebView source={{ uri: SUPPORT_FORM_URL }} style={{ flex: 1 }} />
-        </View>
-      </Modal>
+      <WebViewModal
+        visible={showSupport}
+        onClose={() => setShowSupport(false)}
+        uri={SUPPORT_FORM_URL}
+      />
     </ThemedView>
   );
 }
@@ -223,7 +217,7 @@ const styles = StyleSheet.create({
   },
   logoutButton: {
     width: '100%',
-    marginTop: 30,
+    marginVertical: 30,
   },
   logoutText: {
     fontWeight: 'bold',

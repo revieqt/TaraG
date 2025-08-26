@@ -9,7 +9,7 @@ import { ThemedView } from '@/components/ThemedView';
 import { BACKEND_URL } from '@/constants/Config';
 import { useLocation } from '@/hooks/useLocation';
 import { fetchDocument } from '@/services/documentsApiService';
-import React, { useState, useEffect} from 'react';
+import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 
@@ -198,7 +198,7 @@ export default function SafetyScreen() {
             </ThemedText>
 
             <View style={styles.helpMenu}>
-              <ThemedView shadow color='primary' style={styles.helpButton}>
+              <ThemedView shadow style={styles.helpButton}>
                 <TouchableOpacity 
                   style={styles.helpButtonContent} 
                   onPress={() => {
@@ -209,7 +209,7 @@ export default function SafetyScreen() {
                   <ThemedIcons library='MaterialIcons' name='local-hospital' size={30} color='red'/>
                 </TouchableOpacity>
               </ThemedView>
-              <ThemedView shadow color='primary' style={styles.helpButton}>
+              <ThemedView shadow style={styles.helpButton}>
                 <TouchableOpacity 
                   style={styles.helpButtonContent} 
                   onPress={() => {
@@ -220,7 +220,7 @@ export default function SafetyScreen() {
                   <ThemedIcons library='MaterialIcons' name='local-police' size={30} color='blue'/>
                 </TouchableOpacity>
               </ThemedView>
-              <ThemedView shadow color='primary' style={styles.helpButton}>
+              <ThemedView shadow style={styles.helpButton}>
                 <TouchableOpacity 
                   style={styles.helpButtonContent} 
                   onPress={() => {
@@ -339,7 +339,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 40,
-    marginTop: 20,
+    marginVertical: 20,
   },
   helpButton:{
     padding: 15,

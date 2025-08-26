@@ -194,12 +194,12 @@ export default function AIChatScreen() {
               </ThemedText>
               <Button
                 title="Upgrade to Pro"
-                onPress={() => router.push('/account/getPro')}
+                onPress={() => []}
                 type="primary"
                 />
               <Button
                 title="Watch Ad for Additional Messages"
-                onPress={() => router.push('/account/getPro')}
+                onPress={() => []}
                 buttonStyle={{marginTop: 10}}
               />
             </View>

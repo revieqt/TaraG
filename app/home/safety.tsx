@@ -1,37 +1,67 @@
 import Button from '@/components/Button';
-import ContactNumberField from '@/components/ContactNumberField';
 import BackButton from '@/components/custom/BackButton';
 import SOSButton from '@/components/custom/SOSButton';
 import GradientHeader from '@/components/GradientHeader';
 import HorizontalSections from '@/components/HorizontalSections';
-import TextField from '@/components/TextField';
 import { ThemedIcons } from '@/components/ThemedIcons';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { BACKEND_URL } from '@/constants/Config';
 import { useSession } from '@/context/SessionContext';
 import { useLocation } from '@/hooks/useLocation';
-import React, { useState } from 'react';
+import { fetchDocument } from '@/services/documentsApiService'; // ✅ same as AccountScreen
+import { router } from 'expo-router'; // ✅ for navigation
+import React, { useState, useEffect} from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 
 export default function SafetyScreen() {
-  const { session, updateSession } = useSession();
-  const user = session?.user;
-  const [showForm, setShowForm] = useState(false);
-  const [formName, setFormName] = useState('');
-  const [formAreaCode, setFormAreaCode] = useState('63+');
-  const [formNumber, setFormNumber] = useState('');
-  const [formIndex, setFormIndex] = useState<number | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  const emergencyContact = user?.emergencyContact && user.emergencyContact.length > 0 ? user.emergencyContact[0] : null;
-
   const { latitude, longitude, loading: locationLoading } = useLocation();
 
   const [amenities, setAmenities] = useState<any[]>([]);
   const [amenityLoading, setAmenityLoading] = useState(false);
   const [amenityError, setAmenityError] = useState<string | null>(null);
+
+  const [emergencyTips, setEmergencyTips] = useState<any[]>([]);
+  const [tipsLoading, setTipsLoading] = useState(false);
+  const [tipsError, setTipsError] = useState<string | null>(null);
+
+  const [selectedAmenityType, setSelectedAmenityType] = useState<string | null>(null);
+
+  useEffect(() => {
+    setTipsLoading(true);
+    setTipsError(null);
+    fetchDocument('emergencyTips-mobileApp')
+      .then((data: any) => {
+        // If the data is an array, set it directly
+        if (Array.isArray(data)) {
+          setEmergencyTips(data);
+        } else if (data && Array.isArray(data.sections)) {
+          setEmergencyTips([data]);
+        } else {
+          setEmergencyTips([]);
+        }
+      })
+      .catch(() => setTipsError('Failed to load emergency tips.'))
+      .finally(() => setTipsLoading(false));
+  }, []);
+
+  // Helper to map amenity type to emergency tip title
+  function getTipTitleForAmenityType(type: string) {
+    switch (type) {
+      case 'hospital':
+      case 'clinic':
+      case 'doctors':
+        return 'Health Emergency';
+      case 'police':
+        return 'Police / Safety Emergency';
+      case 'fire_station':
+      case 'rescue_station':
+        return 'Fire Emergency';
+      default:
+        return '';
+    }
+  }
 
   const fetchAmenities = async (amenityType: string) => {
     if (!latitude || !longitude) {
@@ -80,59 +110,6 @@ export default function SafetyScreen() {
     } finally {
       setAmenityLoading(false);
     }
-  };
-
-  const handleAddOrUpdate = async () => {
-    const newContact = { name: formName, contactNumber: formAreaCode + formNumber };
-    let updatedContacts = user?.emergencyContact ? [...user.emergencyContact] : [];
-    let method: 'POST' | 'PUT' = formIndex !== null ? 'PUT' : 'POST';
-    let url = `${BACKEND_URL}/users/${user?.id}/emergency-contact`;
-    let body: any;
-    if (formIndex !== null && updatedContacts[formIndex]) {
-      updatedContacts[formIndex] = newContact;
-      body = { emergencyContact: updatedContacts };
-    } else {
-      updatedContacts = [newContact];
-      body = { contact: newContact };
-    }
-    setLoading(true);
-    try {
-      const res = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-      if (!res.ok) throw new Error('Failed to save emergency contact');
-      await updateSession({ user: { ...(user as any), emergencyContact: updatedContacts } });
-      setShowForm(false);
-    } catch (err) {
-      alert('Failed to save emergency contact. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const openAddForm = () => {
-    setFormName('');
-    setFormAreaCode('63+');
-    setFormNumber('');
-    setFormIndex(null);
-    setShowForm(true);
-  };
-
-  const openUpdateForm = () => {
-    if (!emergencyContact) return;
-    const match = emergencyContact.contactNumber.match(/^(\d+\+)(.*)$/);
-    setFormName(emergencyContact.name);
-    if (match) {
-      setFormAreaCode(match[1]);
-      setFormNumber(match[2]);
-    } else {
-      setFormAreaCode('63+');
-      setFormNumber(emergencyContact.contactNumber);
-    }
-    setFormIndex(0);
-    setShowForm(true);
   };
 
   const renderAmenityCard = (amenity: any, index: number) => (
@@ -212,51 +189,60 @@ export default function SafetyScreen() {
             <ThemedText type='defaultSemiBold'>Safety Mode</ThemedText>
           </View>
         </View>
+
+        {locationLoading ? (
+          <ActivityIndicator size="large" color="#4300FF" style={{marginTop: 40}} />
+        ) : (
+          <>
+            <ThemedText style={{textAlign: 'center', paddingTop: 20}}>
+              Who do you need to reach in your emergency?
+            </ThemedText>
+
+            <View style={styles.helpMenu}>
+              <ThemedView shadow color='primary' style={styles.helpButton}>
+                <TouchableOpacity 
+                  style={styles.helpButtonContent} 
+                  onPress={() => {
+                    fetchAmenities('hospital');
+                    setSelectedAmenityType('hospital');
+                  }}
+                >
+                  <ThemedIcons library='MaterialIcons' name='local-hospital' size={30} color='red'/>
+                </TouchableOpacity>
+              </ThemedView>
+              <ThemedView shadow color='primary' style={styles.helpButton}>
+                <TouchableOpacity 
+                  style={styles.helpButtonContent} 
+                  onPress={() => {
+                    fetchAmenities('police');
+                    setSelectedAmenityType('police');
+                  }}
+                >
+                  <ThemedIcons library='MaterialIcons' name='local-police' size={30} color='blue'/>
+                </TouchableOpacity>
+              </ThemedView>
+              <ThemedView shadow color='primary' style={styles.helpButton}>
+                <TouchableOpacity 
+                  style={styles.helpButtonContent} 
+                  onPress={() => {
+                    fetchAmenities('fire_station');
+                    setSelectedAmenityType('fire_station');
+                  }}
+                >
+                  <ThemedIcons library='MaterialIcons' name='local-fire-department' size={30} color='orange'/>
+                </TouchableOpacity>
+              </ThemedView>
+            </View>
+          </>
+          
+        )}
       </ThemedView>
       <HorizontalSections
-        labels={['Help Finder', 'Emergency Contact']}
+        labels={['Help Finder', 'Emergency Tips']}
         type="fullTab"
         containerStyle={{ flex: 1 }}
         sections={[
         <View key="help" style={{ flex: 1 }}>
-            
-            {locationLoading ? (
-              <ActivityIndicator size="large" color="#4300FF" style={{marginTop: 40}} />
-            ) : (
-              <>
-                <ThemedText style={{textAlign: 'center', paddingTop: 20}}>
-                  Who do you need to reach in your emergency?
-                </ThemedText>
-
-                <View style={styles.helpMenu}>
-                  <ThemedView shadow color='primary' style={styles.helpButton}>
-                    <TouchableOpacity 
-                      style={styles.helpButtonContent} 
-                      onPress={() => fetchAmenities('hospital')}
-                    >
-                      <ThemedIcons library='MaterialIcons' name='local-hospital' size={30} color='red'/>
-                    </TouchableOpacity>
-                  </ThemedView>
-                  <ThemedView shadow color='primary' style={styles.helpButton}>
-                    <TouchableOpacity 
-                      style={styles.helpButtonContent} 
-                      onPress={() => fetchAmenities('police')}
-                    >
-                      <ThemedIcons library='MaterialIcons' name='local-police' size={30} color='blue'/>
-                    </TouchableOpacity>
-                  </ThemedView>
-                  <ThemedView shadow color='primary' style={styles.helpButton}>
-                    <TouchableOpacity 
-                      style={styles.helpButtonContent} 
-                      onPress={() => fetchAmenities('fire_station')}
-                    >
-                      <ThemedIcons library='MaterialIcons' name='local-fire-department' size={30} color='orange'/>
-                    </TouchableOpacity>
-                  </ThemedView>
-                </View>
-              </>
-              
-            )}
           <ScrollView 
             style={styles.scrollContent}
             showsVerticalScrollIndicator={false}
@@ -273,45 +259,63 @@ export default function SafetyScreen() {
             )}
             {amenities.length > 0 && (
               <View style={styles.amenitiesContainer}>
-                {amenities.map((amenity, index) => renderAmenityCard(amenity, index))}
+                {amenities.map((amenity, index) => (
+                  <TouchableOpacity
+                    key={amenity.id || index}
+                    activeOpacity={0.8}
+                    onPress={() => setSelectedAmenityType(amenity.amenityType)}
+                  >
+                    {renderAmenityCard(amenity, index)}
+                  </TouchableOpacity>
+                ))}
               </View>
             )}
           </ScrollView>
         </View>,
-        <View key="contact" style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <ThemedText type='subtitle'>Emergency Contact</ThemedText>
-          <ThemedText style={{opacity: 0.5}}>Look for the nearest help</ThemedText>
-          {emergencyContact ? (
-            <View style={[styles.settingsRow, { alignItems: 'center', marginTop: 10 }]}> 
-              <View>
-                <ThemedText type='defaultSemiBold'>{emergencyContact.name}</ThemedText>
-                <ThemedText>{emergencyContact.contactNumber}</ThemedText>
-              </View>
-              <Button title="Update" onPress={openUpdateForm} buttonStyle={{ height: 36, paddingHorizontal: 16 }} />
-            </View>
-          ) : (
-            <Button title="Add Emergency Contact" onPress={openAddForm} buttonStyle={{ marginTop: 10 }} />
+        <ScrollView key="tips" style={{ flex: 1, padding: 20 }}>
+          {tipsLoading && (
+            <ActivityIndicator size="large" color="#4300FF" style={{marginTop: 40}} />
           )}
-          {showForm && (
-            <View style={{ marginTop: 16, backgroundColor: '#fff2', borderRadius: 10, padding: 16 }}>
-              <TextField
-                placeholder="Contact Name"
-                value={formName}
-                onChangeText={setFormName}
-              />
-              <ContactNumberField
-                areaCode={formAreaCode}
-                onAreaCodeChange={setFormAreaCode}
-                number={formNumber}
-                onNumberChange={setFormNumber}
-              />
-              <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 10 }}>
-                <Button title="Cancel" onPress={() => setShowForm(false)} type="outline" buttonStyle={{ marginRight: 8 }} />
-                <Button title={formIndex !== null ? 'Update' : 'Add'} onPress={handleAddOrUpdate} type="primary" loading={loading} />
-              </View>
-            </View>
+          {tipsError && (
+            <ThemedText type="error" style={{marginBottom: 10}}>{tipsError}</ThemedText>
           )}
-        </View>]}
+          {!tipsLoading && !tipsError && (
+            <>
+              {selectedAmenityType ? (
+                (() => {
+                  const tipTitle = getTipTitleForAmenityType(selectedAmenityType);
+                  const tip = emergencyTips.find((t: any) => t.title === tipTitle);
+                  if (!tip) {
+                    return <ThemedText>No emergency tip available for this amenity.</ThemedText>;
+                  }
+                  return (
+                    <View style={{marginBottom: 24}}>
+                      <ThemedText type="subtitle" style={{marginBottom: 4}}>
+                        {tip.title}
+                      </ThemedText>
+                      <ThemedText style={{marginBottom: 10}}>
+                        {tip.description}
+                      </ThemedText>
+                      {Array.isArray(tip.sections) && tip.sections.map((section: any, sidx: number) => (
+                        <View key={sidx} style={styles.sectionContent}>
+                          <ThemedText type="defaultSemiBold">
+                            {section.subtitle}
+                          </ThemedText>
+                          <ThemedText style={styles.sectionDescription}>
+                            {section.description}
+                          </ThemedText>
+                        </View>
+                      ))}
+                    </View>
+                  );
+                })()
+              ) : (
+                <ThemedText>Select an amenity to view the corresponding emergency tip.</ThemedText>
+              )}
+            </>
+          )}
+        </ScrollView>
+        ]}
       />
     </ThemedView>
   );
@@ -388,11 +392,6 @@ const styles = StyleSheet.create({
     gap: 8,
     opacity: 0.5,
   },
-  settingsRow:{
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
   amenityHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -405,5 +404,12 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     fontSize: 12,
     fontWeight: 'bold',
+  },
+  sectionContent:{
+    marginVertical: 10,
+
+  },
+  sectionDescription: {
+    marginLeft: 10,
   },
 });

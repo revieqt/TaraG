@@ -7,10 +7,8 @@ import { ThemedIcons } from '@/components/ThemedIcons';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { BACKEND_URL } from '@/constants/Config';
-import { useSession } from '@/context/SessionContext';
 import { useLocation } from '@/hooks/useLocation';
-import { fetchDocument } from '@/services/documentsApiService'; // ✅ same as AccountScreen
-import { router } from 'expo-router'; // ✅ for navigation
+import { fetchDocument } from '@/services/documentsApiService';
 import React, { useState, useEffect} from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
@@ -194,6 +192,7 @@ export default function SafetyScreen() {
           <ActivityIndicator size="large" color="#4300FF" style={{marginTop: 40}} />
         ) : (
           <>
+            
             <ThemedText style={{textAlign: 'center', paddingTop: 20}}>
               Who do you need to reach in your emergency?
             </ThemedText>

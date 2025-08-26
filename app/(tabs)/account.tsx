@@ -11,6 +11,7 @@ import React, { useState } from 'react';
 import { Alert, Image, ScrollView, StyleSheet, TouchableOpacity, View, Modal } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { SUPPORT_FORM_URL } from '@/constants/Config';
+import GradientHeader from '@/components/GradientHeader';
 
 export default function AccountScreen() {
   const { session, clearSession } = useSession();
@@ -45,8 +46,9 @@ export default function AccountScreen() {
 
   return (
     <ThemedView style={{ flex: 1 }}>
+      <GradientHeader/>
       <ScrollView
-        style={{ width: '100%' }}
+        style={{ width: '100%', zIndex: 1000, marginBottom: 20 }}
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={true}
       >
@@ -74,19 +76,45 @@ export default function AccountScreen() {
             </View>
           </TouchableOpacity>
         </ThemedView>
-
-        {/* Pro User Prompt */}
-        {!user?.isProUser ? (
-          <Button
-            title='Unlock the full TaraG experience'
-            onPress={() => router.push('/account/getPro')}
-            buttonStyle={{
-              width: '100%',
-              marginBottom: 15,
-            }}
-          />
-        ) : null}
-
+        <ThemedView color='primary' shadow style={styles.proContainer}>
+          {!user?.isProUser ? (
+            <>
+              <ThemedText type='subtitle' style={{fontSize: 17, color: 'skyblue', marginBottom: 10}}>Basic Traveler</ThemedText>
+              <Button
+                title='Unlock the full TaraG experience'
+                onPress={() => router.push('/account/getPro')}
+                buttonStyle={{
+                  width: '100%',
+                  marginBottom: 15,
+                }}
+              />
+            </>
+          ) : (
+            <>
+              <ThemedText type='subtitle' style={{fontSize: 17, color: 'orange'}}>Pro User</ThemedText>
+              <ThemedText style={{textAlign: 'center', opacity: .5, marginBottom: 10}}>You have access to all features. Thank you for supporting TaraG!</ThemedText>
+            </>
+          )}
+          <View style={styles.featuresContainer}>
+            <ThemedIcons library='MaterialDesignIcons' name='robot-excited' size={25}/>
+            <ThemedText>Unlimited TaraAI Conversations</ThemedText>
+          </View>
+    
+          <View style={styles.featuresContainer}>
+            <ThemedIcons library='MaterialIcons' name='auto-graph' size={25}/>
+            <ThemedText>Boost your Post Engagement</ThemedText>
+          </View>
+    
+          <View style={styles.featuresContainer}>
+            <ThemedIcons library='MaterialIcons' name='app-blocking' size={25}/>
+            <ThemedText>Enjoy TaraG Ads Free</ThemedText>
+          </View>
+    
+          <View style={styles.featuresContainer}>
+            <ThemedIcons library='MaterialDesignIcons' name='trophy-award' size={25}/>
+            <ThemedText>Exclusive Pro Traveller Badge</ThemedText>
+          </View>
+        </ThemedView>
         {/* Options */}
         <View style={styles.options}>
           <ThemedText style={styles.optionsTitle} type='defaultSemiBold'>
@@ -205,6 +233,20 @@ const styles = StyleSheet.create({
   closeButton: {
     backgroundColor: '#ff4444',
     padding: 12,
+    alignItems: 'center',
+  },
+  proContainer:{
+    width: '100%',
+    padding: 20,
+    borderRadius: 10,
+    marginBottom: 15,
+    alignItems: 'center',
+  },
+  featuresContainer: {
+    flexDirection: 'row',
+    padding: 5,
+    width: '100%',
+    gap: 20,
     alignItems: 'center',
   },
 });

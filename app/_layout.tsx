@@ -69,7 +69,6 @@ export default function RootLayout() {
 
             <Stack.Screen name="account/viewProfile" />
             <Stack.Screen name="account/notifications" />
-            <Stack.Screen name="account/getPro" />
             <Stack.Screen name="account/info-view" />
 
             <Stack.Screen name="home/routes/routes" />

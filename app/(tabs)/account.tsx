@@ -7,12 +7,16 @@ import { auth } from '@/services/firestore/config';
 import { fetchDocument } from '@/services/documentsApiService';
 import { router } from 'expo-router';
 import { signOut } from 'firebase/auth';
-import React from 'react';
-import { Alert, Image, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import { Alert, Image, ScrollView, StyleSheet, TouchableOpacity, View, Modal } from 'react-native';
+import { WebView } from 'react-native-webview';
+import { SUPPORT_FORM_URL } from '@/constants/Config';
 
 export default function AccountScreen() {
   const { session, clearSession } = useSession();
   const user = session?.user;
+
+  const [showSupport, setShowSupport] = useState(false);
 
   const fullName = [user?.fname, user?.mname, user?.lname].filter(Boolean).join(' ');
 
@@ -96,21 +100,24 @@ export default function AccountScreen() {
             <ThemedText>Change Password</ThemedText>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => openDocument('privacyPolicy-mobileApp')} style={styles.optionsChild}>
-            <ThemedIcons library='MaterialDesignIcons' name='file-alert' size={15} />
+            <ThemedIcons library='MaterialDesignIcons' name='file-eye' size={15} />
             <ThemedText>Privacy Policy</ThemedText>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => openDocument('terms-mobileApp')} style={styles.optionsChild}>
+            <ThemedIcons library='MaterialDesignIcons' name='file-alert' size={15} />
+            <ThemedText>Terms and Conditions</ThemedText>
           </TouchableOpacity>
 
           <ThemedText style={styles.optionsTitle} type='defaultSemiBold'>
             Help and Support
           </ThemedText>
           <TouchableOpacity onPress={() => openDocument('manual-mobileApp')} style={styles.optionsChild}>
-            <ThemedIcons library='MaterialDesignIcons' name='file-alert' size={15} />
+            <ThemedIcons library='MaterialDesignIcons' name='file-find' size={15} />
             <ThemedText>App Manual</ThemedText>
           </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => openDocument('terms-mobileApp')} style={styles.optionsChild}>
-            <ThemedIcons library='MaterialDesignIcons' name='file-alert' size={15} />
-            <ThemedText>Terms and Conditions</ThemedText>
+          <TouchableOpacity onPress={() => setShowSupport(true)} style={styles.optionsChild}>
+            <ThemedIcons library='MaterialDesignIcons' name='headset' size={15} />
+            <ThemedText>Contact Support</ThemedText>
           </TouchableOpacity>
         </View>
 
@@ -123,6 +130,19 @@ export default function AccountScreen() {
           textStyle={styles.logoutText}
         />
       </ScrollView>
+
+      {/* Support Modal */}
+      <Modal visible={showSupport} animationType="slide">
+        <View style={{ flex: 1 }}>
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={() => setShowSupport(false)}
+          >
+            <ThemedText style={{ color: '#fff', fontWeight: 'bold' }}>Close</ThemedText>
+          </TouchableOpacity>
+          <WebView source={{ uri: SUPPORT_FORM_URL }} style={{ flex: 1 }} />
+        </View>
+      </Modal>
     </ThemedView>
   );
 }
@@ -181,5 +201,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
     letterSpacing: 1,
+  },
+  closeButton: {
+    backgroundColor: '#ff4444',
+    padding: 12,
+    alignItems: 'center',
   },
 });

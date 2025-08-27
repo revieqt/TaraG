@@ -9,6 +9,7 @@ import useChangeProfileImage from '@/hooks/useChangeProfileImage';
 import { useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
+import ProBadge from '@/components/custom/ProBadge';
 
 
 export default function ProfileScreen() {
@@ -64,7 +65,11 @@ export default function ProfileScreen() {
         {
           user ? (
             <>
-              <ThemedText type="subtitle">{user.fname} {user.mname ? user.mname : ''}{user.lname}</ThemedText>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                <ThemedText type="subtitle">{user.fname} {user.mname ? user.mname : ''}{user.lname}</ThemedText>
+                <ProBadge/>
+              </View>
+              
               <ThemedText type="defaultSemiBold">@{user.username}</ThemedText>
             </>
           ) : (

@@ -12,6 +12,8 @@ import { auth } from '@/services/firebaseConfig';
 import { router } from 'expo-router';
 import { signOut } from 'firebase/auth';
 import React, { useState } from 'react';
+import ProBadge from '@/components/custom/ProBadge';
+import { TRAVELLER_PRO_PRICE } from '@/constants/Config';
 import { Alert, Image, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 export default function AccountScreen() {
@@ -88,7 +90,10 @@ export default function AccountScreen() {
               style={styles.profileImage}
             />
             <View style={{ justifyContent: 'center' }}>
-              <ThemedText type='defaultSemiBold'>{fullName}</ThemedText>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                <ThemedText type='defaultSemiBold'>{fullName}</ThemedText>
+                <ProBadge/>
+              </View>
               <ThemedText>@{user?.username}</ThemedText>
             </View>
             <View style={{ position: 'absolute', right: 0 }}>
@@ -100,7 +105,7 @@ export default function AccountScreen() {
           {!user?.isProUser ? (
             <>
               <ThemedText type='subtitle' style={{fontSize: 17, color: 'skyblue'}}>Basic Traveler</ThemedText>
-              <ThemedText style={{textAlign: 'center', opacity: .5, marginBottom: 10}}>Unlock the full TaraG experience. Get TaraG Pro now!</ThemedText>
+              <ThemedText style={{textAlign: 'center', opacity: .5, marginBottom: 10}}>Unlock the full TaraG experience. Get TaraG Pro for as low as ${TRAVELLER_PRO_PRICE}/month</ThemedText>
               <Button
                 title='Get TaraG Pro'
                 type='primary'

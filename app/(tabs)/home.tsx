@@ -23,7 +23,6 @@ export default function HomeScreen() {
   const { weatherData, loading: weatherLoading, error: weatherError } = useWeather(latitude || 0, longitude || 0);
   const backgroundColor = useThemeColor({}, 'background');
   const secondaryColor = useThemeColor({}, 'secondary');
-  const tintColor = useThemeColor({}, 'tint');
 
   // Use alerts hook with user location
   const userLocation = {
@@ -147,7 +146,7 @@ export default function HomeScreen() {
           
           {loading ? (
              <View style={styles.loadingContainer}>
-               <ActivityIndicator size="large" color={tintColor} />
+               <ActivityIndicator size="large"/>
              </View>
            ) : (
             <>

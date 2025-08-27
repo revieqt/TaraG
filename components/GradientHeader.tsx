@@ -10,7 +10,7 @@ type GradientHeaderProps = {
 const GradientHeader: React.FC<GradientHeaderProps> = ({
   color,
 }) => {
-  const secondaryColor = useThemeColor({}, 'secondary');
+  const secondaryColor = useThemeColor({}, 'accent');
   const gradientColor = color || secondaryColor;
 
   return (

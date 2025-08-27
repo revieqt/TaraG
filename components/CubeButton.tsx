@@ -6,7 +6,7 @@ import ThemedIcons from '@/components/ThemedIcons';
 interface CubeButtonProps {
   size?: number;
   color?: string;
-  iconLibrary?: 'AntDesign' | 'MaterialIcons' | 'Ionicons' | 'FontAwesome' | 'Feather' | 'Entypo' | 'MaterialCommunityIcons' | 'MaterialDesignIcons';
+  iconLibrary?:  'MaterialIcons' | 'MaterialCommunityIcons' | 'MaterialDesignIcons';
   iconName: string;
   iconSize?: number;
   iconColor?: string;

@@ -1,9 +1,8 @@
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Tabs } from 'expo-router';
 import React from 'react';
 import { Platform, Text } from 'react-native';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 function TabBarLabel({ children, color }: { children: React.ReactNode; color: string }) {
   return (
@@ -22,13 +21,13 @@ function TabBarLabel({ children, color }: { children: React.ReactNode; color: st
 }
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-  const activeColor = Colors[colorScheme ?? 'light'].tint;
+  const primaryColor = useThemeColor({}, 'primary');
+  const secondaryColor = useThemeColor({}, 'secondary');
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: activeColor,
+        tabBarActiveTintColor: secondaryColor,
         headerShown: false,
         tabBarShowLabel: true,
         tabBarLabel: ({ children, color }) => <TabBarLabel color={color}>{children}</TabBarLabel>,
@@ -39,14 +38,14 @@ export default function TabLayout() {
             paddingBottom: 12,
             paddingTop: 5,
             height: 60,
-            backgroundColor: Colors[colorScheme ?? 'light'].primary,
+            backgroundColor: primaryColor,
           },
           default: {
             paddingHorizontal: 10,
             paddingBottom: 12,
             paddingTop: 5,
             height: 60,
-            backgroundColor: Colors[colorScheme ?? 'light'].primary,
+            backgroundColor: primaryColor,
           },
         }),
       }}

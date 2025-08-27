@@ -1,4 +1,4 @@
-import CubeButton from '@/components/CubeButton'; 
+import CubeButton from '@/components/CubeButton';
 import Header from '@/components/Header';
 import HorizontalSections from '@/components/HorizontalSections';
 import OptionsPopup from '@/components/OptionsPopup';

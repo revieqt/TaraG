@@ -1,5 +1,6 @@
 import Button from '@/components/Button';
 import GradientHeader from '@/components/GradientHeader';
+import { BACKEND_URL } from '@/constants/Config';
 import { ThemedIcons } from '@/components/ThemedIcons';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -16,6 +17,8 @@ import { Alert, Image, ScrollView, StyleSheet, TouchableOpacity, View } from 're
 export default function AccountScreen() {
   const { session, clearSession } = useSession();
   const user = session?.user;
+  const [showPayment, setShowPayment] = useState(false);
+  const [paymentUrl, setPaymentUrl] = useState<string | null>(null);
 
   const [showSupport, setShowSupport] = useState(false);
 
@@ -30,7 +33,24 @@ export default function AccountScreen() {
       Alert.alert('Logout Failed', 'An error occurred while logging out.');
     }
   };
-
+  
+  const handlePayPro = async () => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/pay/traveller-pro`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+      const data = await res.json();
+      if (data?.data?.attributes?.checkout_url) {
+        setPaymentUrl(data.data.attributes.checkout_url);
+        setShowPayment(true);
+      } else {
+        Alert.alert("Error", "Failed to get payment link.");
+      }
+    } catch (err) {
+      Alert.alert("Error", "Failed to start payment.");
+    }
+  };
   // Helper to load a document and navigate
   const openDocument = async (docName: 'terms-mobileApp' | 'privacyPolicy-mobileApp' | 'manual-mobileApp') => {
     try {
@@ -79,10 +99,12 @@ export default function AccountScreen() {
         <ThemedView color='primary' shadow style={styles.proContainer}>
           {!user?.isProUser ? (
             <>
-              <ThemedText type='subtitle' style={{fontSize: 17, color: 'skyblue', marginBottom: 10}}>Basic Traveler</ThemedText>
+              <ThemedText type='subtitle' style={{fontSize: 17, color: 'skyblue'}}>Basic Traveler</ThemedText>
+              <ThemedText style={{textAlign: 'center', opacity: .5, marginBottom: 10}}>Unlock the full TaraG experience. Get TaraG Pro now!</ThemedText>
               <Button
-                title='Unlock the full TaraG experience'
-                onPress={() => []}
+                title='Get TaraG Pro'
+                type='primary'
+                onPress={handlePayPro}
                 buttonStyle={{
                   width: '100%',
                   marginBottom: 15,
@@ -164,6 +186,12 @@ export default function AccountScreen() {
         visible={showSupport}
         onClose={() => setShowSupport(false)}
         uri={SUPPORT_FORM_URL}
+      />
+
+      <WebViewModal
+        visible={showPayment}
+        onClose={() => setShowPayment(false)}
+        uri={paymentUrl || ""}
       />
     </ThemedView>
   );

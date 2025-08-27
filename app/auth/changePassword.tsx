@@ -1,11 +1,12 @@
 import Button from '@/components/Button';
+import BackButton from '@/components/custom/BackButton';
 import PasswordField from '@/components/PasswordField';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { changeUserPassword } from '@/services/userApiService';
 import { useNavigation } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, View } from 'react-native';
 
 export default function ChangePasswordScreen() {
   const [currentPassword, setCurrentPassword] = useState('');
@@ -47,22 +48,15 @@ export default function ChangePasswordScreen() {
     setLoading(false);
   };
 
-  const handleCancel = () => {
-    setFormError('');
-    setCurrentPassword('');
-    setNewPassword('');
-    setConfirmPassword('');
-    navigation.goBack();
-  };
-
     return (
     
-      <ThemedView style={styles.content}>
+      <ThemedView style={{flex:1, padding: 20, justifyContent: 'center'}}>
+        <BackButton type='floating'/>
         <KeyboardAvoidingView
           style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} // Center the container
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
-        <View style={styles.container}>
+        <View style={{width: '100%'}}>
           <ThemedText type="title">
             Change Password
           </ThemedText>
@@ -102,57 +96,16 @@ export default function ChangePasswordScreen() {
             onBlur={() => setFocusedInput(null)}
             isFocused={focusedInput === 'confirm'}
           />
-
-          
-
-          <View style={styles.buttonRow}>
-            <Button
-              title="Cancel"
-              onPress={handleCancel}
-              type="outline"
-              buttonStyle={styles.cancelButton}
-            />
+          <View>
             <Button
               title="Submit"
               onPress={handleChangePassword}
               type="primary"
               loading={loading}
-              buttonStyle={styles.submitButton}
             />
           </View>
         </View>
         </KeyboardAvoidingView>
       </ThemedView>
-    
   );
 }
-
-const styles = StyleSheet.create({
-  
-  content: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    flex: 1,
-  },
-  container: {
-    width: '100%',
-    alignSelf: 'center',
-
-  },
-  buttonRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 10,
-    marginTop: 10,
-  },
-  cancelButton: {
-    flex: 1,
-    marginRight: 5,
-    borderRadius: 25,
-  },
-  submitButton: {
-    flex: 1,
-    marginLeft: 5,
-    borderRadius: 25,
-  },
-});

@@ -13,8 +13,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import * as Speech from 'expo-speech';
 import React, { useEffect, useRef, useState } from 'react';
-
-import { ActivityIndicator, FlatList, Image, KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 function getTodayKey() {
   const today = new Date();
@@ -31,7 +39,6 @@ export default function AIChatScreen() {
 
   const [messageCount, setMessageCount] = useState(0);
 
-  // Load message count from AsyncStorage on mount
   useEffect(() => {
     const loadCount = async () => {
       const key = getTodayKey();
@@ -41,7 +48,6 @@ export default function AIChatScreen() {
     loadCount();
   }, []);
 
-  // Save message count to AsyncStorage when it changes
   useEffect(() => {
     const saveCount = async () => {
       const key = getTodayKey();
@@ -58,7 +64,6 @@ export default function AIChatScreen() {
 
     if (!isProUser) {
       if (messageCount >= MAX_FREE_MESSAGES_PER_DAY) {
-        // No need for Alert, just hide input below
         return;
       }
       setMessageCount((prev) => prev + 1);
@@ -68,7 +73,6 @@ export default function AIChatScreen() {
     setInput('');
   };
 
-  // Speak the latest assistant message if TTS is enabled
   useEffect(() => {
     if (
       ttsEnabled &&
@@ -88,191 +92,233 @@ export default function AIChatScreen() {
   const showIntro = messages.length === 0;
 
   return (
-    <ThemedView style={{ flex: 1, padding: 0 }}>
-      <Header label='TaraAI' rightButton={[
-        <OptionsPopup
-          actions={[
-            {
-              label: ttsEnabled ? 'Disable Text-to-Speech' : 'Enable Text-to-Speech',
-              icon: <MaterialIcons name="record-voice-over" size={20} color="#222" />,
-              onPress: () => setTtsEnabled((prev) => !prev),
-            },
-            {
-              label: 'Reset Chat',
-              icon: <MaterialIcons name="refresh" size={20} color="#222" />,
-              onPress: resetChat,
-            },
-          ]}>
-          <ThemedIcons library="MaterialCommunityIcons" name="dots-vertical" size={24}/>
-        </OptionsPopup>
-      ]}/>
-      {showIntro ? (
-        <ThemedView style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 32 }}>
-          <Image
-            source={require('@/assets/images/slide1-img.png')}
-            style={{ width: 80, height: 80, borderRadius: 40, marginBottom: 10}}
-          />
-          <ThemedText type="subtitle" style={{ marginBottom: 10 }}>Hello, I am Tara</ThemedText>
-          <ThemedText style={{ textAlign: 'center', color: '#888' }}>
-            Your personal travel companion. Ask me anything about travel—destinations, tips, weather, and more.
-          </ThemedText>
-        </ThemedView>
-      ) : (
-        <FlatList
-          ref={flatListRef}
-          data={messages}
-          keyExtractor={(_, idx) => idx.toString()}
-          contentContainerStyle={styles.messagesContainer}
-          renderItem={({ item }) => (
-            <View style={[
-              styles.messageRow,
-              item.role === 'assistant' ? styles.aiRow : styles.userRow
-            ]}>
-              {item.role === 'assistant' && (
-                <Image
-                  source={require('@/assets/images/slide1-img.png')}
-                  style={styles.taraProfile}
-                />
-              )}
-              <View style={[
-                styles.messageBubble,
-                item.role === 'user' ? styles.userBubble : styles.aiBubble
-              ]}>
-                <ThemedText style={item.role === 'user' ? styles.userText : styles.aiText}>
-                  {item.content}
-                </ThemedText>
-                {item.showGoToRoutes && (
-                  <TouchableOpacity
-                    style={{
-                      marginTop: 8,
-                      backgroundColor: '#4300FF',
-                      borderRadius: 8,
-                      paddingVertical: 6,
-                      paddingHorizontal: 14,
-                      alignSelf: 'flex-start'
-                    }}
-                    onPress={() => router.push('/home/routes/routes')}
-                  >
-                    <ThemedText style={{ color: '#fff', fontWeight: 'bold' }}>Go to Routes</ThemedText>
-                  </TouchableOpacity>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
+    >
+      <Header
+        label="TaraAI"
+        rightButton={[
+          <OptionsPopup
+            key="options"
+            actions={[
+              {
+                label: ttsEnabled
+                  ? 'Disable Text-to-Speech'
+                  : 'Enable Text-to-Speech',
+                icon: (
+                  <MaterialIcons
+                    name="record-voice-over"
+                    size={20}
+                    color="#222"
+                  />
+                ),
+                onPress: () => setTtsEnabled((prev) => !prev),
+              },
+              {
+                label: 'Reset Chat',
+                icon: (
+                  <MaterialIcons
+                    name="refresh"
+                    size={20}
+                    color="#222"
+                  />
+                ),
+                onPress: resetChat,
+              },
+            ]}
+          >
+            <ThemedIcons
+              library="MaterialCommunityIcons"
+              name="dots-vertical"
+              size={24}
+            />
+          </OptionsPopup>,
+        ]}
+      />
+      <ThemedView style={{ flex: 1, padding: 0 }}>
+        {showIntro ? (
+          <ThemedView
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+              paddingHorizontal: 32,
+            }}
+          >
+            <Image
+              source={require('@/assets/images/slide1-img.png')}
+              style={{
+                width: 80,
+                height: 80,
+                borderRadius: 40,
+                marginBottom: 10,
+              }}
+            />
+            <ThemedText type="subtitle" style={{ marginBottom: 10 }}>
+              Hello, I am Tara
+            </ThemedText>
+            <ThemedText style={{ textAlign: 'center', color: '#888' }}>
+              Your personal travel companion. Ask me anything about travel—destinations, tips, weather, and more.
+            </ThemedText>
+          </ThemedView>
+        ) : (
+          <FlatList
+            ref={flatListRef}
+            data={messages}
+            keyExtractor={(_, idx) => idx.toString()}
+            contentContainerStyle={[styles.messagesContainer, { paddingBottom: 70 }]}
+            renderItem={({ item }) => (
+              <View
+                style={[
+                  styles.messageRow,
+                  item.role === 'assistant'
+                    ? {justifyContent: 'flex-start'}
+                    : {justifyContent: 'flex-end', alignSelf: 'flex-end'},
+                ]}
+              >
+                {item.role === 'assistant' && (
+                  <Image
+                    source={require('@/assets/images/slide1-img.png')}
+                    style={styles.taraProfile}
+                  />
                 )}
+                <ThemedView
+                  color={item.role === 'assistant' ? 'primary' : 'secondary'}
+                  shadow
+                  style={[
+                    styles.messageBubble,
+                    item.role === 'user'
+                      ? {alignSelf: 'flex-end'}
+                      : {alignSelf: 'flex-start'},
+                  ]}
+                >
+                  <ThemedText
+                    style={
+                      item.role === 'user'
+                        ? {color: '#fff'}
+                        : null
+                    }
+                  >
+                    {item.content}
+                  </ThemedText>
+                  {item.showGoToRoutes && (
+                    <TouchableOpacity
+                      style={{
+                        marginTop: 8,
+                        backgroundColor: '#4300FF',
+                        borderRadius: 8,
+                        paddingVertical: 6,
+                        paddingHorizontal: 14,
+                        alignSelf: 'flex-start',
+                      }}
+                      onPress={() => router.push('/home/routes/routes')}
+                    >
+                      <ThemedText
+                        style={{ color: '#fff', fontWeight: 'bold' }}
+                      >
+                        Go to Routes
+                      </ThemedText>
+                    </TouchableOpacity>
+                  )}
+                </ThemedView>
               </View>
-            </View>
-          )}
-        />
-      )}
-      {loading && (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="small" color="#4300FF" />
-        </View>
-      )}
-      {error && (
-        <ThemedText style={{ color: 'red', textAlign: 'center', marginBottom: 8 }}>{error}</ThemedText>
-      )}
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={80}
-      >
-        <View style={styles.inputRow}>
-          {hasMessagesLeft ? (
-            <>
-              <TextField
-                value={input}
-                onChangeText={setInput}
-                placeholder="Type your message..."
-                onSubmitEditing={handleSend}
-                style={{ flex: 1, marginBottom: 0 }}
+            )}
+          />
+        )}
+        {loading && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="small" color="#4300FF" />
+          </View>
+        )}
+        {error && (
+          <ThemedText
+            style={{
+              color: 'red',
+              textAlign: 'center',
+              marginBottom: 8,
+            }}
+          >
+            {error}
+          </ThemedText>
+        )}
+      </ThemedView>
+      <ThemedView color="primary" style={styles.inputRowAbsolute}>
+        {hasMessagesLeft ? (
+          <>
+            <TextField
+              value={input}
+              onChangeText={setInput}
+              placeholder="Type your message..."
+              onSubmitEditing={handleSend}
+              style={{ flex: 1, marginBottom: 0 }}
+            />
+            <TouchableOpacity
+              style={styles.sendBtn}
+              onPress={handleSend}
+              disabled={loading || !input.trim()}
+            >
+              <ThemedIcons
+                library="MaterialIcons"
+                name="send"
+                size={30}
+                color="#00FFDE"
               />
-              <TouchableOpacity style={styles.sendBtn} onPress={handleSend} disabled={loading || !input.trim()}>
-                <ThemedIcons library='MaterialIcons' name='send' size={30} color='#00FFDE'/>
-              </TouchableOpacity>
-            </>
-          ) : (
-            <View style={{height: 180}}>
-              <ThemedText style={{ textAlign: 'center', flex: 1 }}>
-                You have reached the free daily credits for messages to Tara today. Upgrade to Pro for unlimited access or come back tomorrow.
-              </ThemedText>
-              <Button
-                title="Upgrade to Pro"
-                onPress={() => []}
-                type="primary"
-                />
-              <Button
-                title="Watch Ad for Additional Messages"
-                onPress={() => []}
-                buttonStyle={{marginTop: 10}}
-              />
-            </View>
-          )}
-        </View>
-      </KeyboardAvoidingView>
-    </ThemedView>
+            </TouchableOpacity>
+          </>
+        ) : (
+          <View style={{ height: 180 }}>
+            <ThemedText style={{ textAlign: 'center', flex: 1 }}>
+              You have reached the free daily credits for messages to Tara today. Upgrade to Pro for unlimited access or come back tomorrow.
+            </ThemedText>
+            <Button
+              title="Upgrade to Pro"
+              onPress={() => []}
+              type="primary"
+            />
+            <Button
+              title="Watch Ad for Additional Messages"
+              onPress={() => []}
+              buttonStyle={{ marginTop: 10 }}
+            />
+          </View>
+        )}
+      </ThemedView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  header: {
-    paddingTop: 40,
-    paddingBottom: 16,
-    paddingHorizontal: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: 'transparent',
-  },
-  resetBtn: {
-    padding: 6,
-  },
   messagesContainer: {
     paddingHorizontal: 16,
-    paddingBottom: 10,
     flexGrow: 1,
   },
   messageRow: {
     flexDirection: 'row',
     alignItems: 'flex-end',
-    marginVertical: 6,
+    marginVertical: 10,
     maxWidth: '100%',
-  },
-  aiRow: {
-    justifyContent: 'flex-start',
-  },
-  userRow: {
-    justifyContent: 'flex-end',
-    alignSelf: 'flex-end',
   },
   taraProfile: {
     width: 36,
     height: 36,
-    borderRadius: 18,
     marginRight: 8,
-    backgroundColor: '#eee',
   },
   messageBubble: {
     maxWidth: '80%',
     borderRadius: 16,
     padding: 12,
   },
-  userBubble: {
-    alignSelf: 'flex-end',
-    backgroundColor: '#4300FF',
-  },
-  aiBubble: {
-    alignSelf: 'flex-start',
-    backgroundColor: '#f6f6f6',
-  },
-  userText: {
-    color: '#fff',
-  },
-  aiText: {
-    color: '#222',
-  },
-  inputRow: {
+  inputRowAbsolute: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 12,
-    borderTopWidth: 1,
-    borderColor: '#eee',
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 10,
   },
   sendBtn: {
     paddingVertical: 10,

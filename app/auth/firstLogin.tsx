@@ -1,4 +1,5 @@
 import Button from '@/components/Button';
+import GradientHeader from '@/components/GradientHeader';
 import HorizontalSections from '@/components/HorizontalSections';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -131,6 +132,7 @@ export default function FirstLoginScreen() {
 
   return (
     <ThemedView style={styles.container}>
+      <GradientHeader/>
       <HorizontalSections
         labels={labels}
         sections={sections}

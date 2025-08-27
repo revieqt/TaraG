@@ -60,7 +60,6 @@ export default function CreateOrUpdateItineraryScreen() {
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [locations, setLocations] = useState<LocationItem[]>([]);
   const [dailyLocations, setDailyLocations] = useState<DailyLocation[]>([]);
-  const [jsonResult, setJsonResult] = useState<any>(null);
   const [showAddLocation, setShowAddLocation] = useState<{[key: string]: boolean}>({});
   const [pendingLocation, setPendingLocation] = useState<{[key: string]: Partial<LocationItem>}>({});
   const [loading, setLoading] = useState(false);
@@ -176,7 +175,6 @@ export default function CreateOrUpdateItineraryScreen() {
           }))
         : locations,
     };
-    setJsonResult(result);
     setLoading(true);
     setSuccess(false);
     setErrorMessage(undefined);

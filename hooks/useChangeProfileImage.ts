@@ -1,6 +1,6 @@
 import { useSession } from '@/context/SessionContext';
 import * as ImagePicker from 'expo-image-picker';
-import { Alert, Platform } from 'react-native';
+import { Alert } from 'react-native';
 import { BACKEND_URL } from '@/constants/Config';
 
 export default function useChangeProfileImage() {

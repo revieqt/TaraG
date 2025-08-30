@@ -31,52 +31,43 @@ export default function ProfileScreen() {
 
   return (
     <ThemedView style={{flex:1}}>
-      <BackButton style={styles.backButton}/>
-      <GradientHeader/>
-      {user && (
-        <OptionsPopup
-          actions={[
-            {
-              label: 'View Profile',
-              onPress: () => setViewImageVisible(true),
-            },
-            ...(isCurrentUser ? [{
-              label: 'Change Profile',
-              onPress: async () => {
-                await changeProfileImage();
-              },
-            }] : []),
-          ]}
-          style={styles.profileImage}
-        >
-            <Image
-              source={{ uri: session?.user?.profileImage || 'https://ui-avatars.com/api/?name=User' }}
-              style={{flex: 1}}
-            />
-        </OptionsPopup>
-      )}
-      <ViewImageModal
-        visible={viewImageVisible}
-        imageUrl={user?.profileImage || ''}
-        onClose={() => setViewImageVisible(false)}
-      />
+      <ThemedView color='primary'>
+        <BackButton style={styles.backButton}/>
+        <GradientHeader/>
+        {user && (
+          <OptionsPopup
+            style={styles.profileImage}
+          >
+              <Image
+                source={{ uri: session?.user?.profileImage || 'https://ui-avatars.com/api/?name=User' }}
+                style={{flex: 1}}
+              />
+          </OptionsPopup>
+        )}
+        <ViewImageModal
+          visible={viewImageVisible}
+          imageUrl={user?.profileImage || ''}
+          onClose={() => setViewImageVisible(false)}
+        />
 
-      <View style={{marginTop: 200, alignItems: 'center'}}>
-        {
-          user ? (
-            <>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                <ThemedText type="subtitle">{user.fname} {user.mname ? user.mname : ''}{user.lname}</ThemedText>
-                <ProBadge/>
-              </View>
-              
-              <ThemedText type="defaultSemiBold">@{user.username}</ThemedText>
-            </>
-          ) : (
-            <ThemedText type="error">User not found.</ThemedText>
-          )
-        }
-      </View>
+        <View style={{marginTop: 200, alignItems: 'center'}}>
+          {
+            user ? (
+              <>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                  <ThemedText type="subtitle">{user.fname} {user.mname ? user.mname : ''}{user.lname}</ThemedText>
+                  <ProBadge/>
+                </View>
+                
+                <ThemedText type="defaultSemiBold">@{user.username}</ThemedText>
+              </>
+            ) : (
+              <ThemedText type="error">User not found.</ThemedText>
+            )
+          }
+        </View>
+      </ThemedView>
+      
       <View style={{paddingHorizontal: 20, paddingTop: 5}}>
         {user ? (
           <>
@@ -86,14 +77,6 @@ export default function ProfileScreen() {
             <ThemedText>Contact Number: {user.contactNumber}</ThemedText>
             <ThemedText>Status: {user.status}</ThemedText>
             <ThemedText>Type: {user.type}</ThemedText>
-            {user.emergencyContact && user.emergencyContact.length > 0 && (
-              <View style={{ marginTop: 10 }}>
-                <ThemedText type="subtitle">Emergency Contacts:</ThemedText>
-                {user.emergencyContact.map((ec, idx) => (
-                  <ThemedText key={idx}>- {ec.name}: {ec.contactNumber}</ThemedText>
-                ))}
-              </View>
-            )}
           </>
         ) : (
           <ThemedText type="error">User not found.</ThemedText>

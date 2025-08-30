@@ -3,19 +3,13 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import React, { useRef, useState } from 'react';
 import { Animated, Easing, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
 
-export interface OptionsAction {
-  label: string;
-  icon?: React.ReactNode;
-  onPress: () => void;
-}
-
 interface OptionsProps {
-  actions: OptionsAction[];
+  options?: React.ReactNode[];
   style?: ViewStyle | ViewStyle[];
   children?: React.ReactNode;
 }
 
-const Options: React.FC<OptionsProps> = ({ actions, style, children }) => {
+const Options: React.FC<OptionsProps> = ({ options = [], style, children }) => {
   const [visible, setVisible] = useState(false);
   const slideAnim = useRef(new Animated.Value(0)).current;
   const primaryColor = useThemeColor({}, 'primary');
@@ -58,12 +52,10 @@ const Options: React.FC<OptionsProps> = ({ actions, style, children }) => {
       >
         <Pressable style={styles.overlay} onPress={handleClose}>
           <Animated.View style={[styles.menu, { backgroundColor: primaryColor, transform: [{ translateY }] }]}>
-            {actions.map((action, index) => (
-              <Pressable key={index} style={styles.menuItem} onPress={() => { handleClose(); action.onPress(); }}>
-                {action.icon && action.icon}
-
-                <ThemedText>{action.label}</ThemedText>
-              </Pressable>
+            {options.map((option, index) => (
+              <View key={index} style={styles.menuItem}>
+                {option}
+              </View>
             ))}
           </Animated.View>
         </Pressable>
@@ -99,6 +91,7 @@ const styles = StyleSheet.create({
     paddingVertical: 13,
     paddingHorizontal: 16,
     gap: 15
+
   },
   icon: {
     marginRight: 12,

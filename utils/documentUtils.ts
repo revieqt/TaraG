@@ -1,10 +1,10 @@
 import { Alert } from 'react-native';
 import { router } from 'expo-router';
-import { DocumentName, DocumentData } from '@/hooks/useDocument';
+import { DocumentData } from '@/hooks/useDocument';
 import { BACKEND_URL } from "@/constants/Config";
 
 // Helper function to fetch document data
-export const fetchDocumentData = async (docName: DocumentName): Promise<DocumentData> => {
+export const fetchDocumentData = async (docName: any): Promise<DocumentData> => {
   try {
     const response = await fetch(`${BACKEND_URL}/public/${docName}.json`);
     if (!response.ok) {
@@ -19,7 +19,7 @@ export const fetchDocumentData = async (docName: DocumentName): Promise<Document
 };
 
 // Helper to load a document and navigate
-export const openDocument = async (docName: DocumentName) => {
+export const openDocument = async (docName: any) => {
   try {
     const doc = await fetchDocumentData(docName);
     router.push({

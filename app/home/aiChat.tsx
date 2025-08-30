@@ -102,31 +102,33 @@ export default function AIChatScreen() {
         rightButton={[
           <OptionsPopup
             key="options"
-            actions={[
-              {
-                label: ttsEnabled
-                  ? 'Disable Text-to-Speech'
-                  : 'Enable Text-to-Speech',
-                icon: (
-                  <MaterialIcons
-                    name="record-voice-over"
-                    size={20}
-                    color="#222"
-                  />
-                ),
-                onPress: () => setTtsEnabled((prev) => !prev),
-              },
-              {
-                label: 'Reset Chat',
-                icon: (
-                  <MaterialIcons
-                    name="refresh"
-                    size={20}
-                    color="#222"
-                  />
-                ),
-                onPress: resetChat,
-              },
+            options={[
+              <TouchableOpacity
+                key="tts"
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 15, paddingVertical: 5 }}
+                onPress={() => setTtsEnabled((prev) => !prev)}
+              >
+                <MaterialIcons
+                  name="record-voice-over"
+                  size={20}
+                  color="#222"
+                />
+                <ThemedText>
+                  {ttsEnabled ? 'Disable Text-to-Speech' : 'Enable Text-to-Speech'}
+                </ThemedText>
+              </TouchableOpacity>,
+              <TouchableOpacity
+                key="reset"
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 15, paddingVertical: 5 }}
+                onPress={resetChat}
+              >
+                <MaterialIcons
+                  name="refresh"
+                  size={20}
+                  color="#222"
+                />
+                <ThemedText>Reset Chat</ThemedText>
+              </TouchableOpacity>,
             ]}
           >
             <ThemedIcons

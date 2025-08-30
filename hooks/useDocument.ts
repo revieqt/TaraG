@@ -13,13 +13,11 @@ export type DocumentData = {
   sections: DocumentSection[];
 };
 
-export type DocumentName = "terms-mobileApp" | "privacyPolicy-mobileApp" | "manual-mobileApp" | "emergencyTips-mobileApp";
-
 export function useDocument() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchDocument = useCallback(async (docName: DocumentName): Promise<DocumentData> => {
+  const fetchDocument = useCallback(async (docName: any): Promise<DocumentData> => {
     setLoading(true);
     setError(null);
     

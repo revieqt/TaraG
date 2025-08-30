@@ -1,6 +1,6 @@
 import { ThemedIcons } from '@/components/ThemedIcons';
 import { ThemedView } from '@/components/ThemedView';
-import { hasUnreadNotifications } from '@/services/userApiService';
+// import { hasUnreadNotifications } from '@/services/authApiService';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
@@ -14,8 +14,8 @@ const NotificationsButton: React.FC<NotificationsButtonProps> = ({ userId, style
   const [hasUnread, setHasUnread] = useState(false);
 
   useEffect(() => {
-    if (!userId) return setHasUnread(false);
-    hasUnreadNotifications(userId).then(setHasUnread);
+    // if (!userId) return setHasUnread(false);
+    // hasUnreadNotifications(userId).then(setHasUnread);
   }, [userId]);
 
   return (

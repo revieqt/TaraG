@@ -1,26 +1,25 @@
 import Button from '@/components/Button';
+import ProBadge from '@/components/custom/ProBadge';
 import GradientHeader from '@/components/GradientHeader';
-import { BACKEND_URL } from '@/constants/Config';
+import OptionsPopup from '@/components/OptionsPopup';
+import Switch from '@/components/Switch';
 import { ThemedIcons } from '@/components/ThemedIcons';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import WebViewModal from '@/components/WebView';
-import { SUPPORT_FORM_URL } from '@/constants/Config';
+import { BACKEND_URL, SUPPORT_FORM_URL, TRAVELLER_PRO_PRICE } from '@/constants/Config';
 import { useSession } from '@/context/SessionContext';
 import { openDocument } from '@/utils/documentUtils';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
-import ProBadge from '@/components/custom/ProBadge';
-import { TRAVELLER_PRO_PRICE } from '@/constants/Config';
 import { Alert, Image, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
-import OptionsPopup from '@/components/OptionsPopup';
 
 export default function AccountScreen() {
   const { session, clearSession } = useSession();
   const user = session?.user;
   const [showPayment, setShowPayment] = useState(false);
   const [paymentUrl, setPaymentUrl] = useState<string | null>(null);
-
+  const [showInfo, setShowInfo] = useState(true);
   const [showSupport, setShowSupport] = useState(false);
 
   const fullName = [user?.fname, user?.mname, user?.lname].filter(Boolean).join(' ');
@@ -141,11 +140,31 @@ export default function AccountScreen() {
             <ThemedText>Change Password</ThemedText>
           </TouchableOpacity>
 
-          <OptionsPopup actions={[]} style={styles.optionsChild}> 
-          <ThemedIcons library='MaterialIcons' name='supervised-user-circle' size={15} />
-          <ThemedText>Profile Visibility</ThemedText>
-          </OptionsPopup>
+          <OptionsPopup
+            key="visibility"
+            style={styles.optionsChild}
+            options={[
+              <Switch
+                label="Make Profile Private"
+                value={showInfo}
+                onValueChange={setShowInfo}
+              />,
+              <Switch
+                label="Show Personal Info"
+                value={showInfo}
+                onValueChange={setShowInfo}
+              />,
+              <Switch
+                label="Show Travel Info"
+                value={showInfo}
+                onValueChange={setShowInfo}
+              />
+            ]}
+          >
 
+            <ThemedIcons library='MaterialIcons' name='supervised-user-circle' size={15} />
+            <ThemedText>Profile Control</ThemedText>
+          </OptionsPopup>
           <TouchableOpacity onPress={() => openDocument('privacyPolicy-mobileApp')} style={styles.optionsChild}>
             <ThemedIcons library='MaterialDesignIcons' name='file-eye' size={15} />
             <ThemedText>Privacy Policy</ThemedText>
@@ -165,6 +184,10 @@ export default function AccountScreen() {
           <TouchableOpacity onPress={() => setShowSupport(true)} style={styles.optionsChild}>
             <ThemedIcons library='MaterialDesignIcons' name='headset' size={15} />
             <ThemedText>Contact Support</ThemedText>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => openDocument('about')} style={styles.optionsChild}>
+            <ThemedIcons library='MaterialDesignIcons' name='file-find' size={15} />
+            <ThemedText>About TaraG</ThemedText>
           </TouchableOpacity>
         </View>
 

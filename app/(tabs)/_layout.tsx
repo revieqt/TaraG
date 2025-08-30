@@ -8,7 +8,7 @@ function TabBarLabel({ children, color }: { children: React.ReactNode; color: st
   return (
     <Text
       style={{
-        fontFamily: 'Roboto',
+        fontFamily: 'Poppins',
         fontSize: 11,
         color,
         marginTop: 2,

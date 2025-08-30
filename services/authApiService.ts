@@ -206,3 +206,23 @@ export async function updateFirstLoginViaBackend(userId: string, interests: stri
     throw new Error(data.error || 'Failed to update first login status');
   }
 }
+
+// Change password via backend API
+export async function changePasswordViaBackend(currentPassword: string, newPassword: string, accessToken: string): Promise<void> {
+  const response = await fetch(`${BACKEND_URL}/auth/change-password`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      currentPassword,
+      newPassword,
+      accessToken,
+    }),
+  });
+
+  if (!response.ok) {
+    const data = await response.json();
+    throw new Error(data.error || 'Failed to change password');
+  }
+}

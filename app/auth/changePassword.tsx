@@ -3,10 +3,11 @@ import BackButton from '@/components/custom/BackButton';
 import PasswordField from '@/components/PasswordField';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { changeUserPassword } from '@/services/userApiService';
 import { useNavigation } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, KeyboardAvoidingView, Platform, View } from 'react-native';
+import { changePasswordViaBackend } from '@/services/authApiService';
+import { useSession } from '@/context/SessionContext';
 
 export default function ChangePasswordScreen() {
   const [currentPassword, setCurrentPassword] = useState('');
@@ -16,6 +17,7 @@ export default function ChangePasswordScreen() {
   const [formError, setFormError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
+  const { session } = useSession();
 
   const handleChangePassword = async () => {
     setFormError('');
@@ -31,19 +33,18 @@ export default function ChangePasswordScreen() {
       setFormError('Password must be at least 6 characters.');
       return;
     }
+    if (!session?.accessToken) {
+      setFormError('Please log in again to change your password.');
+      return;
+    }
+
     setLoading(true);
     try {
-      await changeUserPassword(currentPassword, newPassword);
+      await changePasswordViaBackend(session.accessToken, currentPassword, newPassword);
       Alert.alert('Success', 'Your password has been changed.');
       navigation.goBack();
     } catch (err: any) {
-      if (err && err.code === 'auth/wrong-password') {
-        setFormError('Current password is incorrect.');
-      }else if( (err && err.code === 'auth/invalid-credential')){
-        setFormError('Incorrect current password.');
-      } else {
-        setFormError(err?.message || 'Failed to change password.');
-      }
+      setFormError(err?.message || 'Failed to change password.');
     }
     setLoading(false);
   };

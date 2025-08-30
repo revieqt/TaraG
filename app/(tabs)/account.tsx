@@ -8,13 +8,12 @@ import WebViewModal from '@/components/WebView';
 import { SUPPORT_FORM_URL } from '@/constants/Config';
 import { useSession } from '@/context/SessionContext';
 import { openDocument } from '@/utils/documentUtils';
-import { auth } from '@/services/firebaseConfig';
 import { router } from 'expo-router';
-import { signOut } from 'firebase/auth';
 import React, { useState } from 'react';
 import ProBadge from '@/components/custom/ProBadge';
 import { TRAVELLER_PRO_PRICE } from '@/constants/Config';
 import { Alert, Image, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import OptionsPopup from '@/components/OptionsPopup';
 
 export default function AccountScreen() {
   const { session, clearSession } = useSession();
@@ -28,7 +27,6 @@ export default function AccountScreen() {
 
   const handleLogout = async () => {
     try {
-      await signOut(auth);
       await clearSession();
       router.replace('/auth/login');
     } catch (err) {
@@ -142,6 +140,12 @@ export default function AccountScreen() {
             <ThemedIcons library='MaterialIcons' name='vpn-key' size={15} />
             <ThemedText>Change Password</ThemedText>
           </TouchableOpacity>
+
+          <OptionsPopup actions={[]} style={styles.optionsChild}> 
+          <ThemedIcons library='MaterialIcons' name='supervised-user-circle' size={15} />
+          <ThemedText>Profile Visibility</ThemedText>
+          </OptionsPopup>
+
           <TouchableOpacity onPress={() => openDocument('privacyPolicy-mobileApp')} style={styles.optionsChild}>
             <ThemedIcons library='MaterialDesignIcons' name='file-eye' size={15} />
             <ThemedText>Privacy Policy</ThemedText>

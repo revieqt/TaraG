@@ -59,8 +59,11 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
     (async () => {
       try {
         const stored = await AsyncStorage.getItem('session');
+        console.log('🔍 SessionContext: Stored session data:', stored);
+        
         if (stored) {
           const parsed = JSON.parse(stored);
+          console.log('🔍 SessionContext: Parsed session:', parsed);
 
           if (parsed.user) {
             parsed.user.bdate = new Date(parsed.user.bdate);
@@ -73,11 +76,15 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
           }
 
           setSession(parsed);
+          console.log('✅ SessionContext: Session loaded successfully');
+        } else {
+          console.log('❌ SessionContext: No stored session found');
         }
       } catch (err) {
-        console.error('Failed to load session:', err);
+        console.error('❌ SessionContext: Failed to load session:', err);
       } finally {
         setLoading(false);
+        console.log('🏁 SessionContext: Loading complete');
       }
     })();
   }, []);

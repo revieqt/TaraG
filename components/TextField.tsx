@@ -36,7 +36,6 @@ const TextField: React.FC<TextFieldProps> = ({
   // Use themed colors
   const backgroundColor = useThemeColor({}, 'primary');
   const textColor = useThemeColor({}, 'text');
-  const borderColor = useThemeColor({}, 'tint');
 
   // Local focus state for border color
   const [isFocused, setIsFocused] = useState(false);
@@ -57,7 +56,7 @@ const TextField: React.FC<TextFieldProps> = ({
       style={[
         styles.inputWrapper,
         { backgroundColor },
-        { borderColor: focused ? borderColor : '#cccccc', borderWidth: 1 },
+        { borderColor: focused ? '#ccc' : '#ccc4', borderWidth: 1 },
         style
       ]}
     >

@@ -13,6 +13,7 @@ import { router } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { openDocument } from '@/utils/documentUtils';
+import GradientHeader from '@/components/GradientHeader';
 
 export default function RegisterScreen() {
   const [fname, setFname] = useState('');
@@ -104,10 +105,11 @@ export default function RegisterScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={{ flex: 1, width: '100%' }}
     >
-      <ThemedView style={styles.background}>
+      <GradientHeader/>
+      <ThemedView>
         <ScrollView
           ref={scrollRef}
-          style={{ width: '100%', padding: 20 }}
+          style={{ width: '100%', padding: 20, zIndex: 2 }}
           contentContainerStyle={{ paddingBottom: 30 }}
           keyboardShouldPersistTaps="handled"
         >
@@ -119,7 +121,7 @@ export default function RegisterScreen() {
           </ThemedText>
 
           {errorMsg ? (
-            <ThemedText style={styles.errorMsg}>{errorMsg}</ThemedText>
+            <ThemedText type='error'>{errorMsg}</ThemedText>
           ) : null}
 
           <TextField
@@ -192,8 +194,8 @@ export default function RegisterScreen() {
             value={confirmPassword}
             onChangeText={setConfirmPassword}
           />
-          <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap'}}>
-            <ThemedText>By creating an account, you agree to our </ThemedText>
+          <View style={{flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', marginVertical: 7}}>
+            <ThemedText style={{opacity: .5}}>By creating an account, you agree to our </ThemedText>
             <TouchableOpacity onPress={() => openDocument('terms-mobileApp')}>
               <ThemedText type='link'>Terms and Conditions</ThemedText>
             </TouchableOpacity>
@@ -207,9 +209,9 @@ export default function RegisterScreen() {
             loading={loading}
           />
 
-          <TouchableOpacity onPress={() => router.push('/auth/login')} style={styles.registerLink}>
-            <ThemedText style={styles.registerText}>
-              Already have an account? <ThemedText style={{ textDecorationLine: 'underline' }}>Login</ThemedText>
+          <TouchableOpacity onPress={() => router.push('/auth/login')} style={{alignSelf: 'center', marginTop: 16}}>
+            <ThemedText>
+              Already have an account? <ThemedText type='link'>Login</ThemedText>
             </ThemedText>
           </TouchableOpacity>
         </ScrollView>
@@ -219,25 +221,4 @@ export default function RegisterScreen() {
 }
 
 const styles = StyleSheet.create({
-  background: {
-    flex: 1,
-  },
-  errorMsg: {
-    color: '#d32f2f',
-    backgroundColor: '#fdecea',
-    borderRadius: 8,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    marginBottom: 14,
-    textAlign: 'center',
-    fontSize: 15,
-  },
-  registerLink: {
-    marginTop: 10,
-    alignItems: 'center',
-  },
-  registerText: {
-    color: '#007bff',
-    fontSize: 15,
-  },
 });

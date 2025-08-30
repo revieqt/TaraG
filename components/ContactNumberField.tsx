@@ -34,7 +34,6 @@ const ContactNumberField: React.FC<ContactNumberFieldProps> = ({
 }) => {
   const backgroundColor = useThemeColor({}, 'primary');
   const textColor = useThemeColor({}, 'text');
-  const borderColor = useThemeColor({}, 'tint');
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [isDropdownFocused, setIsDropdownFocused] = useState(false);
   const isFocused = isInputFocused || isDropdownFocused;
@@ -55,7 +54,7 @@ const ContactNumberField: React.FC<ContactNumberFieldProps> = ({
       style={[
         styles.inputWrapper,
         { backgroundColor },
-        { borderColor: isFocused ? borderColor : '#cccccc', borderWidth: 1 },
+        { borderColor: isFocused ? '#ccc' : '#ccc4', borderWidth: 1 },
         style,
       ]}
       onStartShouldSetResponder={() => true}

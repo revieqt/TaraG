@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
 
   },
   error: {
-    fontFamily: 'Roboto',
+    fontFamily: 'Poppins',
     fontSize: 14,
     paddingVertical: 10,
     color: '#d32f2f',

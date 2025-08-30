@@ -22,8 +22,7 @@ const DropDownField: React.FC<DropDownFieldProps> = ({
 }) => {
   const backgroundColor = useThemeColor({}, 'primary');
   const textColor = useThemeColor({}, 'text');
-  const borderColor = useThemeColor({}, 'tint');
-  const [isFocused, setIsFocused] = useState(false);
+  const [focused, setFocused] = useState(false);
 
   // Convert values to uniform {label, value} objects
   const options = values.map((v) =>
@@ -31,12 +30,12 @@ const DropDownField: React.FC<DropDownFieldProps> = ({
   );
 
   return (
-    <TouchableWithoutFeedback onPressIn={() => setIsFocused(true)} onPressOut={() => setIsFocused(false)}>
+    <TouchableWithoutFeedback onPressIn={() => setFocused(true)} onPressOut={() => setFocused(false)}>
       <View
         style={[
           styles.inputWrapper,
           { backgroundColor },
-          { borderColor: isFocused ? borderColor : '#cccccc', borderWidth: 1 },
+          { borderColor: focused ? '#ccc' : '#ccc4', borderWidth: 1 },
           style,
         ]}
       >
@@ -46,8 +45,8 @@ const DropDownField: React.FC<DropDownFieldProps> = ({
           enabled={enabled}
           style={[styles.picker, { color: textColor }]}
           dropdownIconColor={textColor}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
         >
           {placeholder ? (
             <Picker.Item label={placeholder} value="" color="#aaa" enabled={false} />

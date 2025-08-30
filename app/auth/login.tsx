@@ -1,4 +1,5 @@
 import Button from '@/components/Button';
+import GradientHeader from '@/components/GradientHeader';
 import PasswordField from '@/components/PasswordField';
 import TextField from '@/components/TextField';
 import { ThemedText } from '@/components/ThemedText';
@@ -70,8 +71,9 @@ export default function LoginScreen() {
 
   return (
     <ThemedView style={styles.background}>
+      <GradientHeader/>
       <KeyboardAvoidingView
-        style={styles.container}
+        style={{width: '100%'}}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <View style={styles.formContainer}>
@@ -79,7 +81,7 @@ export default function LoginScreen() {
           <ThemedText style={{ marginBottom: 30 }}>Safer Journeys. Join TaraG!</ThemedText>
 
           {errorMsg ? (
-            <ThemedText style={styles.errorMsg}>{errorMsg}</ThemedText>
+            <ThemedText type='error'>{errorMsg}</ThemedText>
           ) : null}
 
           <TextField
@@ -143,37 +145,30 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   background: {
     flex: 1,
+    width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
-  },
-  container: {
-    width: '100%',
   },
   formContainer: {
     marginTop: 150,
-  },
-  errorMsg: {
-    color: 'red',
-    marginBottom: 10,
-    textAlign: 'center',
+    padding: 20
   },
   options: {
     alignItems: 'center',
     marginTop: 17,
   },
-  circularButton: {
-    width: 60,
-    height: 60,
-    marginTop: 10,
-    marginBottom: 50,
-    borderRadius: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
+  // circularButton: {
+  //   width: 60,
+  //   height: 60,
+  //   marginTop: 10,
+  //   marginBottom: 50,
+  //   borderRadius: 30,
+  //   justifyContent: 'center',
+  //   alignItems: 'center',
+  //   shadowColor: '#000',
+  //   shadowOffset: { width: 0, height: 2 },
+  //   shadowOpacity: 0.25,
+  //   shadowRadius: 3.84,
+  //   elevation: 5,
+  // },
 });

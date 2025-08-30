@@ -22,7 +22,6 @@ const PasswordField: React.FC<PasswordFieldProps> = ({
 }) => {
   const backgroundColor = useThemeColor({}, 'primary');
   const textColor = useThemeColor({}, 'text');
-  const borderColor = useThemeColor({}, 'tint');
 
   const [isPasswordVisible, setPasswordVisible] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
@@ -43,7 +42,7 @@ const PasswordField: React.FC<PasswordFieldProps> = ({
       style={[
         styles.inputWrapper,
         { backgroundColor },
-        { borderColor: focused ? borderColor : '#cccccc', borderWidth: 1 },
+        { borderColor: focused ? '#ccc' : '#ccc4', borderWidth: 1 },
       ]}
     >
       <TextInput

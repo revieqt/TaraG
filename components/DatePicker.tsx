@@ -29,7 +29,6 @@ const DatePicker: React.FC<DatePickerProps> = ({
 }) => {
   const backgroundColor = useThemeColor({}, 'primary');
   const textColor = useThemeColor({}, 'text');
-  const borderColor = useThemeColor({}, 'tint');
 
   const [showPicker, setShowPicker] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
@@ -59,7 +58,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
       style={[
         styles.inputWrapper,
         { backgroundColor },
-        { borderColor: focused ? borderColor : '#cccccc', borderWidth: 1 },
+        { borderColor: focused ? '#ccc' : '#ccc4', borderWidth: 1 },
         style, // <-- apply custom style
       ]}
     >

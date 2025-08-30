@@ -4,9 +4,9 @@ import HorizontalSections from '@/components/HorizontalSections';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import ToggleButton from '@/components/ToggleButton';
-import { auth, db } from '@/services/firebaseConfig';
+import { updateFirstLoginViaBackend } from '@/services/authApiService';
+import { useSession } from '@/context/SessionContext';
 import { router } from 'expo-router';
-import { doc, updateDoc } from 'firebase/firestore';
 import React, { useState } from 'react';
 import { Image, ScrollView, StyleSheet, View } from 'react-native';
 
@@ -18,6 +18,7 @@ const interests = [
 
 export default function FirstLoginScreen() {
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
+  const { session } = useSession();
 
   const handleInterestToggle = (value: string, isSelected: boolean) => {
     if (isSelected) {
@@ -29,15 +30,11 @@ export default function FirstLoginScreen() {
 
   const handleFinish = async () => {
     if (selectedInterests.length < 3) return;
+    if (!session?.user || !session?.accessToken) return;
+    
     try {
-      const user = auth.currentUser;
-      if (user) {
-        await updateDoc(doc(db, 'users', user.uid), {
-          isFirstLogin: false,
-          likes: selectedInterests
-        });
-        router.replace('/(tabs)/home');
-      }
+      await updateFirstLoginViaBackend(session.user.id, selectedInterests, session.accessToken);
+      router.replace('/(tabs)/home');
     } catch (error) {
       console.error('Error updating user profile:', error);
     }

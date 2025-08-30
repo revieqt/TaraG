@@ -7,7 +7,7 @@ import { ThemedView } from '@/components/ThemedView';
 import WebViewModal from '@/components/WebView';
 import { SUPPORT_FORM_URL } from '@/constants/Config';
 import { useSession } from '@/context/SessionContext';
-import { fetchDocument } from '@/services/documentsApiService';
+import { openDocument } from '@/utils/documentUtils';
 import { auth } from '@/services/firebaseConfig';
 import { router } from 'expo-router';
 import { signOut } from 'firebase/auth';
@@ -51,18 +51,6 @@ export default function AccountScreen() {
       }
     } catch (err) {
       Alert.alert("Error", "Failed to start payment.");
-    }
-  };
-  // Helper to load a document and navigate
-  const openDocument = async (docName: 'terms-mobileApp' | 'privacyPolicy-mobileApp' | 'manual-mobileApp') => {
-    try {
-      const doc = await fetchDocument(docName);
-      router.push({
-        pathname: '/account/info-view',
-        params: { data: JSON.stringify(doc) }, // pass JSON as string
-      });
-    } catch (error) {
-      Alert.alert('Error', `Failed to load ${docName}.`);
     }
   };
 

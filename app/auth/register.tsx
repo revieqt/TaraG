@@ -6,11 +6,13 @@ import PasswordField from '@/components/PasswordField';
 import TextField from '@/components/TextField';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { registerUser } from '@/services/userApiService';
+import { registerUserViaBackend } from '@/services/authApiService';
+import { useSession } from '@/context/SessionContext';
 import { calculateAge } from '@/utils/calculateAge';
 import { router } from 'expo-router';
 import React, { useRef, useState } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { openDocument } from '@/utils/documentUtils';
 
 export default function RegisterScreen() {
   const [fname, setFname] = useState('');
@@ -27,6 +29,7 @@ export default function RegisterScreen() {
   const [errorMsg, setErrorMsg] = useState('');
   const scrollRef = useRef<ScrollView>(null);
   const [areaCode, setAreaCode] = useState('+63');
+  const { updateSession } = useSession();
 
   const handleRegister = async () => {
     setErrorMsg('');
@@ -60,24 +63,24 @@ export default function RegisterScreen() {
     setLoading(true);
 
     try {
-      await registerUser(
+      const response = await registerUserViaBackend({
         email,
         password,
-        {
-          fname,
-          lname,
-          mname: mname || '',
-          bdate,
-          age,
-          gender,
-          contactNumber: areaCode + contactNumber,
-          username,
-          isProUser: false,
-          status: 'Active',
-          profileImage: '@/assets/images/defaultUser.jpg', // You can set a default URL if you want
-          type: 'user',
-        }
-      );
+        fname,
+        lname,
+        mname: mname || '',
+        bdate: bdate!.toISOString(),
+        age,
+        gender,
+        contactNumber: areaCode + contactNumber,
+        username,
+        isProUser: false,
+        status: 'Active',
+        profileImage: '@/assets/images/defaultUser.jpg',
+        type: 'user',
+      });
+
+      // Navigate to login after successful registration
       router.replace('/auth/login');
     } catch (error: any) {
       if (error.code === 'auth/email-already-in-use') {
@@ -86,10 +89,10 @@ export default function RegisterScreen() {
         setErrorMsg('Invalid email address.');
       } else if (error.code === 'auth/weak-password') {
         setErrorMsg('Password should be at least 6 characters.');
-      } else if (typeof error === 'string') {
-        setErrorMsg(error);
+      } else if (error.error) {
+        setErrorMsg(error.error);
       } else {
-        setErrorMsg(error.message || 'Registration failed.');
+        setErrorMsg('Registration failed.');
       }
       scrollRef.current?.scrollTo({ y: 0, animated: true });
     }
@@ -189,6 +192,12 @@ export default function RegisterScreen() {
             value={confirmPassword}
             onChangeText={setConfirmPassword}
           />
+          <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap'}}>
+            <ThemedText>By creating an account, you agree to our </ThemedText>
+            <TouchableOpacity onPress={() => openDocument('terms-mobileApp')}>
+              <ThemedText type='link'>Terms and Conditions</ThemedText>
+            </TouchableOpacity>
+          </View>
 
           <Button
             title={loading ? 'Registering...' : 'Register'}

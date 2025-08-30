@@ -1,11 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 
-// 🧑‍💼 User type
-export type EmergencyContact = {
-  name: string;
-  contactNumber: string;
-};
 
 export type User = {
   id: string;
@@ -25,7 +20,6 @@ export type User = {
   type: string;
   createdOn: Date;
   groups?: string[];
-  emergencyContact?: EmergencyContact[];
 };
 
 // 📍 ActiveRoute type
@@ -41,6 +35,8 @@ export type ActiveRoute = {
 export type SessionData = {
   user?: User;
   activeRoute?: ActiveRoute;
+  accessToken?: string;
+  refreshToken?: string;
 };
 
 // 💡 Context shape

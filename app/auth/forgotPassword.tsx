@@ -3,7 +3,7 @@ import TextField from '@/components/TextField';
 import { ThemedIcons } from '@/components/ThemedIcons';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { sendUserPasswordResetEmail } from '@/services/userApiService';
+import { sendPasswordResetViaBackend } from '@/services/authApiService';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Alert, KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity } from 'react-native';
@@ -35,7 +35,7 @@ export default function ForgotPasswordScreen() {
     if (cooldown > 0) return;
     try {
       setSending(true);
-      await sendUserPasswordResetEmail(email);
+      await sendPasswordResetViaBackend(email);
       setEmailSent(true);
       setCooldown(RESEND_COOLDOWN);
       Alert.alert('Email Sent', 'Please check your inbox for password reset instructions.');
@@ -60,7 +60,7 @@ export default function ForgotPasswordScreen() {
         }}
       >
         <ThemedView>
-          <ThemedIcons library='Ionicons' name={'arrow-back'} size={20}></ThemedIcons>
+          <ThemedIcons library='MaterialIcons' name={'arrow-back'} size={20}></ThemedIcons>
         </ThemedView>
       </TouchableOpacity>
 

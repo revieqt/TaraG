@@ -2,9 +2,9 @@ import Button from '@/components/Button';
 import { ThemedIcons } from '@/components/ThemedIcons';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { verifyUserEmail } from '@/services/userApiService';
+import { sendVerificationEmailViaBackend, checkEmailVerificationViaBackend } from '@/services/authApiService';
+import { useSession } from '@/context/SessionContext';
 import { useRouter } from 'expo-router';
-import { getAuth, reload } from 'firebase/auth';
 import React, { useEffect, useState } from 'react';
 import { Alert, KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity } from 'react-native';
 
@@ -16,8 +16,7 @@ export default function VerifyEmailScreen() {
   const [cooldown, setCooldown] = useState(0);
   const [emailSent, setEmailSent] = useState(false);
 
-  const auth = getAuth();
-  const user = auth.currentUser;
+  const { session } = useSession();
   const router = useRouter();
 
   useEffect(() => {
@@ -29,11 +28,11 @@ export default function VerifyEmailScreen() {
   }, [cooldown]);
 
   const handleSendVerification = async () => {
-    if (!user) return;
+    if (!session?.user || !session?.accessToken) return;
     if (cooldown > 0) return;
     try {
       setSending(true);
-      await verifyUserEmail(user);
+      await sendVerificationEmailViaBackend(session.user.email, session.accessToken);
       setEmailSent(true);
       setCooldown(RESEND_COOLDOWN);
       Alert.alert('Email Sent', 'Please check your inbox to verify your email.');
@@ -45,13 +44,13 @@ export default function VerifyEmailScreen() {
   };
 
   const handleCheckVerification = async () => {
-    if (!user) return;
+    if (!session?.user) return;
     try {
       setChecking(true);
-      await reload(user);
-      if (user.emailVerified) {
+      const result = await checkEmailVerificationViaBackend(session.user.id);
+      if (result.emailVerified) {
         Alert.alert('Success', 'Your email has been verified.');
-        router.replace('/auth/firstLogin'); // Change to your desired path
+        router.replace('/auth/firstLogin');
       } else {
         Alert.alert('Not Verified', 'Your email is still not verified.');
       }
@@ -71,7 +70,7 @@ export default function VerifyEmailScreen() {
         }}
       >
         <ThemedView>
-          <ThemedIcons library='Ionicons' name={'arrow-back'} size={20}></ThemedIcons>
+          <ThemedIcons library='MaterialIcons' name={'arrow-back'} size={20}></ThemedIcons>
         </ThemedView>
         
       </TouchableOpacity>
@@ -85,7 +84,7 @@ export default function VerifyEmailScreen() {
 
         {emailSent && (
           <ThemedText style={{ marginBottom: 10 }}>
-            We’ve sent a verification link to your email: {user?.email}
+            We've sent a verification link to your email: {session?.user?.email}
           </ThemedText>
         )}
 

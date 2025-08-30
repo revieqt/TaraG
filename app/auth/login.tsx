@@ -5,8 +5,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useSession } from '@/context/SessionContext';
 import { useGoogleLogin } from '@/hooks/useGoogleAuth';
-import { auth } from '@/services/firebaseConfig';
-import { loginUserAndFetchProfile } from '@/services/userApiService';
+import { loginUserViaBackend } from '@/services/authApiService';
 import { FontAwesome } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
@@ -19,7 +18,7 @@ export default function LoginScreen() {
   const [errorMsg, setErrorMsg] = useState('');
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
   const { updateSession } = useSession();
-  const { signIn: googleSignIn, ready: googleReady } = useGoogleLogin();
+  // const { signIn: googleSignIn, ready: googleReady } = useGoogleLogin();
 
   const handleLogin = async () => {
     setErrorMsg('');
@@ -30,30 +29,38 @@ export default function LoginScreen() {
       return;
     }
     try {
-      const userForSession = await loginUserAndFetchProfile(email, password);
-      await updateSession({ user: userForSession });
-      // Check if email is verified using Firebase auth
-      if (auth.currentUser && !auth.currentUser.emailVerified) {
-        router.replace('/auth/verifyEmail');
-        setLoading(false);
-        return;
-      }
+      const response = await loginUserViaBackend(email, password);
+      
+      // Update session with user data and tokens
+      await updateSession({ 
+        user: response.user,
+        accessToken: response.accessToken,
+        refreshToken: response.refreshToken
+      });
+      
       // Check if this is the user's first login
-      if (userForSession.isFirstLogin) {
+      if (response.user.isFirstLogin) {
         router.replace('/auth/firstLogin');
         setLoading(false);
         return;
       }
+      
       router.replace('/');
     } catch (error: any) {
+      if (error.requiresVerification) {
+        router.replace('/auth/verifyEmail');
+        setLoading(false);
+        return;
+      }
+      
       if (error.code === 'auth/user-not-found') {
         setErrorMsg('No account found with this email.');
       } else if (error.code === 'auth/wrong-password') {
         setErrorMsg('Incorrect password.');
       } else if (error.code === 'auth/invalid-email') {
         setErrorMsg('Invalid email address.');
-      } else if (typeof error === 'string') {
-        setErrorMsg(error);
+      } else if (error.error) {
+        setErrorMsg(error.error);
       } else {
         setErrorMsg('Login failed. Please check your credentials.');
       }
@@ -105,14 +112,14 @@ export default function LoginScreen() {
 
           <View style={styles.options}>
             <ThemedText>or</ThemedText>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               onPress={googleSignIn}
               disabled={!googleReady}
             >
               <ThemedView style={styles.circularButton} color='primary'>
                 <FontAwesome name="google" size={30} color="#4285F4" />
               </ThemedView>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             <TouchableOpacity
               onPress={() => router.push('/auth/forgotPassword')}
               style={{ marginTop: 20, marginBottom: 10 }}

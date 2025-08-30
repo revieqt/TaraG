@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   link: {
-    fontFamily: 'Roboto',
+    fontFamily: 'Poppins',
     lineHeight: 30,
     fontSize: 14,
     color: '#0a7ea4',

@@ -8,13 +8,14 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { BACKEND_URL } from '@/constants/Config';
 import { useLocation } from '@/hooks/useLocation';
-import { fetchDocument } from '@/services/documentsApiService';
+import { useDocument } from '@/hooks/useDocument';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 
 export default function SafetyScreen() {
   const { latitude, longitude, loading: locationLoading } = useLocation();
+  const { fetchDocument } = useDocument();
 
   const [amenities, setAmenities] = useState<any[]>([]);
   const [amenityLoading, setAmenityLoading] = useState(false);
@@ -42,7 +43,7 @@ export default function SafetyScreen() {
       })
       .catch(() => setTipsError('Failed to load emergency tips.'))
       .finally(() => setTipsLoading(false));
-  }, []);
+  }, [fetchDocument]);
 
   // Helper to map amenity type to emergency tip title
   function getTipTitleForAmenityType(type: string) {

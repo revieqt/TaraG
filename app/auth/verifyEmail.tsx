@@ -28,15 +28,30 @@ export default function VerifyEmailScreen() {
   }, [cooldown]);
 
   const handleSendVerification = async () => {
-    if (!session?.user || !session?.accessToken) return;
+    console.log('🔍 Frontend: handleSendVerification called');
+    console.log('🔍 Frontend: Session data:', { 
+      hasUser: !!session?.user, 
+      hasToken: !!session?.accessToken,
+      email: session?.user?.email 
+    });
+    
+    if (!session?.user?.email) {
+      console.log('❌ Frontend: Missing email data');
+      Alert.alert('Error', 'Please log in again to send verification email.');
+      return;
+    }
     if (cooldown > 0) return;
+    
     try {
       setSending(true);
+      console.log('📤 Frontend: Calling sendVerificationEmailViaBackend...');
       await sendVerificationEmailViaBackend(session.user.email, session.accessToken);
+      console.log('✅ Frontend: Email verification request successful');
       setEmailSent(true);
       setCooldown(RESEND_COOLDOWN);
       Alert.alert('Email Sent', 'Please check your inbox to verify your email.');
     } catch (error: any) {
+      console.log('❌ Frontend: Email verification failed:', error);
       Alert.alert('Error', error.message || 'Failed to send verification email.');
     } finally {
       setSending(false);
@@ -44,10 +59,10 @@ export default function VerifyEmailScreen() {
   };
 
   const handleCheckVerification = async () => {
-    if (!session?.user) return;
+    if (!session?.user?.email) return;
     try {
       setChecking(true);
-      const result = await checkEmailVerificationViaBackend(session.user.id);
+      const result = await checkEmailVerificationViaBackend(session.user.id, session.user.email);
       if (result.emailVerified) {
         Alert.alert('Success', 'Your email has been verified.');
         router.replace('/auth/firstLogin');

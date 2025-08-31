@@ -47,6 +47,12 @@ export default function LoginScreen() {
       router.replace('/');
     } catch (error: any) {
       if (error.requiresVerification) {
+        // Store partial session data for email verification
+        await updateSession({ 
+          user: { email } as any,
+          accessToken: undefined,
+          refreshToken: undefined
+        });
         router.replace('/auth/verifyEmail');
         setLoading(false);
         return;

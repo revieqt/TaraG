@@ -127,26 +127,39 @@ export async function logoutUserViaBackend(accessToken: string): Promise<void> {
 }
 
 // Send verification email via backend API
-export async function sendVerificationEmailViaBackend(email: string, idToken: string): Promise<void> {
+export async function sendVerificationEmailViaBackend(email: string, accessToken?: string): Promise<void> {
+  console.log('🌐 API Service: Making request to:', `${BACKEND_URL}/auth/send-verification-email`);
+  console.log('🌐 API Service: Request data:', { email, hasToken: !!accessToken });
+  
+  const headers: any = {
+    'Content-Type': 'application/json',
+  };
+  
+  if (accessToken) {
+    headers['Authorization'] = `Bearer ${accessToken}`;
+  }
+  
   const response = await fetch(`${BACKEND_URL}/auth/send-verification-email`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers,
     body: JSON.stringify({
       email,
-      idToken,
     }),
   });
 
+  console.log('🌐 API Service: Response status:', response.status);
+  
   if (!response.ok) {
     const data = await response.json();
+    console.log('🌐 API Service: Error response:', data);
     throw new Error(data.error || 'Failed to send verification email');
   }
+  
+  console.log('🌐 API Service: Request successful');
 }
 
 // Check email verification via backend API
-export async function checkEmailVerificationViaBackend(userId: string): Promise<{ emailVerified: boolean }> {
+export async function checkEmailVerificationViaBackend(userId?: string, email?: string): Promise<{ emailVerified: boolean }> {
   const response = await fetch(`${BACKEND_URL}/auth/check-email-verification`, {
     method: 'POST',
     headers: {
@@ -154,6 +167,7 @@ export async function checkEmailVerificationViaBackend(userId: string): Promise<
     },
     body: JSON.stringify({
       userId,
+      email,
     }),
   });
 
@@ -185,16 +199,15 @@ export async function sendPasswordResetViaBackend(email: string): Promise<void> 
 }
 
 // Update first login status via backend API
-export async function updateFirstLoginViaBackend(userId: string, interests: string[], accessToken?: string): Promise<void> {
+export async function updateFirstLoginViaBackend(userId: string, interests: string[], accessToken: string): Promise<void> {
   const response = await fetch(`${BACKEND_URL}/auth/update-first-login`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`,
     },
     body: JSON.stringify({
-      userId,
       interests,
-      accessToken,
     }),
   });
 
@@ -205,16 +218,16 @@ export async function updateFirstLoginViaBackend(userId: string, interests: stri
 }
 
 // Change password via backend API
-export async function changePasswordViaBackend(currentPassword: string, newPassword: string, accessToken: string): Promise<void> {
+export async function changePasswordViaBackend(accessToken: string, currentPassword: string, newPassword: string): Promise<void> {
   const response = await fetch(`${BACKEND_URL}/auth/change-password`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`,
     },
     body: JSON.stringify({
       currentPassword,
       newPassword,
-      accessToken,
     }),
   });
 

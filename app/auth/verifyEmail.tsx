@@ -16,7 +16,7 @@ export default function VerifyEmailScreen() {
   const [cooldown, setCooldown] = useState(0);
   const [emailSent, setEmailSent] = useState(false);
 
-  const { session } = useSession();
+  const { session, updateSession } = useSession();
   const router = useRouter();
 
   useEffect(() => {
@@ -63,9 +63,29 @@ export default function VerifyEmailScreen() {
     try {
       setChecking(true);
       const result = await checkEmailVerificationViaBackend(session.user.id, session.user.email);
-      if (result.emailVerified) {
-        Alert.alert('Success', 'Your email has been verified.');
-        router.replace('/auth/firstLogin');
+      if (result.emailVerified && result.tokens) {
+        // Create session data with tokens and fetch full user profile
+        const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/auth/fetch-user-profile`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${result.tokens.accessToken}`,
+          },
+          body: JSON.stringify({ email: session.user.email }),
+        });
+
+        if (response.ok) {
+          const userData = await response.json();
+          await updateSession({
+            user: userData.user,
+            accessToken: result.tokens.accessToken,
+            refreshToken: result.tokens.refreshToken,
+          });
+          Alert.alert('Success', 'Your email has been verified.');
+          router.replace('/auth/firstLogin');
+        } else {
+          throw new Error('Failed to fetch user profile');
+        }
       } else {
         Alert.alert('Not Verified', 'Your email is still not verified.');
       }

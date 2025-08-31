@@ -159,7 +159,7 @@ export async function sendVerificationEmailViaBackend(email: string, accessToken
 }
 
 // Check email verification via backend API
-export async function checkEmailVerificationViaBackend(userId?: string, email?: string): Promise<{ emailVerified: boolean }> {
+export async function checkEmailVerificationViaBackend(userId?: string, email?: string): Promise<{ emailVerified: boolean; tokens?: { accessToken: string; refreshToken: string } }> {
   const response = await fetch(`${BACKEND_URL}/auth/check-email-verification`, {
     method: 'POST',
     headers: {
@@ -177,7 +177,7 @@ export async function checkEmailVerificationViaBackend(userId?: string, email?: 
     throw new Error(data.error || 'Failed to check email verification');
   }
 
-  return { emailVerified: data.emailVerified };
+  return { emailVerified: data.emailVerified, tokens: data.tokens };
 }
 
 // Send password reset email via backend API
@@ -199,14 +199,20 @@ export async function sendPasswordResetViaBackend(email: string): Promise<void> 
 }
 
 // Update first login status via backend API
-export async function updateFirstLoginViaBackend(userId: string, interests: string[], accessToken: string): Promise<void> {
+export async function updateFirstLoginViaBackend(userIdentifier: string, interests: string[], accessToken?: string): Promise<void> {
+  const headers: any = {
+    'Content-Type': 'application/json',
+  };
+  
+  if (accessToken) {
+    headers['Authorization'] = `Bearer ${accessToken}`;
+  }
+
   const response = await fetch(`${BACKEND_URL}/auth/update-first-login`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${accessToken}`,
-    },
+    headers,
     body: JSON.stringify({
+      userIdentifier,
       interests,
     }),
   });

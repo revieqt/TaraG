@@ -30,10 +30,19 @@ export default function FirstLoginScreen() {
 
   const handleFinish = async () => {
     if (selectedInterests.length < 3) return;
-    if (!session?.user || !session?.accessToken) return;
+    if (!session?.user?.email) {
+      console.error('No user email available');
+      return;
+    }
     
     try {
-      await updateFirstLoginViaBackend(session.user.id, selectedInterests, session.accessToken);
+      console.log('🔍 FirstLogin: Attempting to update with:', { 
+        email: session.user.email, 
+        interests: selectedInterests,
+        hasToken: !!session.accessToken 
+      });
+      
+      await updateFirstLoginViaBackend(session.user.email, selectedInterests, session.accessToken);
       router.replace('/(tabs)/home');
     } catch (error) {
       console.error('Error updating user profile:', error);

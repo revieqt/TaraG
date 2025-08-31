@@ -1,20 +1,18 @@
+import { AlertCard } from '@/components/AlertCard';
 import CubeButton from '@/components/CubeButton';
 import NotificationsButton from '@/components/custom/NotificationsButton';
-import HomeMap from '@/components/maps/HomeMap';
 import { ThemedIcons } from '@/components/ThemedIcons';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useSession } from '@/context/SessionContext';
+import { Alert, useAlerts } from '@/hooks/useAlerts';
 import { useLocation } from '@/hooks/useLocation';
-import { useWeather } from '@/hooks/useWeather';
-import { useAlerts } from '@/hooks/useAlerts';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { useWeather } from '@/hooks/useWeather';
 import { getWeatherImage } from '@/utils/weatherUtils';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import { ActivityIndicator, Image, StyleSheet, TouchableOpacity, View, ScrollView } from 'react-native';
-import { AlertCard } from '@/components/AlertCard';
-import { Alert } from '@/hooks/useAlerts';
+import { ActivityIndicator, Image, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 export default function HomeScreen() {
   const { session } = useSession();
@@ -58,30 +56,26 @@ export default function HomeScreen() {
   return (
     <ThemedView style={{ flex: 1 }}>
       <ScrollView>
-        <View style={{height: 300, overflow: 'hidden'}}>
-          <TouchableOpacity 
-            style={{flex: 1}} 
-            onPress={() => router.push('/(tabs)/maps')}
-          >
-            <HomeMap/>
-          </TouchableOpacity>
-          <LinearGradient
-            colors={['transparent', backgroundColor]}
-            start={{ x: 0.5, y: 0 }}
-            end={{ x: 0.5, y: 1 }}
-            style={styles.gradientOverlay}
-            pointerEvents="none"
-          />
+        <View>
+          <NotificationsButton style={{position: 'absolute', top: 20, right: 20, zIndex: 100}}/>
+          <View style={styles.mapHeaderContainer}>
+            
+            <TouchableOpacity 
+              style={{flex: 1}} 
+              onPress={() => router.push('/(tabs)/maps')}
+            >
+              {/* <HomeMap/> */}
+            </TouchableOpacity>
+          </View>
+
           <View style={styles.headerContent}>
-            <View style={styles.notificationContainer}>
-              <TouchableOpacity onPress={() => router.push('/(tabs)/maps')}>
-                <ThemedView roundness={20} color='primary' style={styles.redirectToMap}>  
-                  <ThemedIcons library="MaterialIcons" name="map" size={20}/>
-                  <ThemedText>More on Maps</ThemedText>
-                </ThemedView>
-              </TouchableOpacity>
-              <NotificationsButton />
-            </View>
+            <LinearGradient
+              colors={['transparent', backgroundColor]}
+              start={{ x: 0.5, y: 0 }}
+              end={{ x: 0.5, y: 1 }}
+              style={styles.gradientOverlay}
+              pointerEvents="none"
+            />
             
             <View style={styles.textContainer}>
               <ThemedText type='title' style={{color: secondaryColor}}>
@@ -89,10 +83,10 @@ export default function HomeScreen() {
               </ThemedText>
               <ThemedText type='defaultSemiBold' style={{opacity: 0.7}}>Welcome to TaraG!</ThemedText>
             </View>
+            <Image source={require('@/assets/images/tara-cheerful.png')} style={styles.taraImage} />
           </View>
-
-          <Image source={require('@/assets/images/tara-cheerful.png')} style={styles.taraImage} />
         </View>
+
         <View style={{ paddingHorizontal: 20 }}>
           <View style={styles.menu}>
             <View style={styles.menuOptions}>
@@ -144,7 +138,7 @@ export default function HomeScreen() {
 
           
           
-          {loading ? (
+          {(loading || weatherLoading ) ? (
              <View style={styles.loadingContainer}>
                <ActivityIndicator size="large"/>
              </View>
@@ -231,10 +225,16 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
+  mapHeaderContainer: {
+    height: 300,
+    overflow: 'hidden',
+    backgroundColor: 'blue',
+    borderBottomLeftRadius: 200,
+  },
   taraImage: {
     position: 'absolute',
     bottom: -80,
-    right: -20,
+    right: -30,
     width: 160,
     height: 250,
     zIndex: 2,
@@ -249,6 +249,7 @@ const styles = StyleSheet.create({
     pointerEvents: 'none', // Allow touches to pass through to map
   },
   headerContent: {
+    overflow: 'hidden',
     position: 'absolute',
     width: '100%',
     height: '100%',
@@ -256,28 +257,11 @@ const styles = StyleSheet.create({
     zIndex: 3,
     pointerEvents: 'box-none', // This allows touches to pass through except for the actual content
   },
-  notificationContainer: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    flexDirection: 'row',
-    gap: 10,
-    alignItems: 'center',
-  },
-  redirectToMap: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    paddingHorizontal: 10,
-    paddingVertical: 10,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-  },
   textContainer: {
     position: 'absolute',
     bottom: 0,
     left: 20,
+    zIndex: 3,
   },
   menu:{
     flexDirection: 'row',

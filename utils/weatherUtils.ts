@@ -2,7 +2,15 @@
 export const getWeatherImage = (weatherCode: number) => {
   // Clear sky (0-3)
   if (weatherCode >= 0 && weatherCode <= 3) {
-    return require('@/assets/images/weather-sunny-min.png');
+    // Check if it's day or night based on current time
+    const currentHour = new Date().getHours();
+    const isDay = currentHour >= 6 && currentHour < 18; // Day is 6 AM to 6 PM
+    
+    if (isDay) {
+      return require('@/assets/images/weather-sunny-min.png');
+    } else {
+      return require('@/assets/images/weather-night.png');
+    }
   }
   
   // Rain and drizzle (51-82)

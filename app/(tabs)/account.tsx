@@ -109,12 +109,7 @@ export default function AccountScreen() {
           )}
           <View style={styles.featuresContainer}>
             <ThemedIcons library='MaterialDesignIcons' name='robot-excited' size={25}/>
-            <ThemedText>Unlimited TaraAI Conversations</ThemedText>
-          </View>
-    
-          <View style={styles.featuresContainer}>
-            <ThemedIcons library='MaterialIcons' name='auto-graph' size={25}/>
-            <ThemedText>Boost your Post Engagement</ThemedText>
+            <ThemedText>Extended TaraAI Conversations</ThemedText>
           </View>
     
           <View style={styles.featuresContainer}>

@@ -23,13 +23,10 @@ export interface RegisterData {
   lname: string;
   mname?: string;
   bdate: string;
-  age: number;
   gender: string;
   contactNumber: string;
   username: string;
-  isProUser?: boolean;
   status: string;
-  profileImage: string;
   type: string;
 }
 

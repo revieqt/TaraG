@@ -165,6 +165,6 @@ const styles = StyleSheet.create({
     paddingVertical:5,
     paddingHorizontal: 10,
     borderRadius: 30,
-    backgroundColor: '#ccc4 ',
+    backgroundColor: '#ccc4',
   }
 });

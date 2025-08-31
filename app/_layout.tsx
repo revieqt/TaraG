@@ -53,7 +53,6 @@ export default function RootLayout() {
   return (
       <SessionProvider>
         <SafeAreaView style={{ flex: 1, backgroundColor }} edges={['top', 'bottom']}>
-          {/* ✅ Safe place to use useSession */}
           <SessionInitializer />
 
           <Stack screenOptions={{ headerShown: false }}>
@@ -78,6 +77,9 @@ export default function RootLayout() {
             <Stack.Screen name="home/itineraries/itineraries-view" />
             <Stack.Screen name="home/safety" />
             <Stack.Screen name="home/aiChat" />
+
+            <Stack.Screen name="explore/explore-post" />
+            <Stack.Screen name="explore/tours-view" />
 
             <Stack.Screen name="index" />
             <Stack.Screen name="+not-found" />

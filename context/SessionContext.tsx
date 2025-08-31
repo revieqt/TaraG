@@ -10,16 +10,26 @@ export type User = {
   username: string;
   email: string;
   bdate: Date;
-  age: number;
   gender: string;
   contactNumber: string;
   profileImage: string;
   isProUser: boolean;
-  bio?: string;
+  bio: string;
   status: string;
   type: string;
   createdOn: Date;
-  groups?: string[];
+  groups: string[];
+  isFirstLogin: boolean;
+  likes: string[];
+  safetyState: {
+    isInAnEmergency: boolean;
+    emergencyType: string;
+  };
+  publicSettings: {
+    isProfilePublic: boolean;
+    isTravelInfoPublic: boolean;
+    isPersonalInfoPublic: boolean;
+  };
 };
 
 // 📍 ActiveRoute type

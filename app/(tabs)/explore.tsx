@@ -1,12 +1,13 @@
 import Button from '@/components/Button';
 import Carousel from '@/components/Carousel';
+import CubeButton from '@/components/CubeButton';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useSession } from '@/context/SessionContext';
+import { useThemeColor } from '@/hooks/useThemeColor';
 import { router } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Image, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
-import CubeButton from '@/components/CubeButton';
 
 export default function ExploreScreen() {
   const { session } = useSession();
@@ -16,19 +17,17 @@ export default function ExploreScreen() {
   const scrollViewRef = useRef<ScrollView>(null);
   const headerHeight = 80;
   const tabHeight = 48;
+  const secondaryColor = useThemeColor({}, 'secondary');
+  
 
-  // Initialize lastScrollY when component mounts
   useEffect(() => {
     lastScrollY.current = 0;
   }, []);
 
-  // Handle tab press - scroll to top if clicking active tab
   const handleTabPress = (idx: number) => {
     if (idx === activeTab) {
-      // If clicking the current active tab, scroll to top
       scrollViewRef.current?.scrollTo({ y: 0, animated: true });
     } else {
-      // If clicking a different tab, switch to that tab
       setActiveTab(idx);
     }
   };
@@ -41,9 +40,7 @@ export default function ExploreScreen() {
     
     scrollY.setValue(currentScrollY);
     
-    // If scrolling up and difference is significant enough
     if (isScrollingUp && scrollDifference > 10) {
-      console.log('SHOWING HEADER - Scrolling up');
       Animated.parallel([
         Animated.timing(headerVisible, {
           toValue: 1,
@@ -132,9 +129,9 @@ export default function ExploreScreen() {
         <View style={styles.carouselContainer}>
           <Carousel
             images={[
-              'https://scontent.fceb3-1.fna.fbcdn.net/v/t39.30808-6/487153408_2700054723520291_7044497368256917857_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=a5f93a&_nc_eui2=AeEXEYgFgtzSLjm4zUwaHT0YO8FKtsWq1147wUq2xarXXs4RiOCRcjrgQD_GLvj8x16VL7JqwWKlypXJPGtJJjEH&_nc_ohc=EXbls88HNYMQ7kNvwHoGU4Y&_nc_oc=AdnwkAqzh4pc7VRgqlpsAb_E4O8ZzMe5IpqNJ_REQO4XJlj4T8AFSGxZPCHPQwXlquI&_nc_zt=23&_nc_ht=scontent.fceb3-1.fna&_nc_gid=cVjqKxsf9C_N0zQIDgh09g&oh=00_AfSUgc69_tt_tlZLz6IRzPEqdSwxXVZ11eYjOygDHSXTtw&oe=687B51A1', 
-              'https://scontent.fceb3-1.fna.fbcdn.net/v/t1.6435-9/68551414_1437987093033160_2096824646182633472_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=a5f93a&_nc_eui2=AeEiTsJOwexKfdcCND3hxeVT9yAye2WI66v3IDJ7ZYjrqwNNKgHfPyGNkWgH0tau_TiTwDzvFnjXPaXk-PaJbcIM&_nc_ohc=tXoXG6ggpWgQ7kNvwG1fUig&_nc_oc=Adn35v6CvfejHJ0WEM1A5CiaNRuqkyhC_chGI58xM4aXZaps--DC5Ndw58cywStlHOY&_nc_zt=23&_nc_ht=scontent.fceb3-1.fna&_nc_gid=8r91X_x7wuGmL5IkMpl32Q&oh=00_AfSDKr1u3sUh3gihQSfFQqaVuUoIL6PG6b3PcPjLwGRxrA&oe=689CE86B',
-              'https://scontent.fceb3-1.fna.fbcdn.net/v/t39.30808-6/503873071_2075785779609719_2625728011966557119_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeF7DANAjPgoX5pp0G3dS_FOitAi_5SlrEGK0CL_lKWsQfIWu_gd5r_-BoGKZPq8Zh-W2icNKafB18VmAMhMIu8C&_nc_ohc=x2Qted23h2cQ7kNvwGnODa3&_nc_oc=AdkB6_RKxm2ddouSqLd-ZYhbB5QdmZHu0WnBaJ3f0ebLA1rvmw59V2W9NcbABgzaKv0&_nc_zt=23&_nc_ht=scontent.fceb3-1.fna&_nc_gid=FGiVTkadZmaew-LW9NMHAQ&oh=00_AfR2-ixAoYxK-Xp0y-n9Ahd7gfffddrDXCxc8M0E7TBg8Q&oe=687B3B38'
+              'https://scontent.fceb3-1.fna.fbcdn.net/v/t39.30808-6/538287052_640597579089569_295885445416347281_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeHzobkTiFqG366kjW3egNIKYOy2-iXpenZg7Lb6Jel6dhN9OdRajCf2Vg6lBkpkhwFxPiwcR-4Qza5va6qonuHK&_nc_ohc=yYyv7nky0zoQ7kNvwGkj0Zl&_nc_oc=AdnLi8hmYoE9gILiE_savI_7teWdDLZg9lstw297nrTexeW66WNxhVnJHL7ELMOGgJI&_nc_zt=23&_nc_ht=scontent.fceb3-1.fna&_nc_gid=l9V7l8PgHfg9mPH3h9g00A&oh=00_AfVWFLIdDM-c4VaBohWb73xtjQkT3kcCCtiPbXzps19YPQ&oe=68B86435', 
+              'https://scontent.fceb9-1.fna.fbcdn.net/v/t39.30808-6/527495542_623044884178172_2105755532645257880_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=a5f93a&_nc_eui2=AeFF3UqDwUsXzdpqcCxuYlqYLCEBkEEeRhYsIQGQQR5GFth6WBVe6MZ7D64MNAMu9ZaBzxz6a4A_fT-dkR1h-_Ks&_nc_ohc=9hKLBa_CYdEQ7kNvwFwwE6Q&_nc_oc=AdlbIjLg3P1xp7m5TEVLtSYW7S6AsGw6qTlEfdgQM3wxCFxYvw1Rv9YbiZpWoWNED7Q&_nc_zt=23&_nc_ht=scontent.fceb9-1.fna&_nc_gid=msOZePLq6CW-z9m_GEZoLw&oh=00_AfVDgTnSWOpydFJ23kvnusacLbA1Cv44PqB96Lgmc5lpcg&oe=68B88292',
+              'https://scontent.fceb9-1.fna.fbcdn.net/v/t39.30808-6/506441581_584094611406533_1072900559871384123_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=a5f93a&_nc_eui2=AeEtoZq0Dv4VhuTKmKyJK52cmOP4GztRwN2Y4_gbO1HA3TBK8fGIxR6Julvv-BHnQ4n_1OLfQbMjE4abPk3WXcjv&_nc_ohc=0P9rrdvZS9AQ7kNvwGQogA-&_nc_oc=Adkiq6z3y4u8CJUHbMZ-09r8V9AGBOJ4f_6mi1buhKu7e_PgFmPePNQI5tIDHVe348g&_nc_zt=23&_nc_ht=scontent.fceb9-1.fna&_nc_gid=xK0JSBlj5uHsoyUsPKpPdA&oh=00_AfWtaVtyYM7wflgg7nUgtzZ7o-OWAJTJNqhoglw24V5UOQ&oe=68B8797C'
             ]}
             titles={['Mark Ken Yangyang', 'Ed Lorenz Quiroga', 'Joel Janzel Brigildo']}
             subtitles={['potangina', 'oh oh', 'fiesta stall']}
@@ -144,6 +141,10 @@ export default function ExploreScreen() {
             navigationArrows
           />
         </View>
+
+        <TouchableOpacity onPress={() => router.push("/explore/tours-view")}>
+          <ThemedText>View Tour</ThemedText>
+        </TouchableOpacity>
        </ScrollView>
    );
 
@@ -187,7 +188,11 @@ export default function ExploreScreen() {
         </ThemedView>
 
         <ThemedView color='primary' style={styles.tabRow}>
-          {['Feed', 'Tours', 'Your Groups'].map((label, idx) => (
+          {[
+            // 'Feed', 
+            'Tours', 
+            'Your Groups'
+          ].map((label, idx) => (
             <TouchableOpacity
               key={label}
               style={[
@@ -201,12 +206,12 @@ export default function ExploreScreen() {
               <View style={styles.tabInnerContainer}>
                 <ThemedText style={[
                   styles.tabText,
-                  activeTab === idx && styles.activeTabText,
+                  activeTab === idx && {color: secondaryColor},
                 ]}>{label}</ThemedText>
               </View>
               <View style={[
                 styles.tabUnderline,
-                activeTab === idx && styles.activeTabUnderline,
+                activeTab === idx && {backgroundColor: secondaryColor},
               ]} />
             </TouchableOpacity>
           ))}
@@ -215,13 +220,13 @@ export default function ExploreScreen() {
 
       {/* Content */}
       <View style={{flex: 1}}>
-        <View style={[styles.sectionContainer, { display: activeTab === 0 ? 'flex' : 'none' }]}>
+        {/* <View style={[styles.sectionContainer, { display: activeTab === 0 ? 'flex' : 'none' }]}>
           {renderExploreSection()}
-        </View>
-        <View style={[styles.sectionContainer, { display: activeTab === 1 ? 'flex' : 'none' }]}>
+        </View> */}
+        <View style={[styles.sectionContainer, { display: activeTab === 0 ? 'flex' : 'none' }]}>
           {renderToursSection()}
         </View>
-        <View style={[styles.sectionContainer, { display: activeTab === 2 ? 'flex' : 'none' }]}>
+        <View style={[styles.sectionContainer, { display: activeTab === 1 ? 'flex' : 'none' }]}>
           {renderGroupsSection()}
           <CubeButton
             size={60}
@@ -345,16 +350,12 @@ const styles = StyleSheet.create({
   },
   activeTabText: {
     color: '#007AFF',
-    fontWeight: 'bold',
   },
   tabUnderline: {
     height: 3,
     width: '80%',
     backgroundColor: 'transparent',
     borderRadius: 10,
-  },
-  activeTabUnderline: {
-    backgroundColor: '#007AFF',
   },
   sectionContainer: {
     flex: 1,

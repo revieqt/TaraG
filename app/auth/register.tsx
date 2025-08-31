@@ -71,14 +71,11 @@ export default function RegisterScreen() {
         lname,
         mname: mname || '',
         bdate: bdate!.toISOString(),
-        age,
         gender,
         contactNumber: areaCode + contactNumber,
         username,
-        isProUser: false,
-        status: 'Active',
-        profileImage: '@/assets/images/defaultUser.jpg',
-        type: 'user',
+        status: 'active',
+        type: 'traveler',
       });
 
       // Navigate to login after successful registration

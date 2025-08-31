@@ -192,8 +192,8 @@ export default function AIChatScreen() {
                   style={[
                     styles.messageBubble,
                     item.role === 'user'
-                      ? {alignSelf: 'flex-end'}
-                      : {alignSelf: 'flex-start'},
+                      ? {alignSelf: 'flex-end', borderBottomRightRadius: 5}
+                      : {alignSelf: 'flex-start', borderBottomLeftRadius: 5},
                   ]}
                 >
                   <ThemedText
@@ -309,7 +309,7 @@ const styles = StyleSheet.create({
   },
   messageBubble: {
     maxWidth: '80%',
-    borderRadius: 16,
+    borderRadius: 20,
     padding: 12,
   },
   inputRowAbsolute: {

@@ -45,12 +45,12 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: 'PoppinsBold',
-    fontSize: 32,
+    fontSize: 30,
     lineHeight: 38,
   },
   subtitle: {
     fontFamily: 'PoppinsSemiBold',
-    fontSize: 20,
+    fontSize: 18,
   },
   link: {
     fontFamily: 'Poppins',

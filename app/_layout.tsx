@@ -1,6 +1,6 @@
 import { SessionProvider, useSession } from '@/context/SessionContext';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { socketService } from '@/services/socketService';
+// import { socketService } from '@/services/socketService';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -15,17 +15,17 @@ SplashScreen.preventAutoHideAsync();
 function SessionInitializer() {
   const { session } = useSession();
 
-  useEffect(() => {
-    if (session?.user?.id) {
-      socketService.connect(session.user.id);
-    } else {
-      socketService.disconnect();
-    }
+  // useEffect(() => {
+  //   if (session?.user?.id) {
+  //     socketService.connect(session.user.id);
+  //   } else {
+  //     socketService.disconnect();
+  //   }
 
-    return () => {
-      socketService.disconnect();
-    };
-  }, [session?.user?.id]);
+  //   return () => {
+  //     socketService.disconnect();
+  //   };
+  // }, [session?.user?.id]);
 
   return null;
 }

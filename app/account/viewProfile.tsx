@@ -7,11 +7,12 @@ import OptionsPopup from '@/components/OptionsPopup';
 import { ThemedIcons } from '@/components/ThemedIcons';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import InputModal from '@/components/modals/InputModal';
 import { useSession } from '@/context/SessionContext';
-import useChangeProfileImage from '@/hooks/useChangeProfileImage';
+import { updateUserStringField } from '@/services/userApiService';
 import { useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
-import { Image, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, TouchableOpacity, View, Alert } from 'react-native';
 
 
 export default function ProfileScreen() {
@@ -32,7 +33,37 @@ export default function ProfileScreen() {
   }
 
   const [viewImageVisible, setViewImageVisible] = useState(false);
-  const changeProfileImage = useChangeProfileImage();
+  const [editBioVisible, setEditBioVisible] = useState(false);
+  const [isUpdatingBio, setIsUpdatingBio] = useState(false);
+
+  const handleBioUpdate = async (newBio: string | { areaCode: string; number: string }) => {
+    if (typeof newBio !== 'string' || !sessionUser?.id || !session?.accessToken) {
+      Alert.alert('Error', 'Unable to update bio. Please try again.');
+      return;
+    }
+
+    setIsUpdatingBio(true);
+    try {
+      await updateUserStringField(
+        sessionUser.id,
+        'bio',
+        newBio,
+        session.accessToken
+      );
+      
+      // Update the local session user data
+      if (session.user) {
+        session.user.bio = newBio;
+      }
+      
+      Alert.alert('Success', 'Bio updated successfully!');
+    } catch (error) {
+      console.error('Error updating bio:', error);
+      Alert.alert('Error', error instanceof Error ? error.message : 'Failed to update bio');
+    } finally {
+      setIsUpdatingBio(false);
+    }
+  };
 
   return (
     <ThemedView style={{flex:1}}>
@@ -46,6 +77,27 @@ export default function ProfileScreen() {
           {user && (
             <OptionsPopup
               style={styles.profileImage}
+              options={[
+                <TouchableOpacity
+                  key="viewImage"
+                  onPress={() => setViewImageVisible(true)}
+                  style={styles.optionButton}
+                >
+                  <ThemedIcons library="MaterialIcons" name="visibility" size={20} />
+                  <ThemedText>View Image</ThemedText>
+                </TouchableOpacity>,
+                <TouchableOpacity
+                  key="updateImage"
+                  onPress={() => {
+                    // TODO: Implement update profile image functionality
+                    console.log('Update Profile Image pressed');
+                  }}
+                  style={styles.optionButton}
+                >
+                  <ThemedIcons library="MaterialIcons" name="edit" size={20} />
+                  <ThemedText>Update Profile Image</ThemedText>
+                </TouchableOpacity>
+              ]}
             >
               <Image
                 source={{ uri: session?.user?.profileImage || 'https://ui-avatars.com/api/?name=User' }}
@@ -57,6 +109,17 @@ export default function ProfileScreen() {
             visible={viewImageVisible}
             imageUrl={user?.profileImage || ''}
             onClose={() => setViewImageVisible(false)}
+          />
+
+          <InputModal
+            visible={editBioVisible}
+            onClose={() => setEditBioVisible(false)}
+            onSubmit={handleBioUpdate}
+            label="Edit Bio"
+            description="Tell others about yourself"
+            type="text"
+            initialValue={user?.bio || ''}
+            placeholder="Enter your bio..."
           />
 
           <View style={{marginTop: 120, alignItems: 'center'}}>
@@ -81,7 +144,10 @@ export default function ProfileScreen() {
               <ThemedText>{user?.bio}</ThemedText>
             )}
             { isCurrentUser && (
-              <TouchableOpacity style={styles.editBio}>
+              <TouchableOpacity 
+                style={styles.editBio}
+                onPress={() => setEditBioVisible(true)}
+              >
                 <ThemedIcons library="MaterialIcons" name="edit" size={15}/>
                 <ThemedText>Edit Bio</ThemedText>
               </TouchableOpacity>
@@ -162,5 +228,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 20,
     overflow: 'hidden',
+  },
+  optionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 15,
   }
 });

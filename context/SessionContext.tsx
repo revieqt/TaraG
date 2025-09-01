@@ -14,7 +14,7 @@ export type User = {
   contactNumber: string;
   profileImage: string;
   isProUser: boolean;
-  bio: string;
+  bio?: string;
   status: string;
   type: string;
   createdOn: Date;

@@ -3,6 +3,7 @@ import ProBadge from '@/components/custom/ProBadge';
 import GradientHeader from '@/components/GradientHeader';
 import OptionsPopup from '@/components/OptionsPopup';
 import Switch from '@/components/Switch';
+import { renderUpdateInfo, renderVisibilitySettings } from '@/app/account/accountSettings';
 import { ThemedIcons } from '@/components/ThemedIcons';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -19,7 +20,6 @@ export default function AccountScreen() {
   const user = session?.user;
   const [showPayment, setShowPayment] = useState(false);
   const [paymentUrl, setPaymentUrl] = useState<string | null>(null);
-  const [showInfo, setShowInfo] = useState(true);
   const [showSupport, setShowSupport] = useState(false);
 
   const fullName = [user?.fname, user?.mname, user?.lname].filter(Boolean).join(' ');
@@ -135,31 +135,10 @@ export default function AccountScreen() {
             <ThemedText>Change Password</ThemedText>
           </TouchableOpacity>
 
-          <OptionsPopup
-            key="visibility"
-            style={styles.optionsChild}
-            options={[
-              <Switch
-                label="Make Profile Private"
-                value={showInfo}
-                onValueChange={setShowInfo}
-              />,
-              <Switch
-                label="Show Personal Info"
-                value={showInfo}
-                onValueChange={setShowInfo}
-              />,
-              <Switch
-                label="Show Travel Info"
-                value={showInfo}
-                onValueChange={setShowInfo}
-              />
-            ]}
-          >
+          {renderUpdateInfo()}
 
-            <ThemedIcons library='MaterialIcons' name='supervised-user-circle' size={15} />
-            <ThemedText>Profile Control</ThemedText>
-          </OptionsPopup>
+          {renderVisibilitySettings()}
+
           <TouchableOpacity onPress={() => openDocument('privacyPolicy-mobileApp')} style={styles.optionsChild}>
             <ThemedIcons library='MaterialDesignIcons' name='file-eye' size={15} />
             <ThemedText>Privacy Policy</ThemedText>

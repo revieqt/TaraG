@@ -40,20 +40,6 @@ export default function ProfileScreen() {
         <ThemedView color='primary'>
           <View style={styles.header}>
             <BackButton/>
-            { isCurrentUser && (
-              <OptionsPopup
-                key="options"
-                options={[
-                  
-                ]}
-              >
-                <ThemedIcons
-                  library="MaterialCommunityIcons"
-                  name="dots-vertical"
-                  size={24}
-                />
-              </OptionsPopup>
-            )}
           </View>
           <GradientHeader/>
           
@@ -77,7 +63,7 @@ export default function ProfileScreen() {
             {user ? (
               <>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                  <ThemedText type="subtitle">{user.fname} {user.mname ? user.mname : ''}{user.lname}</ThemedText>
+                  <ThemedText type="subtitle">{user.fname} {user.mname ? user.mname : ''} {user.lname}</ThemedText>
                   <ProBadge/>
                 </View>
                 
@@ -115,11 +101,16 @@ export default function ProfileScreen() {
           <View key="about" style={{ flex: 1, padding: 20}}>
             {user ? (
               <>
+                <ThemedView color="secondary" shadow style={styles.badgeContainer}>
+                  <GradientHeader/>
+                  <View style={{flex: 1, padding: 20}}>
+                    { user?.isProUser ? ( <ProBadge/> ):(<ThemedText>Basic</ThemedText>) }
+                  </View>
+                </ThemedView>
+
                 <ThemedText>Email: {user.email}</ThemedText>
-                <ThemedText>Age: {user.age}</ThemedText>
                 <ThemedText>Gender: {user.gender}</ThemedText>
                 <ThemedText>Contact Number: {user.contactNumber}</ThemedText>
-                <ThemedText>Status: {user.status}</ThemedText>
                 <ThemedText>Type: {user.type}</ThemedText>
               </>
             ) : (
@@ -166,5 +157,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderRadius: 30,
     backgroundColor: '#ccc4',
+  },
+  badgeContainer: {
+    borderRadius: 10,
+    marginBottom: 20,
+    overflow: 'hidden',
   }
 });

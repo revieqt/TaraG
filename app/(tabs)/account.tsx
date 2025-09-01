@@ -14,6 +14,7 @@ import { openDocument } from '@/utils/documentUtils';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, Image, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { renderProUpgrade } from '@/app/account/proUpgrade';
 
 export default function AccountScreen() {
   const { session, clearSession } = useSession();
@@ -33,24 +34,6 @@ export default function AccountScreen() {
     }
   };
   
-  const handlePayPro = async () => {
-    try {
-      const res = await fetch(`${BACKEND_URL}/pay/traveller-pro`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      });
-      const data = await res.json();
-      if (data?.data?.attributes?.checkout_url) {
-        setPaymentUrl(data.data.attributes.checkout_url);
-        setShowPayment(true);
-      } else {
-        Alert.alert("Error", "Failed to get payment link.");
-      }
-    } catch (err) {
-      Alert.alert("Error", "Failed to start payment.");
-    }
-  };
-
   return (
     <ThemedView style={{ flex: 1 }}>
       <GradientHeader/>
@@ -59,7 +42,6 @@ export default function AccountScreen() {
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={true}
       >
-        {/* User Header */}
         <ThemedView shadow color='primary' style={styles.header}>
           <TouchableOpacity
             style={styles.profileButton}
@@ -79,49 +61,16 @@ export default function AccountScreen() {
                 <ThemedText type='defaultSemiBold'>{fullName}</ThemedText>
                 <ProBadge/>
               </View>
-              <ThemedText>@{user?.username}</ThemedText>
+              <ThemedText style={{opacity: .5}}>@{user?.username}</ThemedText>
             </View>
             <View style={{ position: 'absolute', right: 0 }}>
               <ThemedIcons library='MaterialIcons' name='arrow-forward-ios' size={20} />
             </View>
           </TouchableOpacity>
         </ThemedView>
-        <ThemedView color='primary' shadow style={styles.proContainer}>
-          {!user?.isProUser ? (
-            <>
-              <ThemedText type='subtitle' style={{fontSize: 17, color: 'skyblue'}}>Basic Traveler</ThemedText>
-              <ThemedText style={{textAlign: 'center', opacity: .5, marginBottom: 10}}>Unlock the full TaraG experience. Get TaraG Pro for as low as ${TRAVELLER_PRO_PRICE}/month</ThemedText>
-              <Button
-                title='Get TaraG Pro'
-                type='primary'
-                onPress={handlePayPro}
-                buttonStyle={{
-                  width: '100%',
-                  marginBottom: 15,
-                }}
-              />
-            </>
-          ) : (
-            <>
-              <ThemedText type='subtitle' style={{fontSize: 17, color: 'orange'}}>Pro User</ThemedText>
-              <ThemedText style={{textAlign: 'center', opacity: .5, marginBottom: 10}}>You have access to all features. Thank you for supporting TaraG!</ThemedText>
-            </>
-          )}
-          <View style={styles.featuresContainer}>
-            <ThemedIcons library='MaterialDesignIcons' name='robot-excited' size={25}/>
-            <ThemedText>Extended TaraAI Conversations</ThemedText>
-          </View>
-    
-          <View style={styles.featuresContainer}>
-            <ThemedIcons library='MaterialIcons' name='app-blocking' size={25}/>
-            <ThemedText>Enjoy TaraG Ads Free</ThemedText>
-          </View>
-    
-          <View style={styles.featuresContainer}>
-            <ThemedIcons library='MaterialDesignIcons' name='trophy-award' size={25}/>
-            <ThemedText>Exclusive Pro Traveller Badge</ThemedText>
-          </View>
-        </ThemedView>
+
+        {renderProUpgrade()}
+        
         {/* Options */}
         <View style={styles.options}>
           <ThemedText style={styles.optionsTitle} type='defaultSemiBold'>
@@ -249,20 +198,6 @@ const styles = StyleSheet.create({
   closeButton: {
     backgroundColor: '#ff4444',
     padding: 12,
-    alignItems: 'center',
-  },
-  proContainer:{
-    width: '100%',
-    padding: 20,
-    borderRadius: 10,
-    marginBottom: 15,
-    alignItems: 'center',
-  },
-  featuresContainer: {
-    flexDirection: 'row',
-    padding: 5,
-    width: '100%',
-    gap: 20,
     alignItems: 'center',
   },
 });

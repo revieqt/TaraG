@@ -8,7 +8,7 @@ import Button from "@/components/Button";
 import { StyleSheet, View, Alert } from "react-native";
 import { useState, useEffect } from "react";
 import InputModal from "@/components/modals/InputModal";
-import { batchUpdateUserInfo, canUpdateUserInfo } from "@/services/userApiService";
+import { batchUpdateUserInfo, canUpdateUserInfo, updateUserBooleanField } from "@/services/userApiService";
 
 
 export const renderUpdateInfo = () => {
@@ -232,36 +232,67 @@ export const renderUpdateInfo = () => {
 }
 
 export const renderVisibilitySettings = () => {
-    const [showInfo, setShowInfo] = useState(true);
+    const { session, updateSession } = useSession();
+    const user = session?.user;
+    const accessToken = session?.accessToken;
+
+    const handleVisibilityChange = async (fieldName: string, value: boolean) => {
+        if (!user?.id || !accessToken) {
+            Alert.alert('Error', 'Please log in again');
+            return;
+        }
+
+        try {
+            // Update backend
+            await updateUserBooleanField(user.id, fieldName, value, accessToken);
+            
+            // Update session context
+            const updatedUser = {
+                ...user,
+                publicSettings: {
+                    ...user.publicSettings,
+                    [fieldName.split('.')[1]]: value
+                }
+            };
+            
+            await updateSession({ user: updatedUser });
+            
+        } catch (error: any) {
+            Alert.alert('Error', error.message || 'Failed to update setting');
+        }
+    };
+
     return(
         <>
         <OptionsPopup
-            key="visibility"
-            style={styles.optionsChild}
-            options={[
-              <View key="header">
-                <ThemedText type='subtitle'>Profile Visibility</ThemedText>
-                <ThemedText>Control who can see your profile</ThemedText>
-              </View>,
-              <Switch
-                key="private"
-                label="Make Profile Private"
-                value={showInfo}
-                onValueChange={setShowInfo}
-              />,
-              <Switch
-                key="personal"
-                label="Show Personal Info"
-                value={showInfo}
-                onValueChange={setShowInfo}
-              />,
-              <Switch
-                key="travel"
-                label="Show Travel Info"
-                value={showInfo}
-                onValueChange={setShowInfo}
-              />
-            ]}
+        key="visibility"
+        style={styles.optionsChild}
+        options={[
+          <View key="header">
+            <ThemedText type='subtitle'>Profile Visibility</ThemedText>
+            <ThemedText>Control who can see your profile</ThemedText>
+          </View>,
+          <Switch
+            key="private"
+            label="Make Profile Private"
+            value={!user?.publicSettings?.isProfilePublic}
+            onValueChange={(value) => handleVisibilityChange('publicSettings.isProfilePublic', !value)}
+          />,
+          ...(user?.publicSettings?.isProfilePublic ? [
+            <Switch
+              key="personal"
+              label="Show Personal Info"
+              value={user?.publicSettings?.isPersonalInfoPublic || false}
+              onValueChange={(value) => handleVisibilityChange('publicSettings.isPersonalInfoPublic', value)}
+            />,
+            <Switch
+              key="travel"
+              label="Show Travel Info"
+              value={user?.publicSettings?.isTravelInfoPublic || false}
+              onValueChange={(value) => handleVisibilityChange('publicSettings.isTravelInfoPublic', value)}
+            />
+          ] : [])
+        ]}
           >
 
             <ThemedIcons library='MaterialIcons' name='supervised-user-circle' size={15} />

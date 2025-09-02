@@ -58,7 +58,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#0a7ea4',
     textDecorationLine: 'underline',
-
   },
   error: {
     fontFamily: 'Poppins',

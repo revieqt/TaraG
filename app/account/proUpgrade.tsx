@@ -6,9 +6,11 @@ import { ThemedIcons } from "@/components/ThemedIcons";
 import { StyleSheet, View } from "react-native";
 import { useSession } from "@/context/SessionContext";
 import { TRAVELLER_PRO_PRICE } from "@/constants/Config";
+import { router } from "expo-router";
 
 export const renderProUpgrade = () => {
     const { session } = useSession();
+
     const user = session?.user;
     return(
         <>
@@ -20,7 +22,7 @@ export const renderProUpgrade = () => {
                 <Button
                     title='Get TaraG Pro'
                     type='primary'
-                    onPress={() => {}}
+                    onPress={() => router.push('/payment')}
                     buttonStyle={{
                     width: '100%',
                     marginBottom: 15,

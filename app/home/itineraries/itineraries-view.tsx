@@ -12,12 +12,14 @@ import {
   deleteItinerary as deleteItineraryApi,
   markItineraryAsDone,
 } from '@/services/itinerariesApiService';
+import { useSession } from '@/context/SessionContext';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, StyleSheet } from 'react-native';
+import { ActivityIndicator, Alert, StyleSheet, TouchableOpacity } from 'react-native';
 
 export default function ItineraryViewScreen() {
   const { itineraryData } = useLocalSearchParams<{ itineraryData?: string }>();
+  const { session } = useSession();
   const [itinerary, setItinerary] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -68,9 +70,12 @@ export default function ItineraryViewScreen() {
 
   // Handlers for actions
   const handleMarkAsCompleted = async () => {
-    if (!itinerary?.id) return;
+    if (!itinerary?.id || !session?.accessToken) {
+      Alert.alert('Error', 'No access token available');
+      return;
+    }
     setLoading(true);
-    const result = await markItineraryAsDone(itinerary.id);
+    const result = await markItineraryAsDone(itinerary.id, session.accessToken);
     setLoading(false);
     if (result.success) {
       setItinerary({ ...itinerary, status: 'completed', manuallyUpdated: true });
@@ -82,9 +87,12 @@ export default function ItineraryViewScreen() {
   };
 
   const handleCancel = async () => {
-    if (!itinerary?.id) return;
+    if (!itinerary?.id || !session?.accessToken) {
+      Alert.alert('Error', 'No access token available');
+      return;
+    }
     setLoading(true);
-    const result = await cancelItineraryApi(itinerary.id);
+    const result = await cancelItineraryApi(itinerary.id, session.accessToken);
     setLoading(false);
     if (result.success) {
       setItinerary({ ...itinerary, status: 'cancelled', manuallyUpdated: true });
@@ -104,8 +112,12 @@ export default function ItineraryViewScreen() {
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Delete', style: 'destructive', onPress: async () => {
+            if (!session?.accessToken) {
+              Alert.alert('Error', 'No access token available');
+              return;
+            }
             setLoading(true);
-            const result = await deleteItineraryApi(itinerary.id);
+            const result = await deleteItineraryApi(itinerary.id, session.accessToken);
             setLoading(false);
             if (result.success) {
               Alert.alert('Deleted', 'Itinerary deleted.');
@@ -153,32 +165,27 @@ export default function ItineraryViewScreen() {
       <BottomSheet snapPoints={[0.25, 0.9]} defaultIndex={0}>
         {showFirstOptions ? (
           <OptionsPopup
-            actions={[
-              {
-                label: 'Create a Group Trip with this Itinerary (n/a)',
-                icon: <ThemedIcons library="MaterialIcons" name="group" size={20} />,
-                onPress: () => [],
-              },
-              {
-                label: 'Update Itinerary',
-                icon: <ThemedIcons library="MaterialIcons" name="edit" size={20} />,
-                onPress: () => [],
-              },
-              {
-                label: 'Mark Itinerary as Completed',
-                icon: <ThemedIcons library="MaterialIcons" name="check" size={20} />,
-                onPress: handleMarkAsCompleted,
-              },
-              {
-                label: 'Cancel Itinerary',
-                icon: <ThemedIcons library="MaterialIcons" name="cancel" size={20} />,
-                onPress: handleCancel,
-              },
-              {
-                label: 'Delete Itinerary',
-                icon: <ThemedIcons library="MaterialIcons" name="delete" size={20} color="red" />,
-                onPress: handleDelete,
-              },
+            options={[
+              <TouchableOpacity style={styles.optionsChild}>
+                <ThemedIcons library="MaterialIcons" name="group" size={20} />
+                <ThemedText>Create a Group Trip with this Itinerary (n/a)</ThemedText>
+              </TouchableOpacity>,
+              <TouchableOpacity style={styles.optionsChild}>
+                <ThemedIcons library="MaterialIcons" name="edit" size={20} />
+                <ThemedText>Update Itinerary</ThemedText>
+              </TouchableOpacity>,
+              <TouchableOpacity style={styles.optionsChild} onPress={handleMarkAsCompleted}>
+                <ThemedIcons library="MaterialIcons" name="check" size={20} />
+                <ThemedText>Mark Itinerary as Completed</ThemedText>
+              </TouchableOpacity>,
+              <TouchableOpacity style={styles.optionsChild} onPress={handleCancel}>
+                <ThemedIcons library="MaterialIcons" name="cancel" size={20} />
+                <ThemedText>Cancel Itinerary</ThemedText>
+              </TouchableOpacity>,
+              <TouchableOpacity style={styles.optionsChild} onPress={handleDelete}>
+                <ThemedIcons library="MaterialIcons" name="delete" size={20} />
+                <ThemedText>Delete Itinerary</ThemedText>
+              </TouchableOpacity>,
             ]}
             style={styles.options}
           >
@@ -186,17 +193,15 @@ export default function ItineraryViewScreen() {
           </OptionsPopup>
         ) : (
           <OptionsPopup
-            actions={[
-              {
-                label: 'Repeat Itinerary',
-                icon: <ThemedIcons library="MaterialIcons" name="cancel" size={20} />,
-                onPress: () => [],
-              },
-              {
-                label: 'Delete Itinerary',
-                icon: <ThemedIcons library="MaterialIcons" name="delete" size={20} color="red" />,
-                onPress: handleDelete,
-              },
+            options={[
+              <TouchableOpacity style={styles.optionsChild}>
+                <ThemedIcons library="MaterialIcons" name="history" size={20} />
+                <ThemedText>Repeat Itinerary</ThemedText>
+              </TouchableOpacity>,
+              <TouchableOpacity style={styles.optionsChild} onPress={handleDelete}>
+                <ThemedIcons library="MaterialIcons" name="delete" size={20} />
+                <ThemedText>Delete Itinerary</ThemedText>
+              </TouchableOpacity>
             ]}
             style={styles.options}
           >
@@ -218,4 +223,9 @@ const styles = StyleSheet.create({
     right: 0,
     zIndex: 10,
   },
+  optionsChild:{
+    flexDirection: 'row',
+    gap: 10,
+    padding: 5
+  }
 });

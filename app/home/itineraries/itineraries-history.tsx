@@ -1,20 +1,17 @@
-import CubeButton from '@/components/CubeButton';
 import Header from '@/components/Header';
-import OptionsPopup from '@/components/OptionsPopup';
 import { ThemedIcons } from '@/components/ThemedIcons';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { deleteItinerary, getItinerariesByUserAndStatus } from '@/services/itinerariesApiService';
+import { getItinerariesByUserAndStatus } from '@/services/itinerariesApiService';
 import { useSession } from '@/context/SessionContext';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, StyleSheet, TouchableOpacity, View, ScrollView } from 'react-native';
-import GradientHeader from '@/components/GradientHeader';
+import { ActivityIndicator, StyleSheet, TouchableOpacity, View, ScrollView } from 'react-native';
 
-export default function ItinerariesScreen() {
+export default function ItinerariesHistoryScreen() {
   const { session } = useSession();
-  const [ongoingItineraries, setOngoingItineraries] = useState<any[]>([]);
-  const [upcomingItineraries, setUpcomingItineraries] = useState<any[]>([]);
+  const [cancelledItineraries, setCancelledItineraries] = useState<any[]>([]);
+  const [completedItineraries, setCompletedItineraries] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshFlag, setRefreshFlag] = useState(0);
@@ -48,22 +45,22 @@ export default function ItinerariesScreen() {
       setError(null);
 
       try {
-        // Fetch ongoing and upcoming itineraries separately
-        const [ongoingResult, upcomingResult] = await Promise.all([
-          getItinerariesByUserAndStatus(session.user.id, 'ongoing', session.accessToken),
-          getItinerariesByUserAndStatus(session.user.id, 'upcoming', session.accessToken)
+        // Fetch cancelled and completed itineraries separately
+        const [cancelledResult, completedResult] = await Promise.all([
+          getItinerariesByUserAndStatus(session.user.id, 'cancelled', session.accessToken),
+          getItinerariesByUserAndStatus(session.user.id, 'completed', session.accessToken)
         ]);
 
-        if (ongoingResult.success) {
-          setOngoingItineraries(ongoingResult.data || []);
+        if (cancelledResult.success) {
+          setCancelledItineraries(cancelledResult.data || []);
         } else {
-          setError(ongoingResult.errorMessage || 'Failed to fetch ongoing itineraries');
+          setError(cancelledResult.errorMessage || 'Failed to fetch cancelled itineraries');
         }
 
-        if (upcomingResult.success) {
-          setUpcomingItineraries(upcomingResult.data || []);
+        if (completedResult.success) {
+          setCompletedItineraries(completedResult.data || []);
         } else {
-          setError(upcomingResult.errorMessage || 'Failed to fetch upcoming itineraries');
+          setError(completedResult.errorMessage || 'Failed to fetch completed itineraries');
         }
       } catch (err: any) {
         setError(err.message || 'Failed to fetch itineraries');
@@ -93,10 +90,10 @@ export default function ItinerariesScreen() {
       <View style={{ flex: 1 }}>
         <TouchableOpacity onPress={() => goToViewItinerary(itinerary)} activeOpacity={0.7}>
           <ThemedText type='defaultSemiBold'>{itinerary.title}</ThemedText>
-          {itinerary.status === 'ongoing' ? (
-            <ThemedText style={{opacity: .7}}>Ongoing</ThemedText>
+          {itinerary.status === 'cancelled' ? (
+            <ThemedText style={{opacity: .7}}>Cancelled</ThemedText>
           ) : (
-            <ThemedText style={{opacity: .7}}>Upcoming</ThemedText>
+            <ThemedText style={{opacity: .7}}>Completed</ThemedText>
           )}
           <View style={styles.typesContainer}>
             <ThemedIcons library="MaterialIcons" name="edit-calendar" size={15}/>
@@ -112,17 +109,7 @@ export default function ItinerariesScreen() {
   return (
     <ThemedView style={{ flex: 1 }}>
       <Header 
-        label="Itineraries" 
-        rightButton={
-          <OptionsPopup options={[
-            <TouchableOpacity onPress={() => router.push('/home/itineraries/itineraries-history')} style={styles.options}>
-              <ThemedIcons library="MaterialIcons" name="history" size={22} color="#222" />
-              <ThemedText>View History</ThemedText>
-            </TouchableOpacity>
-          ]}> 
-            <ThemedIcons library="MaterialCommunityIcons" name="dots-vertical" size={22} color="#222" />
-          </OptionsPopup>
-        }
+        label="History"
       />
       
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16 }}>
@@ -139,29 +126,21 @@ export default function ItinerariesScreen() {
 
         {!loading && !error && (
           <>
-            {/* Ongoing Itineraries Section */}
-            {ongoingItineraries.length > 0 && ongoingItineraries.map(renderItineraryItem)}
+            {/* Cancelled Itineraries Section */}
+            {cancelledItineraries.length > 0 && cancelledItineraries.map(renderItineraryItem)}
 
-            {/* Upcoming Itineraries Section */}
-            {upcomingItineraries.length > 0 && upcomingItineraries.map(renderItineraryItem)}
+            {/* Completed Itineraries Section */}
+            {completedItineraries.length > 0 && completedItineraries.map(renderItineraryItem)}
 
             {/* No itineraries message */}
-            {ongoingItineraries.length === 0 && upcomingItineraries.length === 0 && (
+            {cancelledItineraries.length === 0 && completedItineraries.length === 0 && (
               <ThemedView style={{ padding: 16, alignItems: 'center' }}>
-                <ThemedText>No ongoing or upcoming itineraries found.</ThemedText>
+                <ThemedText>No cancelled or completed itineraries found.</ThemedText>
               </ThemedView>
             )}
           </>
         )}
       </ScrollView>
-
-      <CubeButton
-        size={60}
-        iconName="add"
-        iconColor="#fff"
-        onPress={() => router.push('/home/itineraries/itineraries-form')}
-        style={{position: 'absolute', bottom: 20, right: 20}}
-      />
     </ThemedView>
   );
 }
@@ -186,9 +165,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 4
   },
-  options:{
-    flexDirection: 'row',
-    gap: 10,
-    padding: 5
-  }
 });

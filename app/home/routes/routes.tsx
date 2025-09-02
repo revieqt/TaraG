@@ -3,10 +3,11 @@ import Header from '@/components/Header';
 import HorizontalSections from '@/components/HorizontalSections';
 import OptionsPopup from '@/components/OptionsPopup';
 import { ThemedIcons } from '@/components/ThemedIcons';
+import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { router } from 'expo-router';
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
 
 export default function RoutesScreen() {
 
@@ -15,25 +16,24 @@ export default function RoutesScreen() {
       <Header 
         label="Routes" 
         rightButton={
-          <OptionsPopup actions={[]}> 
+          <OptionsPopup options={[
+            <TouchableOpacity style={styles.options} onPress={() => router.push('/home/routes/routes-history')}>
+              <ThemedIcons library="MaterialIcons" name="history" size={20} />
+              <ThemedText>View History</ThemedText>
+            </TouchableOpacity>,
+            <TouchableOpacity style={styles.options}>
+            <ThemedIcons library="MaterialIcons" name="settings" size={20} />
+            <ThemedText>Route Settings</ThemedText>
+          </TouchableOpacity>,
+          ]}> 
             <ThemedIcons library="MaterialCommunityIcons" name="dots-vertical" size={22} color="#222" />
           </OptionsPopup>
         }
       />
-      <HorizontalSections
-        labels={['Pending', 'Archives']}
-        type="fullTab"
-        containerStyle={{ flex: 1 }}
-        sections={[
-        <View key="pending" style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <ThemedView>
-          </ThemedView>
-        </View>,
-        <View key="archives" style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <ThemedView>
-          </ThemedView>
-        </View>]}
-      />
+      
+      <View style={{padding: 20}}>
+        
+      </View>
 
       <CubeButton
         size={60}
@@ -47,5 +47,9 @@ export default function RoutesScreen() {
 }
 
 const styles = StyleSheet.create({
-  
+  options:{
+    flexDirection: 'row',
+    gap: 10,
+    padding: 5
+  }
 });

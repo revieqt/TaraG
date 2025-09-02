@@ -72,15 +72,18 @@ export default function RootLayout() {
 
             <Stack.Screen name="home/routes/routes" />
             <Stack.Screen name="home/routes/routes-create" />
+            <Stack.Screen name="home/routes/routes-history" />
             <Stack.Screen name="home/itineraries/itineraries" />
             <Stack.Screen name="home/itineraries/itineraries-form" />
             <Stack.Screen name="home/itineraries/itineraries-view" />
+            <Stack.Screen name="home/itineraries/itineraries-history" />
             <Stack.Screen name="home/safety" />
             <Stack.Screen name="home/aiChat" />
 
             <Stack.Screen name="explore/explore-post" />
             <Stack.Screen name="explore/tours-view" />
 
+            <Stack.Screen name="payment" />
             <Stack.Screen name="index" />
             <Stack.Screen name="+not-found" />
           </Stack>

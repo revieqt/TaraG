@@ -38,16 +38,17 @@ export default function TourView() {
             pointerEvents="none"
           />
           
-          <View style={styles.textContainer}>
-            <ThemedText type='title'>
-              Tour TItle here
-            </ThemedText>
-            <ThemedText type='defaultSemiBold' style={{opacity: 0.7}}>Welcome to TaraG!</ThemedText>
-          </View>
+          
         </View>
       </View>
 
       <View style={{margin:20}}>
+        <View style={styles.textContainer}>
+          <ThemedText type='title'>
+            Tour TItle here
+          </ThemedText>
+          <ThemedText type='defaultSemiBold' style={{opacity: 0.7}}>Welcome to TaraG!</ThemedText>
+        </View>
         <ThemedView style={styles.agencyContainer}>
           <ThemedText type='defaultSemiBold'>Agency Name</ThemedText>
           <ThemedText>Agency Name</ThemedText>
@@ -74,7 +75,7 @@ export default function TourView() {
 const styles = StyleSheet.create({
   carouselContainer: {
     width: '100%',
-    height: 300,
+    height: 250,
     borderBottomLeftRadius: 200,
     overflow: 'hidden',
   },
@@ -88,9 +89,6 @@ const styles = StyleSheet.create({
     pointerEvents: 'box-none', // This allows touches to pass through except for the actual content
   },
   textContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 20,
     zIndex: 3,
     pointerEvents: 'box-none',
   },

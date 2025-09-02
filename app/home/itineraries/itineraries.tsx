@@ -189,6 +189,7 @@ const styles = StyleSheet.create({
   options:{
     flexDirection: 'row',
     gap: 10,
-    padding: 5
+    padding: 5,
+    flex: 1
   }
 });

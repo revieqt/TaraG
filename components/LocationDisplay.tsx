@@ -14,20 +14,17 @@ const LocationDisplay: React.FC<LocationDisplayProps> = ({ content }) => {
   const handleLayout = (e: LayoutChangeEvent, index: number) => {
     const { y, height } = e.nativeEvent.layout;
     if (index === 0) {
-      // First item top connector
-      setTopOffset(y + 10); // adjust to connector
+      setTopOffset(y + 10);
     }
     if (index === content.length - 1) {
-      // Last item bottom connector
-      setBottomOffset(y + 10); // adjust to connector
+      setBottomOffset(y + 10);
     }
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.itemsContainer}>
-        {/* Render central line only when we know both offsets */}
-        {topOffset !== null && bottomOffset !== null && (
+        {topOffset !== null && bottomOffset !== null && content.length > 1 && (
           <View
             style={[
               styles.timeline,
@@ -44,8 +41,6 @@ const LocationDisplay: React.FC<LocationDisplayProps> = ({ content }) => {
           >
             {/* Pin + Connector */}
             <View style={styles.pinColumn}>
-              {/* Horizontal connector */}
-              <View style={styles.connector} />
               <View>
                 <ThemedIcons
                   library="MaterialIcons"
@@ -77,8 +72,12 @@ const styles = StyleSheet.create({
   },
   timeline: {
     position: "absolute",
-    width: 1,
-    backgroundColor: "#ccc",
+    width: 2,
+    backgroundColor: "transparent",
+    borderStyle: "dashed",
+    borderWidth: 1,
+    borderColor: "#ccc",
+    left: 13,
   },
   itemRow: {
     flexDirection: "row",
@@ -90,17 +89,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "flex-start",
     position: "relative",
-  },
-  connector: {
-    flex: 1,
-    borderBottomWidth: 1,
-    borderColor: "#ccc",
-    marginTop: 10,
-    marginRight: 4,
+    marginLeft: 5,
   },
   contentBox: {
     flex: 1,
     paddingVertical: 2,
-    paddingLeft: 8
   },
 });

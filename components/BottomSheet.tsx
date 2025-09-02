@@ -7,6 +7,7 @@ import {
     ScrollView,
     StyleSheet,
     View,
+    ViewStyle,
 } from "react-native";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
@@ -15,12 +16,14 @@ interface BottomSheetProps {
   children: React.ReactNode;
   snapPoints?: number[]; // decimals (e.g., 0.25 = 25% of screen height)
   defaultIndex?: number; // starting snap index
+  style?: ViewStyle; // optional custom styles
 }
 
 export default function BottomSheet({
   children,
   snapPoints = [0.25, 0.5, 0.9],
   defaultIndex = 0,
+  style,
 }: BottomSheetProps) {
   const backgroundColor = useThemeColor({}, "primary");
 
@@ -75,6 +78,7 @@ export default function BottomSheet({
       style={[
         styles.container,
         { transform: [{ translateY }], backgroundColor: backgroundColor },
+        style,
       ]}
     >
       {/* Handle zone (only draggable area) */}

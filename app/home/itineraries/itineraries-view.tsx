@@ -131,16 +131,16 @@ export default function ItineraryViewScreen() {
     );
   };
 
-  const handleGoToUpdateForm = () => {
-    if (!itinerary || typeof itinerary !== 'object') {
-      Alert.alert('Error', 'No itinerary data to update.');
-      return;
-    }
-    router.push({
-      pathname: '/home/itineraries/itineraries-form',
-      params: { itineraryData: JSON.stringify(itinerary) }
-    });
-  };
+  // const handleGoToUpdateForm = () => {
+  //   if (!itinerary || typeof itinerary !== 'object') {
+  //     Alert.alert('Error', 'No itinerary data to update.');
+  //     return;
+  //   }
+  //   router.push({
+  //     pathname: '/home/itineraries/itineraries-form',
+  //     params: { itineraryData: JSON.stringify(itinerary) }
+  //   });
+  // };
 
   const showFirstOptions =
     itinerary && (itinerary.status === 'upcoming' || itinerary.status === 'current');

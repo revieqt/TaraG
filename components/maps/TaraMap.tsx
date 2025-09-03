@@ -2,7 +2,7 @@ import { useSession } from '@/context/SessionContext';
 import { useLocation } from '@/hooks/useLocation';
 import React, { ReactNode, useEffect, useRef } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
-import MapView, { Camera, PROVIDER_DEFAULT, Region } from 'react-native-maps';
+import MapView, { Camera, PROVIDER_GOOGLE, Region } from 'react-native-maps';
 import TaraMarker from './TaraMarker';
 
 type CameraProps = {
@@ -90,7 +90,7 @@ const TaraMap: React.FC<TaraMapProps> = ({
         mapType='standard'
         ref={mapRef}
         style={[styles.map, mapStyle]}
-        provider={PROVIDER_DEFAULT}
+        provider={PROVIDER_GOOGLE}
         initialRegion={initialRegion}
       >
         {showMarker && session && latitude !== 0 && longitude !== 0 && !loading && (

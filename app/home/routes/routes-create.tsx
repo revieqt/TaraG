@@ -1,19 +1,19 @@
 import LocationAutocomplete, { LocationItem } from '@/components/LocationAutocomplete';
 import TaraMap from '@/components/maps/TaraMap';
-import TaraMarker from '@/components/maps/TaraMarker';
-import CubeButton from '@/components/CubeButton';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedIcons } from '@/components/ThemedIcons';
-import ToggleButton from '@/components/ToggleButton';
 import Button from '@/components/Button';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState } from 'react';
 import BottomSheet from '@/components/BottomSheet';
-import { StyleSheet, View, TouchableOpacity, Dimensions, ScrollView } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, ScrollView } from 'react-native';
 import LocationDisplay from '@/components/LocationDisplay';
 import { useLocation } from '@/hooks/useLocation';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { useSession } from '@/context/SessionContext';
+import { getRoutes } from '@/services/routeApiService';
+import BackButton from '@/components/custom/BackButton';
 
 const MODES = [
   { label: 'Car', value: 'driving-car', icon: 'directions-car', iconLibrary: 'MaterialIcons' },
@@ -26,9 +26,12 @@ export default function CreateRouteScreen() {
   const [endLocation, setEndLocation] = useState<LocationItem | null>(null);
   const [waypoints, setWaypoints] = useState<LocationItem[]>([]);
   const [selectedMode, setSelectedMode] = useState<string | null>(null);
+  const [routeData, setRouteData] = useState<any>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
   const secondaryColor = useThemeColor({}, 'accent');
 
-  const { suburb , city } = useLocation();
+  const { loading, suburb , city, latitude, longitude } = useLocation();
+  const { session } = useSession();
 
   const handleAddWaypoint = () => {
     setWaypoints([...waypoints, { locationName: '', latitude: null, longitude: null, note: '' }]);
@@ -53,125 +56,199 @@ export default function CreateRouteScreen() {
     }
   };
 
-  const handleGenerateRoute = () => {
-    console.log('Generate route with:', {  endLocation, waypoints, selectedMode });
+  const handleGenerateRoute = async () => {
+    if (!selectedMode || !endLocation || !session?.user?.id || !latitude || !longitude) {
+      console.log('Missing required data for route generation');
+      return;
+    }
+
+    setIsGenerating(true);
+    try {
+      // Build location array: start -> waypoints -> end
+      const locationArray = [
+        { latitude: latitude as number, longitude: longitude as number }, // Starting location
+        ...waypoints.filter(wp => wp.latitude && wp.longitude).map(wp => ({
+          latitude: wp.latitude!,
+          longitude: wp.longitude!
+        })), // Waypoints
+        { latitude: endLocation.latitude!, longitude: endLocation.longitude! } // End location
+      ];
+
+      const route = await getRoutes({
+        location: locationArray,
+        mode: selectedMode
+      });
+
+      if (route) {
+        setRouteData(route);
+        console.log('Route generated:', route);
+      } else {
+        console.log('Failed to generate route');
+      }
+    } catch (error) {
+      console.error('Error generating route:', error);
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   return (
     <View style={{ flex: 1 }}>
-      {/* <TaraMap showMarker={false}/> */}
+      {/* <TaraMap
+        showMarker={false}
+        mapStyle={{ flex: 1, zIndex: 0 }}
+        region={{
+          latitude: 14.5995, // Manila coords
+          longitude: 120.9842,
+          latitudeDelta: 0.1,
+          longitudeDelta: 0.1,
+        }}
+      /> */}
       <View style={styles.header}>
+        
         <LinearGradient
           colors={['#000', 'transparent']}
           style={styles.headerGradient}
         />
         <View style={styles.headerTitle}>
-          <ThemedText type="title" style={{color: '#fff'}}>
-            Hello Traveler
-          </ThemedText>
-          <ThemedText type="subtitle" style={{color: '#fff'}}>
-            Where are we going today?
-          </ThemedText>
+          <BackButton/>
+          <View style={{marginLeft: 10, pointerEvents: 'none',}}>
+            {routeData ? (
+              <>
+                <ThemedText type="title" style={{color: '#fff'}}>
+                  {routeData.distance} km • {routeData.duration} min
+                </ThemedText>
+                <ThemedText type="defaultSemiBold" style={{color: '#fff', flexWrap: 'wrap'}}>
+                  {suburb}, {city}{waypoints.length > 0 && waypoints.map(wp => wp.locationName ? ` → ${wp.locationName}` : '').join('')} → {endLocation?.locationName}
+                </ThemedText>
+              </>
+            ) : (
+              <>
+                <ThemedText type="title" style={{color: '#fff'}}>
+                  Hello Traveler
+                </ThemedText>
+                <ThemedText type="subtitle" style={{color: '#fff'}}>
+                  Where are we going today?
+                </ThemedText>
+              </>
+            )}
+          </View>
+          
         </View>
       </View>
       
-      <BottomSheet snapPoints={[0.5, 0.83]} defaultIndex={0} style={{zIndex: 100}}>
-        <ScrollView showsVerticalScrollIndicator={false}>
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false}
-          style={{marginBottom: 30}}
-          contentContainerStyle={styles.modeRowContent}
-        >
-            {MODES.map((mode) => (
-              <TouchableOpacity
-                key={mode.value}
-                onPress={() => handleModeToggle(mode.value, true)}
-              >
-                <ThemedView
-                style={[
-                  styles.modeButton,
-                  selectedMode === mode.value && {backgroundColor: secondaryColor},
-                ]}>
-                  <ThemedIcons library={mode.iconLibrary} name={mode.icon} size={15}/>
-                  <ThemedText>
-                    {mode.label}
-                  </ThemedText>
-                </ThemedView>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-
-          <LocationDisplay
-            content={[
-              // Start Location
-              <View key="start">
-                <ThemedText type="defaultSemiBold">Your Location</ThemedText>
-                <ThemedText style={{opacity: .5}}>{suburb}, {city}</ThemedText>
-              </View>,
-              
-              // Waypoints
-              ...waypoints.map((waypoint, index) => (
-                <View key={`waypoint-${index}`}>
-                  <View style={styles.waypointHeader}>
-                    <ThemedText type="defaultSemiBold">
-                      Waypoint {index + 1}
+      {routeData ? (
+        <View style={styles.buttonsContainer}>
+          <Button
+            title="Go Back"
+            onPress={() => setRouteData(null)}
+            type="outline"
+          />
+          <Button
+            title="Start Route"
+            onPress={() => []}
+            type="primary"
+            buttonStyle={{marginTop: 10}}
+          />
+        </View>
+      ) : (
+        <BottomSheet snapPoints={[0.5, 0.83]} defaultIndex={0} style={{zIndex: 100}}>
+          <ScrollView showsVerticalScrollIndicator={false}>
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false}
+            style={{marginBottom: 30}}
+            contentContainerStyle={styles.modeRowContent}
+          >
+              {MODES.map((mode) => (
+                <TouchableOpacity
+                  key={mode.value}
+                  onPress={() => handleModeToggle(mode.value, true)}
+                >
+                  <ThemedView
+                  style={[
+                    styles.modeButton,
+                    selectedMode === mode.value && {backgroundColor: secondaryColor},
+                  ]}>
+                    <ThemedIcons library="MaterialIcons" name={mode.icon} size={15}/>
+                    <ThemedText>
+                      {mode.label}
                     </ThemedText>
+                  </ThemedView>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+
+            <LocationDisplay
+              content={[
+                // Start Location
+                <View key="start" style={{marginBottom: 10}}>
+                  <ThemedText type="defaultSemiBold">Your Location</ThemedText>
+                  {!loading && (
+                    <ThemedText style={{opacity: .5}}>{suburb}, {city}</ThemedText>
+                  )}
+                </View>,
+                
+                // Waypoints
+                ...waypoints.map((waypoint, index) => (
+                  <View key={`waypoint-${index}`}>
                     <TouchableOpacity 
                       onPress={() => handleRemoveWaypoint(index)}
                       style={styles.removeButton}
                     >
-                      <ThemedIcons library="MaterialIcons" name="close" size={20} color="#ff4444" />
+                      <ThemedIcons library="MaterialIcons" name="close" size={25} color="#ff4444" />
                     </TouchableOpacity>
+                    <LocationAutocomplete
+                      value={waypoint.locationName}
+                      onSelect={(location) => handleWaypointSelect(index, location)}
+                      placeholder={`Enter waypoint ${index + 1}`}
+                    />
                   </View>
+                )),
+                
+                // End Location
+                <View key="end">
                   <LocationAutocomplete
-                    value={waypoint.locationName}
-                    onSelect={(location) => handleWaypointSelect(index, location)}
-                    placeholder={`Enter waypoint ${index + 1}`}
+                    value={endLocation?.locationName || ''}
+                    onSelect={setEndLocation}
+                    placeholder="Enter destination"
                   />
                 </View>
-              )),
-              
-              // End Location
-              <View key="end">
-                <ThemedText type="defaultSemiBold">To</ThemedText>
-                <LocationAutocomplete
-                  value={endLocation?.locationName || ''}
-                  onSelect={setEndLocation}
-                  placeholder="Enter destination"
-                />
-              </View>
-            ]}
-          />
+              ]}
+            />
 
-          {/* Add Waypoint Button */}
-          <Button
-            title="Add Waypoint"
-            onPress={handleAddWaypoint}
-            type="outline"
-          />
-          <Button
-            title="Generate Route"
-            onPress={handleGenerateRoute}
-            type="primary"
-            buttonStyle={{marginTop: 10}}
-          />
-        </ScrollView>
-      </BottomSheet>
+            {/* Add Waypoint Button */}
+            <Button
+              title="Add Waypoint"
+              onPress={handleAddWaypoint}
+              type="outline"
+            />
+            <Button
+              title={isGenerating ? "Generating..." : "Generate Route"}
+              onPress={handleGenerateRoute}
+              type="primary"
+              buttonStyle={{marginTop: 10}}
+              disabled={isGenerating || !selectedMode || !endLocation}
+            />
+          </ScrollView>
+        </BottomSheet>
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   header: {
-    zIndex: 1,
+    zIndex: 100,
+    pointerEvents: 'none',
   },
   headerTitle: {
     position: 'absolute',
-    top: 40,
-    left: 20,
+    top: 10,
+    left: 10,
     zIndex: 20,
     color: '#fff',
+    pointerEvents: 'none',
   },
   headerGradient: {
     position: 'absolute',
@@ -180,12 +257,7 @@ const styles = StyleSheet.create({
     right: 0,
     height: 200,
     opacity: .7,
-  },
-  locationContainer: {
-    borderBottomWidth: 1,
-    borderColor: '#ccc',
-    paddingBottom: 50,
-    marginBottom: 20,
+    pointerEvents: 'none',
   },
   waypointHeader: {
     flexDirection: 'row',
@@ -194,7 +266,10 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   removeButton: {
-    padding: 4,
+    position: 'absolute',
+    right: 40,
+    top: 11,
+    zIndex: 20,
   },
   modeRowContent: {
     flexDirection: 'row',
@@ -214,5 +289,12 @@ const styles = StyleSheet.create({
   modeButtonText: {
     color: '#333',
     fontSize: 16,
+  },
+  buttonsContainer: {
+    position: 'absolute',
+    bottom: 20,
+    left: 20,
+    right: 20,
+    zIndex: 20,
   },
 });

@@ -2,6 +2,7 @@
 import { ThemedIcons } from "@/components/ThemedIcons";
 import React, { useState } from "react";
 import { LayoutChangeEvent, StyleSheet, View } from "react-native";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 type LocationDisplayProps = {
   content: React.ReactNode[];
@@ -10,6 +11,7 @@ type LocationDisplayProps = {
 const LocationDisplay: React.FC<LocationDisplayProps> = ({ content }) => {
   const [topOffset, setTopOffset] = useState<number | null>(null);
   const [bottomOffset, setBottomOffset] = useState<number | null>(null);
+  const primaryColor = useThemeColor({}, 'primary');
 
   const handleLayout = (e: LayoutChangeEvent, index: number) => {
     const { y, height } = e.nativeEvent.layout;
@@ -41,7 +43,7 @@ const LocationDisplay: React.FC<LocationDisplayProps> = ({ content }) => {
           >
             {/* Pin + Connector */}
             <View style={styles.pinColumn}>
-              <View>
+              <View style={{backgroundColor: primaryColor, borderRadius: 50, width: 20, height: 20, justifyContent: 'center', alignItems: 'center'}}>
                 <ThemedIcons
                   library="MaterialIcons"
                   name="location-on"

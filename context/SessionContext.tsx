@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 
-
+// 🧑‍💻 User type
 export type User = {
   id: string;
   fname: string;
@@ -32,13 +32,23 @@ export type User = {
   };
 };
 
+// 🛣️ ORS Data
+export type ORSData = {
+  geometry: { coordinates: [number, number][]; type: string };
+  distance: number;   // meters
+  duration: number;   // seconds
+  bbox?: number[];
+};
+
 // 📍 ActiveRoute type
 export type ActiveRoute = {
   routeID: string;
   userID: string;
-  location: { latitude: number; longitude: number; locationName: string}[];
+  location: { latitude: number; longitude: number; locationName: string }[];
+  mode: string;
   status: string;
   createdOn: Date;
+  orsData?: ORSData; // ✅ ORS data
 };
 
 // 🧠 SessionData
@@ -73,16 +83,15 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
         
         if (stored) {
           const parsed = JSON.parse(stored);
-          console.log('🔍 SessionContext: Parsed session:', parsed);
 
           if (parsed.user) {
             parsed.user.bdate = new Date(parsed.user.bdate);
             parsed.user.createdOn = new Date(parsed.user.createdOn);
-            // emergencyContact is an array of objects, no conversion needed
           }
 
           if (parsed.activeRoute) {
             parsed.activeRoute.createdOn = new Date(parsed.activeRoute.createdOn);
+            // orsData is left as-is (geometry/distance/duration)
           }
 
           setSession(parsed);

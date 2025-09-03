@@ -7,9 +7,23 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { router } from 'expo-router';
 import React from 'react';
-import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Alert } from 'react-native';
+import { useSession } from '@/context/SessionContext';
 
 export default function RoutesScreen() {
+  const { session } = useSession();
+
+  const handleAddRoute = () => {
+    if (session?.activeRoute) {
+      Alert.alert(
+        "Active Route Detected",
+        "You must end the active route before creating a new one.",
+        [{ text: "OK", style: "default" }]
+      );
+      return;
+    }
+    router.push('/home/routes/routes-create');
+  };
 
   return (
     <ThemedView style={{ flex: 1 }}>
@@ -39,7 +53,7 @@ export default function RoutesScreen() {
         size={60}
         iconName="add"
         iconColor="#fff"
-        onPress={() => router.push('/home/routes/routes-create')}
+        onPress={handleAddRoute}
         style={{position: 'absolute', bottom: 20, right: 20}}
       />
     </ThemedView>

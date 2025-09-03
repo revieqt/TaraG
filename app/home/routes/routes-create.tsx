@@ -14,6 +14,7 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import { useSession } from '@/context/SessionContext';
 import { getRoutes } from '@/services/routeApiService';
 import BackButton from '@/components/custom/BackButton';
+import { router } from 'expo-router';
 
 const MODES = [
   { label: 'Car', value: 'driving-car', icon: 'directions-car', iconLibrary: 'MaterialIcons' },
@@ -31,7 +32,7 @@ export default function CreateRouteScreen() {
   const secondaryColor = useThemeColor({}, 'accent');
 
   const { loading, suburb , city, latitude, longitude } = useLocation();
-  const { session } = useSession();
+  const { session, updateSession } = useSession();
 
   const handleAddWaypoint = () => {
     setWaypoints([...waypoints, { locationName: '', latitude: null, longitude: null, note: '' }]);
@@ -92,6 +93,53 @@ export default function CreateRouteScreen() {
     }
   };
 
+  const handleStartRoute = async () => {
+    if (!routeData || !selectedMode || !endLocation || !session?.user?.id || !latitude || !longitude) {
+      console.log('Missing required data for starting route');
+      return;
+    }
+
+    try {
+      // Build location array with names for ActiveRoute
+      const locationArray = [
+        { 
+          latitude: latitude as number, 
+          longitude: longitude as number, 
+          locationName: `${suburb}, ${city}` 
+        }, // Starting location
+        ...waypoints.filter(wp => wp.latitude && wp.longitude).map(wp => ({
+          latitude: wp.latitude!,
+          longitude: wp.longitude!,
+          locationName: wp.locationName
+        })), // Waypoints
+        { 
+          latitude: endLocation.latitude!, 
+          longitude: endLocation.longitude!,
+          locationName: endLocation.locationName 
+        } // End location
+      ];
+
+      const activeRoute = {
+        routeID: `route_${Date.now()}`, // Generate unique ID
+        userID: session.user.id,
+        location: locationArray,
+        mode: selectedMode,
+        status: 'active',
+        createdOn: new Date(),
+        routeData: routeData
+      };
+
+      // Save to SessionContext
+      await updateSession({ activeRoute });
+      console.log('Route saved to session:', activeRoute);
+
+      // Navigate to maps tab
+      router.push('/(tabs)/maps');
+    } catch (error) {
+      console.error('Error starting route:', error);
+    }
+  };
+
   return (
     <View style={{ flex: 1 }}>
       {/* <TaraMap
@@ -146,7 +194,7 @@ export default function CreateRouteScreen() {
           />
           <Button
             title="Start Route"
-            onPress={() => []}
+            onPress={handleStartRoute}
             type="primary"
             buttonStyle={{marginTop: 10}}
           />

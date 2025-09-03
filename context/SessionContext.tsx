@@ -32,8 +32,8 @@ export type User = {
   };
 };
 
-// 🛣️ ORS Data
-export type ORSData = {
+// 🛣️ Route Data
+export type RouteData = {
   geometry: { coordinates: [number, number][]; type: string };
   distance: number;   // meters
   duration: number;   // seconds
@@ -48,7 +48,7 @@ export type ActiveRoute = {
   mode: string;
   status: string;
   createdOn: Date;
-  orsData?: ORSData; // ✅ ORS data
+  routeData?: RouteData; // ✅ ORS data
 };
 
 // 🧠 SessionData
@@ -91,7 +91,7 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
 
           if (parsed.activeRoute) {
             parsed.activeRoute.createdOn = new Date(parsed.activeRoute.createdOn);
-            // orsData is left as-is (geometry/distance/duration)
+            // routeData is left as-is (geometry/distance/duration)
           }
 
           setSession(parsed);

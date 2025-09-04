@@ -10,12 +10,16 @@ import { BACKEND_URL } from '@/constants/Config';
 import { useLocation } from '@/hooks/useLocation';
 import { useDocument } from '@/hooks/useDocument';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, TouchableOpacity, View, Alert} from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
+import { useSession } from '@/context/SessionContext';
+import { router } from 'expo-router';
+import { generateRouteWithLocations } from '@/services/routeApiService';
 
 export default function SafetyScreen() {
   const { latitude, longitude, loading: locationLoading } = useLocation();
   const { fetchDocument } = useDocument();
+  const { session, updateSession } = useSession();
 
   const [amenities, setAmenities] = useState<any[]>([]);
   const [amenityLoading, setAmenityLoading] = useState(false);
@@ -26,6 +30,58 @@ export default function SafetyScreen() {
   const [tipsError, setTipsError] = useState<string | null>(null);
 
   const [selectedAmenityType, setSelectedAmenityType] = useState<string | null>(null);
+
+  const handleGetDirection = async (amenity: any) => {
+    if (session?.activeRoute) {
+      Alert.alert(
+        "Active Route Detected",
+        "You must end the active route before creating a new one.",
+        [{ text: "OK", style: "default" }]
+      );
+      return;
+    }
+
+    if (!latitude || !longitude || !session?.user?.id) {
+      Alert.alert("Error", "Unable to get your location or user information.");
+      return;
+    }
+
+    try {
+      const route = await generateRouteWithLocations({
+        startLocation: { latitude, longitude },
+        endLocation: { latitude: amenity.latitude, longitude: amenity.longitude },
+        waypoints: [],
+        mode: 'driving-car',
+        userID: session.user.id
+      });
+
+      if (route) {
+        const activeRoute = {
+          routeID: `route_${Date.now()}`,
+          userID: session.user.id,
+          location: [
+            { latitude, longitude, locationName: 'Your Location' },
+            { latitude: amenity.latitude, longitude: amenity.longitude, locationName: amenity.name }
+          ],
+          mode: 'driving-car',
+          status: 'active',
+          createdOn: new Date(),
+          routeData: route
+        };
+
+        await updateSession({ activeRoute });
+        console.log('Route to amenity created:', activeRoute);
+        
+        // Navigate to maps
+        router.push('/(tabs)/maps');
+      } else {
+        Alert.alert("Error", "Failed to generate route. Please try again.");
+      }
+    } catch (error) {
+      console.error('Error generating route to amenity:', error);
+      Alert.alert("Error", "Failed to generate route. Please try again.");
+    }
+  };
 
   useEffect(() => {
     setTipsLoading(true);
@@ -45,7 +101,6 @@ export default function SafetyScreen() {
       .finally(() => setTipsLoading(false));
   }, [fetchDocument]);
 
-  // Helper to map amenity type to emergency tip title
   function getTipTitleForAmenityType(type: string) {
     switch (type) {
       case 'hospital':
@@ -170,7 +225,7 @@ export default function SafetyScreen() {
           </View>
         )}
         <View style={styles.infoRow}>
-          <Button title="Get Directions" onPress={() => {}} buttonStyle={{}}/>
+          <Button title="Get Directions" onPress={() => handleGetDirection(amenity)} buttonStyle={{}}/>
         </View>
       </View>
     </ThemedView>

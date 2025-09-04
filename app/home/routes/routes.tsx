@@ -46,7 +46,11 @@ export default function RoutesScreen() {
       />
       
       <View style={{padding: 20}}>
-        
+        {(session?.activeRoute && (
+          <ThemedView color='primary' shadow style={{padding: 20, borderRadius: 10}}>
+            
+          </ThemedView>
+        ))}
       </View>
 
       <CubeButton

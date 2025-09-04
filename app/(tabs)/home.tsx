@@ -219,7 +219,27 @@ export default function HomeScreen() {
           </ThemedView>
         </View>
       </ScrollView>
+      { session?.activeRoute && (
+        <View style={styles.bottomOverlay}>
+          <LinearGradient
+            colors={['transparent', backgroundColor]}
+            start={{ x: 0.5, y: 0 }}
+            end={{ x: 0.5, y: 1 }}
+            style={styles.bottomGradient}
+          />
           
+          <TouchableOpacity onPress={() => router.push('/(tabs)/maps')} style={{zIndex: 10000}}>
+            <ThemedView color='primary' shadow style={styles.bottomOverlayContent}>
+              <View>
+                <ThemedText type='subtitle'>500 km • 1 hour</ThemedText>
+                <ThemedText type='defaultSemiBold'>away from the next stop</ThemedText>
+              </View>
+              <ThemedIcons library='MaterialDesignIcons' name='chevron-right' size={30}/>
+            </ThemedView>
+          </TouchableOpacity>
+        </View>
+      )}
+      
     </ThemedView>
   );
 }
@@ -339,5 +359,44 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
     marginVertical: 30,
+  },
+  bottomOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1000,
+    pointerEvents: 'none'
+  },
+  bottomOverlayContent:{
+    position: 'absolute',
+    bottom: 10,
+    left: 10,
+    right: 10,
+    zIndex: 1000,
+    padding: 20,
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: '#ccc5',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  },
+  bottomGradient:{
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 200,
+    zIndex: 900,
+    pointerEvents: 'none'
   }
 });

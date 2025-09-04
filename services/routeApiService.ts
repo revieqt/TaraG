@@ -22,6 +22,46 @@ export async function getRoutes(params: {
   }
 }
 
+export async function generateRouteWithLocations(params: {
+  startLocation: { latitude: number; longitude: number };
+  endLocation: { latitude: number; longitude: number };
+  waypoints: { latitude: number; longitude: number }[];
+  mode: string;
+  userID: string;
+}) {
+  const { startLocation, endLocation, waypoints, mode, userID } = params;
+  
+  if (!mode || !endLocation || !userID || !startLocation) {
+    console.log('Missing required data for route generation');
+    return null;
+  }
+
+  try {
+    // Build location array: start -> waypoints -> end
+    const locationArray = [
+      startLocation, // Starting location
+      ...waypoints, // Waypoints
+      endLocation // End location
+    ];
+
+    const route = await getRoutes({
+      location: locationArray,
+      mode: mode
+    });
+
+    if (route) {
+      console.log('Route generated:', route);
+      return route;
+    } else {
+      console.log('Failed to generate route');
+      return null;
+    }
+  } catch (error) {
+    console.error('Error generating route:', error);
+    return null;
+  }
+}
+
 export async function createRoute(params: {
   userID: string;
   status: string;

@@ -33,11 +33,29 @@ export type User = {
 };
 
 // 🛣️ Route Data
+export type RouteStep = {
+  distance: number;        // meters for this step
+  duration: number;        // seconds for this step
+  instruction: string;     // "Turn left onto Main St"
+  name?: string;           // street/POI name if available
+  way_points: [number, number]; // indices in geometry polyline
+};
+
+export type RouteSegment = {
+  distance: number;        // meters between two stops
+  duration: number;        // seconds between two stops
+  steps?: RouteStep[];     // turn-by-turn steps if requested
+};
+
 export type RouteData = {
-  geometry: { coordinates: [number, number][]; type: string };
-  distance: number;   // meters
-  duration: number;   // seconds
+  geometry: {
+    coordinates: [number, number, number?][]; // [lon, lat, ele?] if elevation enabled
+    type: string; // "LineString"
+  };
+  distance: number;   // total meters
+  duration: number;   // total seconds
   bbox?: number[];
+  segments: RouteSegment[]; // per-stop breakdown
 };
 
 // 📍 ActiveRoute type

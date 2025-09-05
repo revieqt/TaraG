@@ -13,6 +13,7 @@ import { getWeatherImage } from '@/utils/weatherUtils';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { ActivityIndicator, Image, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import PulsatingGradient from '@/components/PulsatingGradient';
 
 export default function HomeScreen() {
   const { session } = useSession();
@@ -227,8 +228,9 @@ export default function HomeScreen() {
             end={{ x: 0.5, y: 1 }}
             style={styles.bottomGradient}
           />
-          
+
           <TouchableOpacity onPress={() => router.push('/(tabs)/maps')} style={{zIndex: 10000}}>
+            
             <ThemedView color='primary' shadow style={styles.bottomOverlayContent}>
               <View>
                 <ThemedText type='subtitle'>500 km • 1 hour</ThemedText>

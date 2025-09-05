@@ -8,7 +8,7 @@ import Button from '@/components/Button';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState } from 'react';
 import BottomSheet from '@/components/BottomSheet';
-import { StyleSheet, View, TouchableOpacity, ScrollView } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import LocationDisplay from '@/components/LocationDisplay';
 import { useLocation } from '@/hooks/useLocation';
 import { useThemeColor } from '@/hooks/useThemeColor';
@@ -94,6 +94,23 @@ export default function CreateRouteScreen() {
     }
   };
 
+  const handleCancelRoute = async () => {
+    Alert.alert(
+      "Cancel Route",
+      "Are you sure you want to cancel the route?",
+      [
+        { text: "Cancel", style: "cancel" },
+        { 
+          text: "Cancel Route", 
+          style: "destructive",
+          onPress: async () => {
+            router.back();
+          }
+        }
+      ]
+    );
+  };
+
   const handleStartRoute = async () => {
     if (!routeData || !selectedMode || !endLocation || !session?.user?.id || !latitude || !longitude) {
       console.log('Missing required data for starting route');
@@ -165,7 +182,7 @@ export default function CreateRouteScreen() {
             {routeData ? (
               <>
                 <ThemedText type="title" style={{color: '#fff'}}>
-                  {routeData.distance} km • {routeData.duration} min
+                  {(routeData.distance / 1000).toFixed(2)} km • {Math.round(routeData.duration / 60)} min
                 </ThemedText>
                 <ThemedText type="defaultSemiBold" style={{color: '#fff', flexWrap: 'wrap'}}>
                   {suburb}, {city}{waypoints.length > 0 && waypoints.map(wp => wp.locationName ? ` → ${wp.locationName}` : '').join('')} → {endLocation?.locationName}
@@ -213,7 +230,7 @@ export default function CreateRouteScreen() {
             iconName="close"
             iconColor="#ccc"
             color="white"
-            onPress={() => router.back()}
+            onPress={handleCancelRoute}
             style={{borderRadius: 100}}
           />
         </View>

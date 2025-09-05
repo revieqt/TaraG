@@ -69,6 +69,10 @@ export default function RoutesScreen() {
       <View style={{padding: 20}}>
         {(session?.activeRoute && (
           <ThemedView color='primary' shadow style={{padding: 20, borderRadius: 10}}>
+            {/* Route Summary */}
+            
+
+            {/* Location Display */}
             <LocationDisplay 
               content={session.activeRoute.location.map((loc, index) => (
                 <View key={index}>
@@ -84,7 +88,39 @@ export default function RoutesScreen() {
                 </View>
               ))}
             />
-
+            {session.activeRoute.routeData && (
+              <View style={styles.routeSummary}>
+                
+                <View style={styles.routeStats}>
+                  <View style={styles.statItem}>
+                    <ThemedIcons library="MaterialIcons" name="schedule" size={20} color="#666" />
+                      <ThemedText style={{opacity: 0.7, marginTop: 5}}>Duration</ThemedText>
+                      <ThemedText type="defaultSemiBold">
+                        {Math.round(session.activeRoute.routeData.duration / 60)} min
+                      </ThemedText>
+                  </View>
+                  
+                  <View style={styles.statItem}>
+                    <ThemedIcons library="MaterialIcons" name="straighten" size={20} color="#666" />
+                      <ThemedText style={{opacity: 0.7, marginTop: 5}}>Distance</ThemedText>
+                      <ThemedText type="defaultSemiBold">
+                        {(session.activeRoute.routeData.distance / 1000).toFixed(2)} km
+                      </ThemedText>
+                  </View>
+                  
+                  <View style={styles.statItem}>
+                    <ThemedIcons library="MaterialCommunityIcons" name="elevation-rise" size={20} color="#666" />
+                      <ThemedText style={{opacity: 0.7, marginTop: 5}}>Elevation</ThemedText>
+                      <ThemedText type="defaultSemiBold">
+                        {session.activeRoute.routeData.geometry.coordinates.some(coord => coord[2] !== undefined) 
+                          ? `${Math.round(Math.max(...session.activeRoute.routeData.geometry.coordinates.map(coord => coord[2] || 0)) - Math.min(...session.activeRoute.routeData.geometry.coordinates.map(coord => coord[2] || 0)))}m gain`
+                          : 'N/A'
+                        }
+                      </ThemedText>
+                  </View>
+                </View>
+              </View>
+            )}
             <View style={styles.buttonContainer}>
               <TouchableOpacity 
                 style={[styles.button, {borderColor: '#ccc', borderWidth: 1}]} 
@@ -135,5 +171,28 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 30,
     gap: 8,
+  },
+  routeSummary: {
+    marginTop: 10,
+    paddingTop: 15,
+    borderTopWidth: 1,
+    borderTopColor: '#e0e0e0',
+  },
+  routeStats: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 15,
+  },
+  statItem: {
+    marginTop: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
+  },
+  segmentInfo: {
+    backgroundColor: '#f5f5f5',
+    padding: 10,
+    borderRadius: 8,
+    marginTop: 10,
   },
 });

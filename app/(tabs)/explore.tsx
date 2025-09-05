@@ -1,6 +1,7 @@
 import Button from '@/components/Button';
 import Carousel from '@/components/Carousel';
 import CubeButton from '@/components/RoundedButton';
+import TextField from '@/components/TextField';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useSession } from '@/context/SessionContext';
@@ -158,6 +159,27 @@ export default function ExploreScreen() {
       onScroll={handleScroll}
       scrollEventThrottle={16}
     >
+
+      <View style={{padding: 20, flexDirection: 'row', alignItems: 'center'}}>
+        <View style={{flex: 1}}>
+          <TextField
+            placeholder="Search groups..."
+            value=""
+            onChangeText={() => {}}
+            onFocus={() => {}}
+            onBlur={() => {}}
+            isFocused={false}
+            autoCapitalize="none"
+          />
+        </View>
+        
+        <CubeButton
+          size={50}
+          iconName="add"
+          iconColor="#fff"
+          onPress={() => router.push('/home/itineraries/itineraries-form')}
+        />
+      </View>
     </ScrollView>
    );
 

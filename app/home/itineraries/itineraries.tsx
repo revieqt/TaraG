@@ -1,4 +1,4 @@
-import CubeButton from '@/components/CubeButton';
+import CubeButton from '@/components/RoundedButton';
 import Header from '@/components/Header';
 import OptionsPopup from '@/components/OptionsPopup';
 import { ThemedIcons } from '@/components/ThemedIcons';

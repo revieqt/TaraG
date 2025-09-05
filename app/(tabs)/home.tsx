@@ -1,5 +1,5 @@
 import { AlertCard } from '@/components/AlertCard';
-import CubeButton from '@/components/CubeButton';
+import CubeButton from '@/components/RoundedButton';
 import NotificationsButton from '@/components/custom/NotificationsButton';
 import { ThemedIcons } from '@/components/ThemedIcons';
 import { ThemedText } from '@/components/ThemedText';

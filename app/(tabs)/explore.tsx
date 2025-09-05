@@ -1,6 +1,6 @@
 import Button from '@/components/Button';
 import Carousel from '@/components/Carousel';
-import CubeButton from '@/components/CubeButton';
+import CubeButton from '@/components/RoundedButton';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useSession } from '@/context/SessionContext';

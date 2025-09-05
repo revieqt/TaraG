@@ -3,6 +3,7 @@ import TaraMap from '@/components/maps/TaraMap';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedIcons } from '@/components/ThemedIcons';
+import RoundedButton from '@/components/RoundedButton';
 import Button from '@/components/Button';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState } from 'react';
@@ -187,16 +188,33 @@ export default function CreateRouteScreen() {
       
       {routeData ? (
         <View style={styles.buttonsContainer}>
-          <Button
-            title="Go Back"
-            onPress={() => setRouteData(null)}
-            type="outline"
+          <LinearGradient
+            colors={['transparent', '#000']}
+            style={styles.headerGradient}
           />
-          <Button
-            title="Start Route"
+          <RoundedButton
+            size={50}
+            iconName="arrow-back"
+            iconColor="#ccc"
+            color="white"
+            onPress={() => setRouteData(null)}
+            style={{borderRadius: 100}}
+          />
+          <RoundedButton
+            size={70}
+            iconName="play-arrow"
+            iconSize={35}
+            iconColor="#fff"
             onPress={handleStartRoute}
-            type="primary"
-            buttonStyle={{marginTop: 10}}
+            style={{borderRadius: 100}}
+          />
+          <RoundedButton
+            size={50}
+            iconName="close"
+            iconColor="#ccc"
+            color="white"
+            onPress={() => router.back()}
+            style={{borderRadius: 100}}
           />
         </View>
       ) : (
@@ -340,9 +358,13 @@ const styles = StyleSheet.create({
   },
   buttonsContainer: {
     position: 'absolute',
-    bottom: 20,
-    left: 20,
-    right: 20,
+    bottom: 30,
+    left: 0,
+    right: 0,
     zIndex: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 20,
   },
 });

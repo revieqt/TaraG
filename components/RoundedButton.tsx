@@ -3,7 +3,7 @@ import { StyleSheet, TouchableOpacity, ViewStyle } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import ThemedIcons from '@/components/ThemedIcons';
 
-interface CubeButtonProps {
+interface RoundedButtonProps {
   size?: number;
   color?: string;
   iconLibrary?:  'MaterialIcons' | 'MaterialCommunityIcons' | 'MaterialDesignIcons';
@@ -14,7 +14,7 @@ interface CubeButtonProps {
   style?: ViewStyle;
 }
 
-const CubeButton: React.FC<CubeButtonProps> = ({
+const RoundedButton: React.FC<RoundedButtonProps> = ({
   size = 50,
   color,
   iconLibrary = 'MaterialIcons',
@@ -68,4 +68,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CubeButton; 
+export default RoundedButton; 

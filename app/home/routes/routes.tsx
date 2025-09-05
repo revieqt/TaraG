@@ -1,17 +1,17 @@
-import CubeButton from '@/components/CubeButton';
+import RoundedButton from '@/components/RoundedButton';
 import Header from '@/components/Header';
-import HorizontalSections from '@/components/HorizontalSections';
 import OptionsPopup from '@/components/OptionsPopup';
 import { ThemedIcons } from '@/components/ThemedIcons';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import LocationDisplay from '@/components/LocationDisplay';
 import { router } from 'expo-router';
 import React from 'react';
 import { StyleSheet, View, TouchableOpacity, Alert } from 'react-native';
 import { useSession } from '@/context/SessionContext';
 
 export default function RoutesScreen() {
-  const { session } = useSession();
+  const { session, updateSession } = useSession();
 
   const handleAddRoute = () => {
     if (session?.activeRoute) {
@@ -23,6 +23,27 @@ export default function RoutesScreen() {
       return;
     }
     router.push('/home/routes/routes-create');
+  };
+
+  const handleEndRoute = async () => {
+    Alert.alert(
+      "End Route",
+      "Are you sure you want to end the current route?",
+      [
+        { text: "Cancel", style: "cancel" },
+        { 
+          text: "End Route", 
+          style: "destructive",
+          onPress: async () => {
+            await updateSession({ activeRoute: undefined });
+          }
+        }
+      ]
+    );
+  };
+
+  const handleGoToMaps = () => {
+    router.push('/(tabs)/maps');
   };
 
   return (
@@ -48,12 +69,42 @@ export default function RoutesScreen() {
       <View style={{padding: 20}}>
         {(session?.activeRoute && (
           <ThemedView color='primary' shadow style={{padding: 20, borderRadius: 10}}>
-            
+            <LocationDisplay 
+              content={session.activeRoute.location.map((loc, index) => (
+                <View key={index}>
+                  <ThemedText>
+                    {loc.locationName}
+                  </ThemedText>
+                  <ThemedText style={{opacity: .5}}>
+                    {index === 0 ? 'Start' : 
+                     index === session.activeRoute!.location.length - 1 ? 'Destination' : 
+                     `Waypoint ${index}`}
+                  </ThemedText>
+                  
+                </View>
+              ))}
+            />
+
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity 
+                style={[styles.button, {borderColor: '#ccc', borderWidth: 1}]} 
+                onPress={handleGoToMaps}
+              >
+                <ThemedIcons library="MaterialIcons" name="map" size={25}/>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                style={[styles.button, {backgroundColor: '#dc3545',}]} 
+                onPress={handleEndRoute}
+              >
+                <ThemedIcons library="MaterialIcons" name="stop" size={25} color="#fff"/>
+              </TouchableOpacity>
+            </View>
           </ThemedView>
         ))}
       </View>
 
-      <CubeButton
+      <RoundedButton
         size={60}
         iconName="add"
         iconColor="#fff"
@@ -70,5 +121,19 @@ const styles = StyleSheet.create({
     gap: 10,
     padding: 5,
     flex: 1
-  }
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  button: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 12,
+    borderRadius: 30,
+    gap: 8,
+  },
 });

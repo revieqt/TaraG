@@ -8,6 +8,10 @@ import { ThemedView } from '@/components/ThemedView';
 import { MAX_FREE_MESSAGES_PER_DAY } from '@/constants/Config';
 import { useSession } from '@/context/SessionContext';
 import { useAIChat } from '@/hooks/useAIChat';
+import { useLocation } from '@/hooks/useLocation';
+import { createRoute, getRoutes } from '@/services/routeApiService';
+import { saveItinerary } from '@/services/itinerariesApiService';
+import ChatLoading from '@/components/ChatLoading';
 import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
@@ -30,12 +34,13 @@ function getTodayKey() {
 }
 
 export default function AIChatScreen() {
-  const { messages, loading, error, sendMessage, resetChat } = useAIChat();
+  const { messages, loading, error, sendMessage, resetChat, suggestions, pendingAction, setPendingAction } = useAIChat();
   const [input, setInput] = useState('');
   const [ttsEnabled, setTtsEnabled] = useState(false);
   const flatListRef = useRef<FlatList>(null);
   const router = useRouter();
-  const { session } = useSession();
+  const { session, updateSession } = useSession();
+  const { latitude, longitude, city, suburb, loading: locationLoading, error: locationError } = useLocation();
 
   const [messageCount, setMessageCount] = useState(0);
 
@@ -69,8 +74,163 @@ export default function AIChatScreen() {
       setMessageCount((prev) => prev + 1);
     }
 
-    sendMessage(input.trim());
+    sendMessage(input.trim(), {
+      userID: session?.user?.id,
+      hasActiveRoute: !!session?.activeRoute
+    });
     setInput('');
+  };
+
+  const handleSuggestionPress = (suggestion: string) => {
+    setInput(suggestion);
+  };
+
+  const handleConfirmItinerary = async () => {
+    if (!pendingAction || !session?.accessToken || !session?.user?.id) return;
+    
+    try {
+      const { destination, duration, preferences, title, description, type, startDate, endDate, planDaily } = pendingAction.data || {};
+      
+      // Create itinerary structure with required fields
+      const itinerary = {
+        title: title || 'AI Generated Itinerary',
+        description: description || 'Travel itinerary created by AI assistant',
+        type: type || 'vacation',
+        startDate: startDate || new Date().toISOString().split('T')[0],
+        endDate: endDate || new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 3 days from now
+        planDaily: planDaily || [],
+        userID: session.user.id,
+        locations: [destination || 'Sample Destination']
+      };
+
+      // Save itinerary using existing service
+      const saveResult = await saveItinerary(itinerary, session.accessToken);
+      
+      if (saveResult.success) {
+        sendMessage('Itinerary created successfully! You can view it in your itineraries.', {
+          userID: session?.user?.id,
+          hasActiveRoute: !!session?.activeRoute
+        });
+      } else {
+        console.error('Failed to save itinerary:', saveResult.errorMessage);
+        sendMessage('Sorry, there was an issue creating your itinerary. Please try again.', {
+          userID: session?.user?.id,
+          hasActiveRoute: !!session?.activeRoute
+        });
+      }
+    } catch (error) {
+      console.error('Error creating itinerary:', error);
+      sendMessage('Sorry, there was an issue creating your itinerary. Please try again.', {
+        userID: session?.user?.id,
+        hasActiveRoute: !!session?.activeRoute
+      });
+    }
+    
+    setPendingAction(null);
+  };
+
+  const handleConfirmRoute = async () => {
+    if (!pendingAction || !session?.accessToken || !session?.user?.id) return;
+    
+    try {
+      const { startLocation, endLocation, transportMode } = pendingAction.data || {};
+      
+      if (!startLocation || !endLocation) {
+        console.error('Missing location data for route creation');
+        return;
+      }
+
+      // Check if location is still loading - don't clear pending action, let user retry
+      if (locationLoading) {
+        sendMessage('I\'m still getting your location. Please wait a moment and try the "Yes, Create Route" button again.', {
+          userID: session?.user?.id,
+          hasActiveRoute: !!session?.activeRoute
+        });
+        return;
+      }
+
+      // Check if we have user's current location
+      if (!latitude || !longitude) {
+        console.error('Missing user location data for route creation. Coords:', latitude, longitude, 'Error:', locationError);
+        
+        let errorMessage = 'I need to get your current location first to create a route.';
+        if (locationError) {
+          errorMessage += ' It looks like there was an issue accessing your location. Please check your location permissions and try again.';
+        } else {
+          errorMessage += ' Please make sure location services are enabled and try again.';
+        }
+        
+        // Show user-friendly message
+        sendMessage(errorMessage, {
+          userID: session?.user?.id,
+          hasActiveRoute: !!session?.activeRoute
+        });
+        setPendingAction(null);
+        return;
+      }
+
+      // Create locations array matching routes-create.tsx format
+      const locations = [
+        {
+          latitude: latitude,
+          longitude: longitude,
+          locationName: `${suburb || city || 'Current Location'}`
+        },
+        {
+          latitude: 14.6091, // Destination default - should be geocoded from endLocation
+          longitude: 121.0223,
+          locationName: endLocation
+        }
+      ];
+
+      // Get route data first using getRoutes (matching routes-create.tsx)
+      const routeData = await getRoutes({
+        location: locations.map(loc => ({ latitude: loc.latitude, longitude: loc.longitude })),
+        mode: transportMode || 'driving-car'
+      });
+
+      if (!routeData) {
+        console.error('Failed to generate route data');
+        sendMessage('Sorry, I couldn\'t generate the route. Please try again.', {
+          userID: session?.user?.id,
+          hasActiveRoute: !!session?.activeRoute
+        });
+        setPendingAction(null);
+        return;
+      }
+
+      // Create active route object matching routes-create.tsx format
+      const activeRoute = {
+        routeID: `route_${Date.now()}`,
+        userID: session.user.id,
+        location: locations,
+        mode: transportMode || 'driving-car',
+        status: 'active',
+        createdOn: new Date(),
+        routeData: routeData
+      };
+
+      // Save to SessionContext
+      await updateSession({ activeRoute });
+      
+      // Send confirmation message
+      sendMessage('Route created successfully! You can now view it in the Maps tab.', {
+        userID: session?.user?.id,
+        hasActiveRoute: true
+      });
+    } catch (error) {
+      console.error('Error creating route:', error);
+    }
+    
+    setPendingAction(null);
+  };
+
+  const handleDeclineAction = () => {
+    sendMessage('No, thank you', {
+      userID: session?.user?.id,
+      hasActiveRoute: !!session?.activeRoute
+    });
+    setPendingAction(null);
   };
 
   useEffect(() => {
@@ -164,6 +324,39 @@ export default function AIChatScreen() {
             <ThemedText style={{ textAlign: 'center', color: '#888' }}>
               Your personal travel companion. Ask me anything about travel—destinations, tips, weather, and more.
             </ThemedText>
+            
+            {/* Travel Suggestions */}
+            <View style={{ marginTop: 20, width: '100%' }}>
+              <ThemedText style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 10, textAlign: 'center' }}>
+                Try asking me:
+              </ThemedText>
+              <View style={{ gap: 8 }}>
+                <TouchableOpacity
+                  style={styles.suggestionButton}
+                  onPress={() => handleSuggestionPress("Plan a 3-day itinerary for Cebu")}
+                >
+                  <ThemedText style={styles.suggestionText}>Plan a 3-day itinerary for Cebu</ThemedText>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.suggestionButton}
+                  onPress={() => handleSuggestionPress("Create a route from Manila to Baguio")}
+                >
+                  <ThemedText style={styles.suggestionText}>Create a route from Manila to Baguio</ThemedText>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.suggestionButton}
+                  onPress={() => handleSuggestionPress("What are the best beaches in Palawan?")}
+                >
+                  <ThemedText style={styles.suggestionText}>What are the best beaches in Palawan?</ThemedText>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.suggestionButton}
+                  onPress={() => handleSuggestionPress("Best local food in Iloilo")}
+                >
+                  <ThemedText style={styles.suggestionText}>Best local food in Iloilo</ThemedText>
+                </TouchableOpacity>
+              </View>
+            </View>
           </ThemedView>
         ) : (
           <FlatList
@@ -224,6 +417,74 @@ export default function AIChatScreen() {
                       </ThemedText>
                     </TouchableOpacity>
                   )}
+                  {item.actionRequired && (
+                    <View style={{ marginTop: 10, gap: 8 }}>
+                      {item.actionRequired.type === 'confirm_itinerary' && (
+                        <View style={{ flexDirection: 'row', gap: 8 }}>
+                          <TouchableOpacity
+                            style={{
+                              backgroundColor: '#00FFDE',
+                              borderRadius: 8,
+                              paddingVertical: 8,
+                              paddingHorizontal: 16,
+                              flex: 1,
+                            }}
+                            onPress={handleConfirmItinerary}
+                          >
+                            <ThemedText style={{ color: '#000', fontWeight: 'bold', textAlign: 'center' }}>
+                              Yes, Create Itinerary
+                            </ThemedText>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            style={{
+                              backgroundColor: '#666',
+                              borderRadius: 8,
+                              paddingVertical: 8,
+                              paddingHorizontal: 16,
+                              flex: 1,
+                            }}
+                            onPress={handleDeclineAction}
+                          >
+                            <ThemedText style={{ color: '#fff', fontWeight: 'bold', textAlign: 'center' }}>
+                              No Thanks
+                            </ThemedText>
+                          </TouchableOpacity>
+                        </View>
+                      )}
+                      {item.actionRequired.type === 'confirm_route' && (
+                        <View style={{ flexDirection: 'row', gap: 8 }}>
+                          <TouchableOpacity
+                            style={{
+                              backgroundColor: '#00FFDE',
+                              borderRadius: 8,
+                              paddingVertical: 8,
+                              paddingHorizontal: 16,
+                              flex: 1,
+                            }}
+                            onPress={handleConfirmRoute}
+                          >
+                            <ThemedText style={{ color: '#000', fontWeight: 'bold', textAlign: 'center' }}>
+                              Yes, Create Route
+                            </ThemedText>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            style={{
+                              backgroundColor: '#666',
+                              borderRadius: 8,
+                              paddingVertical: 8,
+                              paddingHorizontal: 16,
+                              flex: 1,
+                            }}
+                            onPress={handleDeclineAction}
+                          >
+                            <ThemedText style={{ color: '#fff', fontWeight: 'bold', textAlign: 'center' }}>
+                              No Thanks
+                            </ThemedText>
+                          </TouchableOpacity>
+                        </View>
+                      )}
+                    </View>
+                  )}
                 </ThemedView>
               </View>
             )}
@@ -231,19 +492,14 @@ export default function AIChatScreen() {
         )}
         {loading && (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="small" color="#4300FF" />
+            <Image
+              source={require('@/assets/images/slide1-img.png')}
+              style={styles.taraProfile}
+            />
+            <View style={[styles.messageBubble, { backgroundColor: '#f0f0f0', alignSelf: 'flex-start', borderBottomLeftRadius: 5 }]}>
+              <ChatLoading />
+            </View>
           </View>
-        )}
-        {error && (
-          <ThemedText
-            style={{
-              color: 'red',
-              textAlign: 'center',
-              marginBottom: 8,
-            }}
-          >
-            {error}
-          </ThemedText>
         )}
       </ThemedView>
       <ThemedView color="primary" style={styles.inputRowAbsolute}>
@@ -330,7 +586,23 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   loadingContainer: {
-    alignItems: 'center',
-    marginVertical: 8,
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    marginVertical: 10,
+    maxWidth: '100%',
+    paddingHorizontal: 16,
+  },
+  suggestionButton: {
+    backgroundColor: 'rgba(67, 0, 255, 0.1)',
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(67, 0, 255, 0.3)',
+  },
+  suggestionText: {
+    color: '#4300FF',
+    textAlign: 'center',
+    fontSize: 14,
   },
 });

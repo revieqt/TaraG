@@ -13,6 +13,7 @@ import { useState, useEffect } from 'react';
 import { useLocation } from '@/hooks/useLocation';
 import haversineDistance from '@/utils/haversineDistance';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { renderDefaultMap } from '../maps/default-state';
 
 export default function MapScreen() {
   const { session, updateSession } = useSession();
@@ -294,19 +295,7 @@ export default function MapScreen() {
       {session?.activeRoute ? (
         renderActiveRoute()
       ):(
-        <View style={styles.contentContainer}>
-          <View style={styles.searchContent}>
-            <TextField
-              placeholder="Search groups..."
-              value=""
-              onChangeText={() => {}}
-              onFocus={() => {}}
-              onBlur={() => {}}
-              isFocused={false}
-              autoCapitalize="none"
-            />
-          </View>
-        </View>
+        renderDefaultMap()
       )}
     </View>
   );

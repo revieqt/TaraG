@@ -1,5 +1,5 @@
 import { useThemeColor } from '@/hooks/useThemeColor';
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
     Animated,
     Dimensions,
@@ -8,6 +8,7 @@ import {
     StyleSheet,
     View,
     ViewStyle,
+    Keyboard,
 } from "react-native";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
@@ -26,22 +27,51 @@ export default function BottomSheet({
   style,
 }: BottomSheetProps) {
   const backgroundColor = useThemeColor({}, "primary");
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
 
   // Hidden offset (only handle visible)
   const hiddenOffset = SCREEN_HEIGHT - 40;
 
-  // Convert decimals to pixel snap values
-  const snapValues = [...snapPoints.map((p) => SCREEN_HEIGHT * (1 - p)), hiddenOffset];
+  // Convert decimals to pixel snap values - adjust for keyboard
+  const effectiveScreenHeight = SCREEN_HEIGHT - keyboardHeight;
+  const snapValues = [...snapPoints.map((p) => effectiveScreenHeight * (1 - p)), hiddenOffset];
 
   const translateY = useRef(new Animated.Value(snapValues[defaultIndex])).current;
   const lastSnap = useRef(snapValues[defaultIndex]);
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', (event) => {
+      setKeyboardHeight(event.endCoordinates.height);
+    });
+    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+      setKeyboardHeight(0);
+    });
+
+    return () => {
+      keyboardDidShowListener?.remove();
+      keyboardDidHideListener?.remove();
+    };
+  }, []);
 
   useEffect(() => {
     Animated.spring(translateY, {
       toValue: snapValues[defaultIndex],
       useNativeDriver: true,
     }).start();
-  }, []);
+  }, [snapValues]);
+
+  // Update position when keyboard height changes
+  useEffect(() => {
+    if (keyboardHeight > 0) {
+      // Move to a higher snap point when keyboard is visible
+      const keyboardAdjustedValue = snapValues[defaultIndex];
+      Animated.spring(translateY, {
+        toValue: keyboardAdjustedValue,
+        useNativeDriver: true,
+      }).start();
+      lastSnap.current = keyboardAdjustedValue;
+    }
+  }, [keyboardHeight, snapValues]);
 
   const panResponder = useRef(
     PanResponder.create({

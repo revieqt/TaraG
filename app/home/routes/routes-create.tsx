@@ -6,9 +6,9 @@ import { ThemedIcons } from '@/components/ThemedIcons';
 import RoundedButton from '@/components/RoundedButton';
 import Button from '@/components/Button';
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import BottomSheet from '@/components/BottomSheet';
-import { StyleSheet, View, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, ScrollView, Alert, KeyboardAvoidingView, Platform, Keyboard } from 'react-native';
 import LocationDisplay from '@/components/LocationDisplay';
 import { useLocation } from '@/hooks/useLocation';
 import { useThemeColor } from '@/hooks/useThemeColor';
@@ -235,8 +235,12 @@ export default function CreateRouteScreen() {
           />
         </View>
       ) : (
-        <BottomSheet snapPoints={[0.5, 0.83]} defaultIndex={0} style={{zIndex: 100}}>
-          <ScrollView showsVerticalScrollIndicator={false}>
+        <BottomSheet 
+          snapPoints={[0.5, 0.83]} 
+          defaultIndex={0} 
+          style={{zIndex: 100}}
+        >
+            <ScrollView showsVerticalScrollIndicator={false}>
           <ScrollView 
             horizontal 
             showsHorizontalScrollIndicator={false}
@@ -313,7 +317,7 @@ export default function CreateRouteScreen() {
               buttonStyle={{marginTop: 10}}
               disabled={isGenerating || !selectedMode || !endLocation}
             />
-          </ScrollView>
+            </ScrollView>
         </BottomSheet>
       )}
     </View>

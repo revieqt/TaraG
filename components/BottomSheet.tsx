@@ -117,13 +117,15 @@ export default function BottomSheet({
       </View>
 
       {/* Scrollable content */}
-      <ScrollView
-        style={styles.scrollContainer}
-        contentContainerStyle={{ paddingBottom: 40 }}
-        showsVerticalScrollIndicator={false}
-      >
-        {children}
-      </ScrollView>
+      <View style={styles.scrollContainer}>
+        <ScrollView
+          contentContainerStyle={{ paddingBottom: 40 }}
+          showsVerticalScrollIndicator={false}
+          nestedScrollEnabled={true}
+        >
+          {children}
+        </ScrollView>
+      </View>
     </Animated.View>
   );
 }

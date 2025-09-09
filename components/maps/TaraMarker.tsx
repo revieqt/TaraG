@@ -1,7 +1,7 @@
 import { useThemeColor } from '@/hooks/useThemeColor';
 import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
-import { Marker } from 'react-native-maps';
+// TaraMarker is now handled by expo-maps markers array - this component is kept for compatibility
 import { ThemedText } from '../ThemedText';
 
 interface TaraMarkerProps {
@@ -18,16 +18,15 @@ const TaraMarker: React.FC<TaraMarkerProps> = ({ coordinate, color, icon, label 
   const secondaryColor = useThemeColor({}, 'secondary');
   const markerColor = color || secondaryColor;
 
+  // This component is now used for styling only - actual marker placement is handled by expo-maps
   return (
-    <Marker coordinate={coordinate} anchor={{ x: 0.5, y: 0.5 }}>
-      <View style={[styles.circle, { borderColor: markerColor }]}>
-        {icon ? (
-          <Image source={{ uri: icon }} style={styles.icon} />
-        ) : (
-          <ThemedText style={{color: markerColor, textAlign: 'center'}}>{label}</ThemedText>
-        )}
-      </View>
-    </Marker>
+    <View style={[styles.circle, { borderColor: markerColor }]}>
+      {icon ? (
+        <Image source={{ uri: icon }} style={styles.icon} />
+      ) : (
+        <ThemedText style={{color: markerColor, textAlign: 'center'}}>{label}</ThemedText>
+      )}
+    </View>
   );
 };
 

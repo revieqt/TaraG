@@ -15,13 +15,13 @@ const ViewItinerary: React.FC<ViewItineraryProps> = ({ json }) => {
   const renderDayLocations = (loc: any) => {
       return (
         <LocationDisplay
-          content={loc.locations.map((l: any, i: number) => (
+          content={loc.locations && Array.isArray(loc.locations) ? loc.locations.map((l: any, i: number) => (
             <View key={i}>
               <ThemedText>{l.locationName} </ThemedText>
               <ThemedText style={{opacity: .5}}>{l.note ? `${l.note}` : ''}</ThemedText>
             </View>
             
-          ))}
+          )) : []}
         />
       );
   };

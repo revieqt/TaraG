@@ -3,6 +3,7 @@ import { Tabs } from 'expo-router';
 import React from 'react';
 import { Platform, Text } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import ThemedIcons from '@/components/ThemedIcons';
 
 function TabBarLabel({ children, color }: { children: React.ReactNode; color: string }) {
   return (
@@ -76,7 +77,7 @@ export default function TabLayout() {
           ),
         }}
       />
-      {/* <Tabs.Screen
+      <Tabs.Screen
         name="explore"
         options={{
           title: 'Explore',
@@ -88,7 +89,7 @@ export default function TabLayout() {
             />
           ),
         }}
-      /> */}
+      />
       <Tabs.Screen
         name="account"
         options={{

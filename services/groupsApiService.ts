@@ -45,6 +45,34 @@ export interface RespondJoinRequest {
   response: boolean;
 }
 
+export interface PromoteUserRequest {
+  groupID: string;
+  userID: string;
+  adminID: string;
+}
+
+export interface KickUserRequest {
+  groupID: string;
+  userID: string;
+  adminID: string;
+}
+
+export interface LinkItineraryRequest {
+  groupID: string;
+  itineraryID: string;
+  adminID: string;
+}
+
+export interface DeleteItineraryRequest {
+  groupID: string;
+  adminID: string;
+}
+
+export interface DeleteGroupRequest {
+  groupID: string;
+  adminID: string;
+}
+
 export interface ApiResponse<T> {
   success: boolean;
   data?: T;
@@ -134,6 +162,78 @@ class GroupsApiService {
   ): Promise<void> {
     await this.makeRequest<void>(
       '/respond-join-request',
+      'POST',
+      accessToken,
+      requestData
+    );
+  }
+
+  async promoteUserToAdmin(
+    accessToken: string,
+    requestData: PromoteUserRequest
+  ): Promise<void> {
+    await this.makeRequest<void>(
+      '/promote-user',
+      'POST',
+      accessToken,
+      requestData
+    );
+  }
+
+  async kickUserFromGroup(
+    accessToken: string,
+    requestData: KickUserRequest
+  ): Promise<void> {
+    await this.makeRequest<void>(
+      '/kick-user',
+      'POST',
+      accessToken,
+      requestData
+    );
+  }
+
+  async leaveGroup(
+    accessToken: string,
+    requestData: KickUserRequest
+  ): Promise<void> {
+    await this.makeRequest<void>(
+      '/leave-group',
+      'POST',
+      accessToken,
+      requestData
+    );
+  }
+
+  async linkGroupItinerary(
+    accessToken: string,
+    requestData: LinkItineraryRequest
+  ): Promise<void> {
+    await this.makeRequest<void>(
+      '/link-itinerary',
+      'POST',
+      accessToken,
+      requestData
+    );
+  }
+
+  async deleteGroupItinerary(
+    accessToken: string,
+    requestData: DeleteItineraryRequest
+  ): Promise<void> {
+    await this.makeRequest<void>(
+      '/delete-itinerary',
+      'POST',
+      accessToken,
+      requestData
+    );
+  }
+
+  async deleteGroup(
+    accessToken: string,
+    requestData: DeleteGroupRequest
+  ): Promise<void> {
+    await this.makeRequest<void>(
+      '/delete-group',
       'POST',
       accessToken,
       requestData

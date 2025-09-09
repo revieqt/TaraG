@@ -7,6 +7,7 @@ import { router } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Image, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { renderGroupsSection } from '@/app/explore/groupsSection';
+import { useLocation } from '@/hooks/useLocation';
 
 export default function ExploreScreen() {
   const { session } = useSession();
@@ -15,9 +16,10 @@ export default function ExploreScreen() {
   const lastScrollY = useRef(0);
   const scrollViewRef = useRef<ScrollView>(null);
   const headerHeight = 80;
-  const tabHeight = 48;
+  const tabHeight = 40;
   const primaryColor = useThemeColor({}, 'primary');
   const secondaryColor = useThemeColor({}, 'secondary');
+  const { suburb, city, loading, error, latitude, longitude } = useLocation();
   
 
   useEffect(() => {
@@ -71,50 +73,6 @@ export default function ExploreScreen() {
     lastScrollY.current = currentScrollY;
   };
 
-  // const renderExploreSection = () => (
-  //   <ScrollView 
-  //     ref={activeTab === 0 ? scrollViewRef : null}
-  //     showsVerticalScrollIndicator={false} 
-  //     style={{width: '100%', height: '100%'}}
-  //     contentContainerStyle={{ paddingTop: stickyHeight }}
-  //     onScroll={handleScroll}
-  //     scrollEventThrottle={16}
-  //   >
-  //       <View
-  //         style={styles.postInput}
-  //       >
-  //         <TouchableOpacity onPress={() => router.push("/account/viewProfile")}>
-  //           <Image
-  //             source={{ uri: session?.user?.profileImage || 'https://ui-avatars.com/api/?name=User' }}
-  //             style={styles.profileImage}
-  //           />
-  //         </TouchableOpacity>
-          
-  //         <Button
-  //           title='Share something to the world'
-  //           onPress={() => router.push("/explore/explore-post")}
-  //           buttonStyle={{
-  //             flex: 1,
-  //             marginBottom: 15,
-  //             alignItems: 'flex-start',
-  //           }}
-  //         />
-  //       </View>
-
-  //       <ThemedView color='primary' shadow style={styles.postContainer}>
-  //         <TouchableOpacity onPress={() => router.push("/account/viewProfile")} style={{flexDirection: 'row'}}>
-  //           <Image
-  //             source={{ uri: session?.user?.profileImage || 'https://ui-avatars.com/api/?name=User' }}
-  //             style={styles.postProfileImage}
-  //           />
-  //           <View style={{marginTop: -5, marginLeft: 10}}>
-  //             <ThemedText>username_of_user</ThemedText>
-  //             <ThemedText style={{marginTop: -5, fontSize: 12, opacity: 0.5}}>type_of_user</ThemedText>
-  //           </View>
-  //         </TouchableOpacity>
-  //       </ThemedView>
-  //      </ScrollView>
-  //  );
 
   // Render function for Tours section
   const renderToursSection = () => (
@@ -142,9 +100,10 @@ export default function ExploreScreen() {
           />
         </View>
 
-        <TouchableOpacity onPress={() => router.push("/explore/tours-view")}>
-          <ThemedText>View Tour</ThemedText>
-        </TouchableOpacity>
+        <ThemedText type='subtitle'>Tours Near You</ThemedText>
+        <ThemedText type='subtitle'>Tours you might like</ThemedText>
+        <ThemedText type='subtitle'>Popular in Cebu</ThemedText>
+        <ThemedText type='subtitle'>Popular in Cebu</ThemedText>
        </ScrollView>
    );
 
@@ -248,28 +207,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 350,
   },
-  // postInput: {
-  //   margin: 20,
-  //   flexDirection: 'row',
-  // },
-  // profileImage: {
-  //   width: 45, 
-  //   height: 45,
-  //   borderRadius: 30,
-  //   marginRight: 15,
-  // },
-  // postContainer:{
-  //   padding: 15,
-  //   marginHorizontal: 20,
-  //   marginBottom: 20,
-  //   borderRadius: 10,
-  //   minHeight: 100,
-  // },
-  // postProfileImage:{
-  //   width: 35,
-  //   aspectRatio: 1,
-  //   borderRadius: 30,
-  // },
   stickyHeader: {
     position: 'absolute',
     top: 0,
@@ -278,21 +215,6 @@ const styles = StyleSheet.create({
     zIndex: 1000,
     backgroundColor: 'transparent',
   },
-  // collapsibleHeader: {
-  //   position: 'absolute',
-  //   top: 0,
-  //   left: 0,
-  //   right: 0,
-  //   zIndex: 999,
-  // },
-  // stickyTabContainer: {
-  //   position: 'absolute',
-  //   top: 78,
-  //   left: 0,
-  //   right: 0,
-  //   zIndex: 998,
-  //   backgroundColor: 'transparent',
-  // },
   tabRow: {
     flexDirection: 'row',   
     justifyContent: 'space-between',

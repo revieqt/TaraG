@@ -80,9 +80,9 @@ export default function RootLayout() {
             <Stack.Screen name="home/safety" />
             <Stack.Screen name="home/aiChat" />
 
-            <Stack.Screen name="explore/explore-post" />
             <Stack.Screen name="explore/tours-view" />
             <Stack.Screen name="explore/groups-view" />
+            <Stack.Screen name="explore/groups-linkItinerary" />
 
             <Stack.Screen name="payment" />
             <Stack.Screen name="index" />

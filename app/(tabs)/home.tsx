@@ -13,7 +13,7 @@ import { getWeatherImage } from '@/utils/weatherUtils';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { ActivityIndicator, Image, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
-import PulsatingGradient from '@/components/PulsatingGradient';
+import WeeklyCalendar from '@/components/WeeklyCalendar';
 
 export default function HomeScreen() {
   const { session } = useSession();
@@ -212,6 +212,27 @@ export default function HomeScreen() {
               
             </>
           )}
+
+<WeeklyCalendar
+        startOfWeek="monday"
+        events={[
+          {
+            id: "1",
+            title: "Beach Trip",
+            start: new Date(2025, 8, 10), // Sept 10
+            end: new Date(2025, 8, 12),   // Sept 12
+            color: "#FF9800",
+          },
+          {
+            id: "2",
+            title: "City Tour",
+            start: new Date(2025, 8, 11),
+            end: new Date(2025, 8, 11),
+            color: "#2196F3",
+          },
+        ]}
+        onDayPress={(d) => console.log("Selected day:", d)}
+      />
 
           <ThemedView color='primary' shadow style={styles.adsContainer}>
             <View style={{width: 300, height: 250, backgroundColor: 'orange', alignSelf: 'center'}}>

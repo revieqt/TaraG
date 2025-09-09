@@ -235,21 +235,21 @@ export default function SafetyScreen() {
     <ThemedView style={{flex:1}}>
       <BackButton style={styles.backButton}/>
       <ThemedView color='primary'>
-        <GradientHeader/>
+        {/* <GradientHeader/>
         <View style={styles.header}>
           <SOSButton/>
           <View style={{ justifyContent: 'center'}}>
             <ThemedText type='subtitle'>Emergency State</ThemedText>
             <ThemedText type='defaultSemiBold'>Safety Mode</ThemedText>
           </View>
-        </View>
+        </View> */}
 
         {locationLoading ? (
           <ActivityIndicator size="large" color="#4300FF" style={{marginTop: 40}} />
         ) : (
           <>
             
-            <ThemedText style={{textAlign: 'center', paddingTop: 20}}>
+            <ThemedText style={{textAlign: 'center', paddingTop: 70,zIndex: 500}}>
               Who do you need to reach in your emergency?
             </ThemedText>
 

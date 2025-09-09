@@ -7,7 +7,8 @@ import ThemedIcons from "@/components/ThemedIcons";
 import Button from '@/components/Button';
 import { ThemedView } from "@/components/ThemedView";
 import { router } from "expo-router";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { useFocusEffect } from '@react-navigation/native';
 import EmptyMessage from '@/components/EmptyMessage';
 import { useSession } from "@/context/SessionContext";
 import { groupsApiService, Group } from "@/services/groupsApiService";
@@ -24,11 +25,33 @@ export const renderGroupsSection = () => {
     const [userGroups, setUserGroups] = useState<Group[]>([]);
     const [loading, setLoading] = useState(false);
     const [groupsLoading, setGroupsLoading] = useState(true);
+    const [lastFetchTime, setLastFetchTime] = useState<number>(0);
+    const [forceRefresh, setForceRefresh] = useState(false);
+
+    // Cache configuration
+    const CACHE_DURATION = 30000; // 30 seconds cache
 
     // Load user's groups on component mount
     useEffect(() => {
         loadUserGroups();
     }, [session]);
+
+    // Check if data is stale and needs refresh
+    const isDataStale = () => {
+        const now = Date.now();
+        return (now - lastFetchTime) > CACHE_DURATION || forceRefresh;
+    };
+
+    // Listen for focus events to refresh groups when returning from group actions
+    useFocusEffect(
+        useCallback(() => {
+            // Only refresh if data is stale or force refresh is requested
+            if (isDataStale()) {
+                loadUserGroups();
+                setForceRefresh(false);
+            }
+        }, [lastFetchTime, forceRefresh])
+    );
 
     const loadUserGroups = async () => {
         if (!session?.accessToken || !session?.user?.id) {
@@ -43,6 +66,7 @@ export const renderGroupsSection = () => {
             const groups = await groupsApiService.getGroups(session.accessToken, session.user.id);
             console.log('✅ Groups loaded:', groups.length, groups);
             setUserGroups(groups);
+            setLastFetchTime(Date.now()); // Update cache timestamp
         } catch (error) {
             console.error('❌ Error loading groups:', error);
             Alert.alert('Error', 'Failed to load groups');
@@ -98,7 +122,7 @@ export const renderGroupsSection = () => {
             );
             
             setGroupName('');
-            loadUserGroups(); // Refresh the groups list
+            setForceRefresh(true); // Force refresh to get updated groups list
         } catch (error) {
             console.error('Error creating group:', error);
             Alert.alert('Error', error instanceof Error ? error.message : 'Failed to create group');
@@ -144,7 +168,7 @@ export const renderGroupsSection = () => {
             );
             
             setInviteCode('');
-            loadUserGroups(); // Refresh the groups list
+            setForceRefresh(true); // Force refresh to get updated groups list
         } catch (error) {
             console.error('Error joining group:', error);
             Alert.alert('Error', error instanceof Error ? error.message : 'Failed to join group');
@@ -204,7 +228,7 @@ export const renderGroupsSection = () => {
                 <TouchableOpacity 
                     onPress={() => router.push({
                         pathname: '/explore/groups-view',
-                        params: { groupData: JSON.stringify(item) }
+                        params: { groupID: item.id }
                     })}
                 >
                     <View style={styles.groupHeader}>
@@ -317,12 +341,12 @@ export const renderGroupsSection = () => {
                 ) : (
                     <>
                         { searchText ? (
-                            <EmptyMessage iconLibrary='MaterialDesignIcons' iconName='groups'
+                            <EmptyMessage iconLibrary='MaterialIcons' iconName='groups'
                             title='No groups match your search'
                             description="Try other keywords"
                             />
                         ):(
-                            <EmptyMessage iconLibrary='MaterialDesignIcons' iconName='groups'
+                            <EmptyMessage iconLibrary='MaterialIcons' iconName='groups'
                             title='No groups found'
                             description="You haven't joined any groups yet"
                             />

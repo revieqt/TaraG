@@ -1,5 +1,10 @@
 import React, { useMemo, useState, useCallback } from "react";
-import { View, Text, TouchableOpacity, LayoutChangeEvent } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, LayoutChangeEvent, StyleSheet } from "react-native";
+import { ThemedView } from "./ThemedView";
+import ThemedIcons from "./ThemedIcons";
+import { ThemedText } from "./ThemedText";
+import { useThemeColor } from "@/hooks/useThemeColor";
+import EmptyMessage from "./EmptyMessage";
 
 type CalendarEvent = {
   id: string;
@@ -12,26 +17,16 @@ type CalendarEvent = {
 type WeeklyCalendarProps = {
   startOfWeek?: "sunday" | "monday";
   events?: CalendarEvent[];
-  onDayPress?: (date: Date) => void;
 };
 
 const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
   startOfWeek = "monday",
   events = [],
-  onDayPress,
 }) => {
-  const [selectedDay, setSelectedDay] = useState<Date>(new Date());
-  const [containerWidth, setContainerWidth] = useState<number>(0);
-
-  // Today reference
   const today = new Date();
-
-  // Handle layout change to capture container width
-  const handleLayout = useCallback((e: LayoutChangeEvent) => {
-    setContainerWidth(e.nativeEvent.layout.width);
-  }, []);
-
-  // Calculate start of week
+  const [containerWidth, setContainerWidth] = useState<number>(0);
+  const accentColor = useThemeColor({}, 'accent');  
+  // calculate start of week
   const currentWeekStart = useMemo(() => {
     const day = today.getDay();
     const diff =
@@ -41,120 +36,210 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
     const d = new Date(today);
     d.setDate(today.getDate() + diff);
     return d;
-  }, [startOfWeek, today]);
+  }, [startOfWeek]);
 
-  // Generate 7 days
-  const days = Array.from({ length: 7 }, (_, i) => {
+  // generate 7 days of the current week
+  const weekDays = Array.from({ length: 7 }, (_, i) => {
     const d = new Date(currentWeekStart);
     d.setDate(currentWeekStart.getDate() + i);
     return d;
   });
 
-  // Events that span this day
-  const getEventsForDay = (day: Date) => {
-    return events.filter((ev) => ev.start <= day && ev.end >= day);
-  };
+  const [selectedIndex, setSelectedIndex] = useState(
+    weekDays.findIndex((d) => d.toDateString() === today.toDateString())
+  );
 
-  // Compute day width based on container width
-  const dayWidth = containerWidth > 0 ? containerWidth / 7 - 4 : 0; // minus margin
+  const selectedDay = weekDays[selectedIndex];
+
+  // filter events for selected day
+  const dayEvents = events.filter((ev) => {
+    const eventStartDate = new Date(ev.start.getFullYear(), ev.start.getMonth(), ev.start.getDate());
+    const eventEndDate = new Date(ev.end.getFullYear(), ev.end.getMonth(), ev.end.getDate());
+    const selectedDate = new Date(selectedDay.getFullYear(), selectedDay.getMonth(), selectedDay.getDate());
+    
+    return selectedDate >= eventStartDate && selectedDate <= eventEndDate;
+  });
+
+  // handle layout (for equal sizing)
+  const handleLayout = useCallback((e: LayoutChangeEvent) => {
+    setContainerWidth(e.nativeEvent.layout.width);
+  }, []);
+
+  // each box width
+  const boxWidth = containerWidth > 0 ? containerWidth / 2 - 8 : 0;
 
   return (
-    <View
-      style={{ flexDirection: "row", justifyContent: "space-between" }}
-      onLayout={handleLayout}
-    >
-      {days.map((date, idx) => {
-        const isToday = date.toDateString() === today.toDateString();
-        const isSelected = date.toDateString() === selectedDay.toDateString();
-        const dayEvents = getEventsForDay(date);
-
-        return (
-          <TouchableOpacity
-            key={idx}
-            onPress={() => {
-              setSelectedDay(date);
-              onDayPress?.(date);
-            }}
-            style={{
-              width: dayWidth,
-              marginHorizontal: 2,
-              alignItems: "center",
-            }}
-          >
-            {/* Day Box */}
-            <View
-              style={{
-                borderRadius: 10,
-                paddingVertical: 8,
-                width: "100%",
-                backgroundColor: isSelected
-                  ? "#007AFF"
-                  : isToday
-                  ? "#E3F2FD"
-                  : "#F5F5F5",
-              }}
+    <View style={styles.container} onLayout={handleLayout}>
+      {/* Left Box - Day Display */}
+      <ThemedView color='primary' shadow
+        style={[styles.box, { width: boxWidth }]}
+      >
+        {/* Day + Date */}
+        <View style={styles.dayContent}>
+          <ThemedText style={styles.dateText}>
+            {selectedDay.toLocaleDateString("en-US", {
+              day: "numeric",
+            })}
+          </ThemedText>
+          <ThemedText style={styles.dayText}>
+            {selectedDay.toLocaleDateString("en-US", {
+              month: "long",
+            })}, {selectedDay.toLocaleDateString("en-US", {
+              year: "numeric",
+            })}
+          </ThemedText>
+          <ThemedText style={styles.dayText}>
+            {selectedDay.toLocaleDateString("en-US", { weekday: "long" })}
+          </ThemedText>
+          {/* Navigation with Dot Indicators */}
+          <View style={styles.navigationRow}>
+            {/* Left Arrow */}
+            <TouchableOpacity
+              style={styles.arrowButtonInside}
+              onPress={() =>
+                setSelectedIndex((prev) => (prev > 0 ? prev - 1 : prev))
+              }
+              disabled={selectedIndex === 0}
             >
-              <Text
-                style={{
-                  textAlign: "center",
-                  fontWeight: "bold",
-                  fontSize: 12,
-                  color: isSelected ? "#fff" : "#333",
-                }}
-              >
-                {date.toLocaleDateString("en-US", { weekday: "short" })}
-              </Text>
-              <Text
-                style={{
-                  textAlign: "center",
-                  fontSize: 16,
-                  fontWeight: "600",
-                  color: isSelected ? "#fff" : "#333",
-                }}
-              >
-                {date.getDate()}
-              </Text>
+              <ThemedIcons 
+                  library="MaterialIcons" 
+                  name="arrow-back-ios" 
+                  size={16}
+              />
+            </TouchableOpacity>
+
+            {/* Dot Indicators */}
+            <View style={styles.dotContainer}>
+              {weekDays.map((_, index) => (
+                <View
+                  key={index}
+                  style={[
+                    styles.dot,
+                    { backgroundColor: index === selectedIndex ? accentColor : "#ccc" }
+                  ]}
+                />
+              ))}
             </View>
 
-            {/* Events indicator */}
-            <View style={{ marginTop: 4, width: "100%" }}>
-              {dayEvents.map((ev) => {
-                const isStart = ev.start.toDateString() === date.toDateString();
-                const isEnd = ev.end.toDateString() === date.toDateString();
+            {/* Right Arrow */}
+            <TouchableOpacity
+              style={styles.arrowButtonInside}
+              onPress={() =>
+                setSelectedIndex((prev) =>
+                  prev < weekDays.length - 1 ? prev + 1 : prev
+                )
+              }
+              disabled={selectedIndex === weekDays.length - 1}
+            >
+              <ThemedIcons 
+                  library="MaterialIcons" 
+                  name="arrow-forward-ios" 
+                  size={16}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
+      </ThemedView>
 
-                return (
-                  <View
-                    key={ev.id}
-                    style={{
-                      height: 6,
-                      borderRadius: 3,
-                      marginVertical: 1,
-                      backgroundColor: ev.color || "#4CAF50",
-                      opacity: 0.9,
-                      width:
-                        isStart && isEnd
-                          ? "100%"
-                          : isStart
-                          ? "95%"
-                          : isEnd
-                          ? "95%"
-                          : "100%",
-                      alignSelf:
-                        isStart
-                          ? "flex-start"
-                          : isEnd
-                          ? "flex-end"
-                          : "center",
-                    }}
-                  />
-                );
-              })}
-            </View>
-          </TouchableOpacity>
-        );
-      })}
+      {/* Right Box - Events */}
+      <ThemedView color='primary' shadow style={[styles.box, { width: boxWidth }]}>
+        <ScrollView>
+          {dayEvents.length > 0 ? (
+            dayEvents.map((ev) => (
+              <View
+                key={ev.id}
+                style={[styles.eventItem,{backgroundColor: accentColor}]}
+              >
+                <ThemedText style={styles.eventTitle}>{ev.title}</ThemedText>
+                <ThemedText style={styles.eventTime}>
+                  {ev.start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} -{" "}
+                  {ev.end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                </ThemedText>
+              </View>
+            ))
+          ) : (
+            <EmptyMessage iconLibrary='MaterialDesignIcons' iconName='camera-timer'
+            title='No Events'
+            description="scheduled for this day"
+            />
+            
+          )}
+        </ScrollView>
+      </ThemedView>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  arrowButton: {
+    padding: 4,
+    marginHorizontal: 8,
+  },
+  arrowButtonInside: {
+    padding: 4,
+    marginHorizontal: 8,
+  },
+  box: {
+    aspectRatio: 1,
+    borderRadius: 12,
+    padding: 12,
+  },
+  dayContent: {
+    flex: 1,
+  },
+  dayText: {
+    opacity: .5
+  },
+  dateText: {
+    fontSize: 40,
+    marginBottom: -10
+  },
+  navigationRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    justifyContent: "center",
+  },
+  dotContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginHorizontal: 2,
+  },
+  eventsTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 6,
+  },
+  eventItem: {
+    padding: 8,
+    marginBottom: 8,
+    borderRadius: 8,
+  },
+  eventTitle: {
+    fontWeight: "600",
+    color: "#333",
+  },
+  eventTime: {
+    fontSize: 11,
+    color: "#555",
+  },
+  noEventsText: {
+    fontSize: 14,
+    color: "#999",
+  },
+});
 
 export default WeeklyCalendar;

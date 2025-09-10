@@ -213,26 +213,24 @@ export default function HomeScreen() {
             </>
           )}
 
-<WeeklyCalendar
-        startOfWeek="monday"
-        events={[
-          {
-            id: "1",
-            title: "Beach Trip",
-            start: new Date(2025, 8, 10), // Sept 10
-            end: new Date(2025, 8, 12),   // Sept 12
-            color: "#FF9800",
-          },
-          {
-            id: "2",
-            title: "City Tour",
-            start: new Date(2025, 8, 11),
-            end: new Date(2025, 8, 11),
-            color: "#2196F3",
-          },
-        ]}
-        onDayPress={(d) => console.log("Selected day:", d)}
-      />
+          <WeeklyCalendar
+            events={[
+              {
+                id: "1",
+                title: "Island Hopping",
+                start: new Date(2025, 8, 10, 8, 0),
+                end: new Date(2025, 8, 10, 12, 0),
+                color: "#FFCDD2",
+              },
+              {
+                id: "2",
+                title: "Dinner Cruise",
+                start: new Date(2025, 8, 10, 18, 0),
+                end: new Date(2025, 8, 10, 20, 0),
+                color: "#C5E1A5",
+              },
+            ]}
+          />
 
           <ThemedView color='primary' shadow style={styles.adsContainer}>
             <View style={{width: 300, height: 250, backgroundColor: 'orange', alignSelf: 'center'}}>
@@ -321,7 +319,8 @@ const styles = StyleSheet.create({
     width: '100%',
     padding: 20,
     borderRadius: 10,
-    overflow: 'hidden'
+    overflow: 'hidden',
+    marginBottom: 15
   },
   redirectToTara: {
     paddingHorizontal: 20,
